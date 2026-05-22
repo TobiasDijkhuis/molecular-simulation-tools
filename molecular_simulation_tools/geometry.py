@@ -8,6 +8,45 @@ from ase import Atoms
 from ase.geometry import find_mic
 
 
+def construct_grid_in_cell(
+    cell: np.ndarray, ngrid: int | tuple[int, int]
+) -> tuple[np.ndarray, np.ndarray]:
+    """Create a grid of points sampled equally in the cell.
+
+    Parameters
+    ----------
+    cell : np.ndarray
+        3x3 matrix of cell dimensions.
+    ngrid : int | tuple[int, int]
+        Number of grid points to sample along x and y. If an integer,
+        takes the same number of points along x and y.
+
+    Returns
+    -------
+    X : np.ndarray
+        Grid of x coordinates
+    Y : np.ndarray
+        Grid of y coordinates
+
+    Raises
+    ------
+    ValueError
+        If `ngrid` is not a 2-tuple.
+
+    """
+    if isinstance(ngrid, int):
+        ngrid = (ngrid, ngrid)
+
+    if len(ngrid) != 2:
+        msg = f"Number of dimensions of ngrid needs to be 2, but was {len(ngrid)}"
+        raise ValueError(msg)
+
+    x = discretize_cell_length(cell[0, 0], ngrid[0])
+    y = discretize_cell_length(cell[1, 1], ngrid[1])
+    X, Y = np.meshgrid(x, y, indexing="ij")  # noqa: N806
+    return X, Y
+
+
 def discretize_cell_length(length: int | float, ngrid: int) -> np.ndarray:
     """Discretize the length of a cell.
 
@@ -29,6 +68,114 @@ def discretize_cell_length(length: int | float, ngrid: int) -> np.ndarray:
     """
     spacing = float(length) / ngrid
     return np.linspace(spacing / 2, length - spacing / 2, num=ngrid, endpoint=True)
+
+
+def correct_distance_for_pbc(distance: np.ndarray, box_length: float) -> np.ndarray:
+    """Correct a distance for periodic boundary conditions.
+
+    Parameters
+    ----------
+    distance : np.ndarray
+        Array of distances
+    box_length : float
+        Length of the periodic box along the dimension of `distance`
+
+    Returns
+    -------
+    distance : np.ndarray
+        Corrected distance
+
+    """
+    distance[distance > box_length * 0.5] -= box_length
+    distance[distance <= -box_length * 0.5] += box_length
+    return distance
+
+
+def find_min_height_for_distance(
+    x: float,
+    y: float,
+    point_coordinates: np.ndarray,
+    distance: float,
+    box_size: np.ndarray | None = None,
+) -> float:
+    """Find the minimum height for a point to be `distance` away from other points.
+
+    Calculate the minimum height ``z`` for a point ``(x, y)`` for it to be at least
+    `distance` away from all points in `point_coordinates`.
+
+    Parameters
+    ----------
+    x : float
+        x-coordinate of desired point
+    y : float
+        y-coordinate of desired point
+    point_coordinates : np.ndarray
+        Nx2 (or more) array of N point coordinates.
+    distance : float
+        Minimum distance to all other points.
+    box_size : np.ndarray | None
+        Size of the box. If None, do not include periodic boundary conditions.
+        Default = None.
+
+    Returns
+    -------
+    height : float
+        Minimum height required for ``(x, y)`` to be `distance` away from all other
+        points.
+
+    Raises
+    ------
+    ValueError
+        If no points within radius `distance` from ``(x, y)``
+        are found in `point_coordinates` (in a 2D projection).
+
+    """
+    delta_x = point_coordinates[:, 0] - x
+    delta_y = point_coordinates[:, 1] - y
+
+    if box_size is not None:
+        delta_x = correct_distance_for_pbc(delta_x, box_size[0])
+        delta_y = correct_distance_for_pbc(delta_y, box_size[1])
+
+    delta_x_squared = delta_x**2
+    delta_y_squared = delta_y**2
+
+    in_cylinder = (distance**2 - delta_x_squared - delta_y_squared) >= 0.0
+
+    if not np.any(in_cylinder):
+        msg = f"No points found within a radius of {distance} of ({x}, {y}) in a 2D projection"
+        raise ValueError(msg)
+
+    point_coordinates = point_coordinates[in_cylinder, :]
+    delta_x_squared = delta_x_squared[in_cylinder]
+    delta_y_squared = delta_y_squared[in_cylinder]
+
+    necessary_delta_z_squared = distance**2 - delta_x_squared - delta_y_squared
+
+    height = np.max(point_coordinates[:, 2] + np.sqrt(necessary_delta_z_squared))
+
+    return height
+
+
+def turn_grid_into_position_vectors(
+    grid_matrices: tuple[np.ndarray, ...],
+) -> np.ndarray:
+    """Turn a grid created by :func:`numpy.meshgrid` into position vectors.
+
+    Taken from https://stackoverflow.com/questions/12864445/how-to-convert-the-output-of-meshgrid-to-the-corresponding-array-of-points
+
+    Parameters
+    ----------
+    grid_matrices : tuple[np.ndarray, ...]
+        Tuple of N grid matrices with M points.
+
+    Returns
+    -------
+    np.ndarray
+        MxN numpy array of the grid positions in N dimensions.
+
+    """
+    return np.vstack(list(map(np.ravel, grid_matrices))).T
 
 
 def calculate_rmsd(
