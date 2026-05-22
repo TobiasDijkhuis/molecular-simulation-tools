@@ -7,6 +7,10 @@ on:
     branches:
       - main
       - develop
+  push:
+    branches:
+      - main
+      - develop
 
   workflow_run:
     workflows: ["Lint (Code Style & Format)"]
