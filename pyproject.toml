@@ -1,8 +1,3 @@
-
-[build-system]
-requires = ["numpy", "wheel", "meson-python", "meson>=1.7.0"]
-build-backend = "mesonpy"
-
 [project]
 name = "molecular-simulation-tools"
 dynamic = ["version"]
