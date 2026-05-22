@@ -66,7 +66,7 @@ preview = true
 "tests/*" = ["ANN001", "ANN201", "D", "ARG001", "PLR6301", "ARG002", "DOC", "S101", "B011", "PLC", "PLR"]
 
 [[tool.mypy.overrides]]
-module = ["numpy", "ase", "ase.*", "matplotlib", "matplotlib.*"]
+module = ["numpy", "ase", "ase.*", "matplotlib", "matplotlib.*", "pytest", "znh5md"]
 ignore_missing_imports = true
 
 [tool.typos.default]

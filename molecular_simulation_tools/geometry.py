@@ -8,6 +8,29 @@ from ase import Atoms
 from ase.geometry import find_mic
 
 
+def discretize_cell_length(length: int | float, ngrid: int) -> np.ndarray:
+    """Discretize the length of a cell.
+
+    Places the points such that they are all equidistant, including the first and
+    last point, if you include periodic boundary conditions.
+
+    Parameters
+    ----------
+    length : int | float
+        Length to discretize
+    ngrid : int
+        Number of points
+
+    Returns
+    -------
+    np.ndarray
+        array containing equidistant points along the length `length`.
+
+    """
+    spacing = float(length) / ngrid
+    return np.linspace(spacing / 2, length - spacing / 2, num=ngrid, endpoint=True)
+
+
 def calculate_rmsd(
     atoms: Atoms,
     target: Atoms,
