@@ -157,6 +157,77 @@ def find_min_height_for_distance(
     return height
 
 
+def find_min_height_for_adsorbate_on_surface(
+    surface: Atoms,
+    ngrid: int | tuple[int, int],
+    distance: float,
+    adsorbate: Atoms | None = None,
+) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
+    """Find the minimum height to place an adsorbate at least `distance` away from surface atoms.
+
+    Calculate the minimum height for `adsorbate` for it to have all its
+    atoms at least `distance` away from the other atoms in `surface`.
+
+    The returned points correspond to placing the center-of-mass of `adsorbate`
+    at ``(x, y, z)``, such that the minimum distance to any atom in the surface is
+    `distance`.
+
+    Parameters
+    ----------
+    surface : Atoms
+        Surface
+    ngrid : int | tuple[int, int]
+        Number of grid points along x and y
+    distance : float
+        Distance from all other atoms.
+    adsorbate : Atoms | None
+        Adsorbate. If None, create a dummy Atoms instance with one atom.
+        Default = None.
+
+    Returns
+    -------
+    grid_x : np.ndarray
+        grid of positions along x
+    grid_y : np.ndarray
+        grid of positions along y
+    sample_heights : np.ndarray
+        height of the points corresponding to the points in `grid_x` and `grid_y.
+
+    """
+    if adsorbate is None:
+        # Dummy, single atom
+        adsorbate = Atoms("H", [[0, 0, 0]])
+    else:
+        adsorbate = adsorbate.copy()
+        adsorbate.set_center_of_mass([0, 0, 0])
+
+    n_atoms_in_adsorbate = len(adsorbate)
+
+    grid_x, grid_y = construct_grid_in_cell(surface.get_cell(), ngrid)
+    if isinstance(ngrid, int):
+        ngrid = (ngrid, ngrid)
+
+    sample_heights = np.empty((ngrid[0], ngrid[1]))
+    cell = np.diag(surface.get_cell())
+    for i_x in range(ngrid[0]):
+        for i_y in range(ngrid[1]):
+            max_height = sys.float_info.min
+
+            for atom_idx in range(n_atoms_in_adsorbate):
+                pos = adsorbate.positions[atom_idx, :]
+
+                height = find_min_height_for_distance(
+                    pos[0] + grid_x[i_x, i_y],
+                    pos[1] + grid_y[i_x, i_y],
+                    surface.positions,
+                    distance,
+                    box_size=cell,
+                )
+                max_height = max(max_height, height)
+            sample_heights[i_x, i_y] = max_height
+    return grid_x, grid_y, sample_heights
+
+
 def turn_grid_into_position_vectors(
     grid_matrices: tuple[np.ndarray, ...],
 ) -> np.ndarray:
