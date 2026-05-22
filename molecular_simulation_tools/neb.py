@@ -19,6 +19,8 @@ def get_images_for_neb(
 ) -> list[Atoms]:
     """Get images to use for NEB calculations using :class:`ase.mep.neb.NEB`.
 
+    Creates ``n_images-1`` copies of `initial`, and one copy of `final`.
+
     Parameters
     ----------
     initial : Atoms
@@ -32,6 +34,7 @@ def get_images_for_neb(
     -------
     images : list[Atoms]
         List of images
+
     """
     images = [initial.copy() for _ in range(n_images - 1)] + [final.copy()]
     return images
@@ -39,9 +42,11 @@ def get_images_for_neb(
 
 def run_energy_weighted_neb(
     images: list[Atoms],
+    calc: Calculator,
     fmax: float = 0.05,
     optimizer: type[Optimizer] = LBFGS,
     interpolate: Literal["linear", "idpp"] | None = None,
+    neb_kwargs: dict[str, Any] | None = None,
 ) -> NEB:
     """Do an energy-weighted climbing image nudged elastic band (EW-CI-NEB) calculation.
 
@@ -51,13 +56,17 @@ def run_energy_weighted_neb(
     ----------
     images : list[Atoms]
         List of atoms, from initial to final frame.
+    calc : Calculator
+        Calculator that can calculate the potential energy and forces of the images.
     fmax : float
-        Maximum force on the highest
+        Maximum force on the highest energy component in eV/Angstrom. Default = 0.05.
     optimizer : type[Optimizer]
-        Optimizer to use for the NEB. Default = LBFGS
+        Optimizer to use for the NEB. Default = LBFGS.
     interpolate : Literal['linear', 'idpp'] | None
         Method to interpolate see :meth:`ase.mep.neb.NEB.interpolate`.
-        If None, do not interpolate images.
+        If None, do not interpolate images. Default = None.
+    neb_kwargs : dict[str, Any] | None
+        Keyword arguments passed to :class:`ase.mep.neb.NEB`. Default = None.
 
     Returns
     -------
@@ -65,16 +74,17 @@ def run_energy_weighted_neb(
         Calculated minimum energy path
 
     """
+    if neb_kwargs is None:
+        neb_kwargs = {}
     neb = NEB(
         images,
-        method="improvedtangent",
-        energy_weighted=True,
-        kmin=0.05,
-        k=0.5,
-        climb=True,
+        **neb_kwargs,
     )
     if interpolate is not None:
         neb.images = neb.interpolate(method=interpolate, mic=images[0].pbc)
+
+    for image in neb.images:
+        image.calc = calc
 
     with optimizer(neb, logfile=None) as opt:  # ty: ignore[invalid-argument-type]
         opt.run(fmax=fmax)
@@ -120,7 +130,7 @@ def run_neb_ts(
     images : list[Atoms]
         Minimum energy path between the initial and final frame,
         with the transition state optimized.
-    transition_state: Atoms
+    transition_state : Atoms
         Optimized transition state
 
     Raises
@@ -132,7 +142,7 @@ def run_neb_ts(
     """
     if energy_weighted_neb_kwargs is None:
         energy_weighted_neb_kwargs = {}
-    neb: NEB = run_energy_weighted_neb(images, **energy_weighted_neb_kwargs)
+    neb: NEB = run_energy_weighted_neb(images, calc, **energy_weighted_neb_kwargs)
     if neb.energies is None:
         msg = (
             "NEB instance returned by 'run_energy_weighted_neb' does not have energies"
