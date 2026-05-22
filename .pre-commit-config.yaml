@@ -13,7 +13,7 @@ repos:
     rev: v0.15.9
     hooks:
       - id: ruff
-        name: "[correctness] Ruff linter"
+        name: "Ruff linter"
         description: "Check for linting errors"
         args: [--fix]
 
@@ -21,7 +21,7 @@ repos:
     rev: v1.20.0
     hooks:
       - id: mypy
-        name: "[correctness] Mypy type checking"
+        name: "Mypy type checking"
         description: "Check for type errors"
         args: [--install-types, --non-interactive]
 
@@ -34,14 +34,14 @@ repos:
     rev: v0.15.9
     hooks:
       - id: ruff-format
-        name: "[style] Ruff formatter"
+        name: "Ruff formatter"
         description: "Format code consistently (indentation, quotes, whitespace)"
 
   - repo: https://github.com/JanEricNitschke/pymend
     rev: v3.2.2
     hooks:
       - id: pymend
-        name: "[style] Check docstrings with pymend"
+        name: "Check docstrings"
         description: "Make sure that all docstrings are correct"
         pass_filenames: true
         args: []

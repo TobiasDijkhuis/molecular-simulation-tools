@@ -1,5 +1,21 @@
+# [build-system]
+# requires = ["setuptools >= 77.0.3", "numpy", "ase"]
+# build-backend = "setuptools.build_meta"
+# 
+
+[build-system]
+requires = ["hatchling", "hatch-vcs"]
+build-backend = "hatchling.build"
+
+[tool.hatch.version]
+source = "vcs"
+fallback-version = "0.0.0"
+
+[tool.hatch.build.hooks.vcs]
+version-file = "molecular_simulation_tools/_version.py"
+
 [project]
-name = "molecular-simulation-tools"
+name = "molecular_simulation_tools"
 dynamic = ["version"]
 authors = [
     { name = "Tobias Dijkhuis" },
