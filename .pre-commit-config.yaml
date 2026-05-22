@@ -1,0 +1,47 @@
+repos:
+  - repo: https://github.com/crate-ci/typos
+    rev: v1.45.0
+    hooks:
+      - id: typos
+        name: "Check spelling errors"
+        description: "Check for spelling errors in files"
+        args: []
+        pass_filenames: false
+
+  # Ruff: Code style, docstrings, etc
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.15.9
+    hooks:
+      - id: ruff
+        name: "[correctness] Ruff linter"
+        description: "Check for linting errors"
+        args: [--fix]
+
+  - repo: https://github.com/pre-commit/mirrors-mypy
+    rev: v1.20.0
+    hooks:
+      - id: mypy
+        name: "[correctness] Mypy type checking"
+        description: "Check for type errors"
+        args: [--install-types, --non-interactive]
+
+
+  # ============================================================================
+  # TIER 2: STYLE (Auto-fixable formatting and imports)
+  # Purpose: Enforce consistent code style
+  # ============================================================================
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.15.9
+    hooks:
+      - id: ruff-format
+        name: "[style] Ruff formatter"
+        description: "Format code consistently (indentation, quotes, whitespace)"
+
+  - repo: https://github.com/JanEricNitschke/pymend
+    rev: v3.2.2
+    hooks:
+      - id: pymend
+        name: "[style] Check docstrings with pymend"
+        description: "Make sure that all docstrings are correct"
+        pass_filenames: true
+        args: []
