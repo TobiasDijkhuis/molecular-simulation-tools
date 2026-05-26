@@ -28,10 +28,6 @@ Functions
 Module Contents
 ---------------
 
-.. py:data:: znh5md_avail
-   :value: True
-
-
 .. py:function:: read_based_on_filetype(path: str | pathlib.Path, index: int | str | slice = -1) -> ase.Atoms | list[ase.Atoms]
 
    Read the file based on the filetype.
@@ -45,5 +41,9 @@ Module Contents
    :rtype: Atoms | list[Atoms]
 
    :raises ImportError: If `path` ends with `.h5`, but ``znh5md`` is not available.
+
+
+.. py:data:: znh5md_avail
+   :value: True
 
 

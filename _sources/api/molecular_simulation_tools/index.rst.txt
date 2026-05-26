@@ -1,0 +1,23 @@
+molecular_simulation_tools
+==========================
+
+.. py:module:: molecular_simulation_tools
+
+.. autoapi-nested-parse::
+
+   Collection of useful tools to run molecular simulations.
+
+
+
+Submodules
+----------
+
+.. toctree::
+   :maxdepth: 1
+
+   /api/molecular_simulation_tools/geometry/index
+   /api/molecular_simulation_tools/io/index
+   /api/molecular_simulation_tools/neb/index
+   /api/molecular_simulation_tools/utils/index
+
+

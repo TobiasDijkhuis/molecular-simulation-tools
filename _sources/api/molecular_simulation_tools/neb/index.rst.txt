@@ -15,9 +15,9 @@ Functions
 .. autoapisummary::
 
    molecular_simulation_tools.neb.get_images_for_neb
+   molecular_simulation_tools.neb.plot_neb
    molecular_simulation_tools.neb.run_energy_weighted_neb
    molecular_simulation_tools.neb.run_neb_ts
-   molecular_simulation_tools.neb.plot_neb
 
 
 Module Contents
@@ -38,6 +38,22 @@ Module Contents
 
    :returns: **images** -- List of images
    :rtype: list[Atoms]
+
+
+.. py:function:: plot_neb(images: list[ase.Atoms] | ase.mep.neb.BaseNEB, ax: matplotlib.pyplot.Axes | None = None, plot_kwargs: dict[str, Any] | None = None) -> matplotlib.pyplot.Axes
+
+   Plot a NEB calculation.
+
+   :param images: Images to plot, or NEB instance to get images from
+   :type images: list[Atoms] | BaseNEB
+   :param ax: Axes to plot on, or None to create a new one. Default = None.
+   :type ax: plt.Axes | None
+   :param plot_kwargs: Keyword arguments passed to :meth:`matplotlib.pyplot.Axes.plot`.
+                       Default = None.
+   :type plot_kwargs: dict[str, Any] | None
+
+   :returns: **ax** -- Axes that was plotted on.
+   :rtype: plt.Axes
 
 
 .. py:function:: run_energy_weighted_neb(images: list[ase.Atoms], calc: ase.calculators.calculator.Calculator, fmax: float = 0.05, optimizer: type[ase.optimize.optimize.Optimizer] = LBFGS, interpolate: Literal['linear', 'idpp'] | None = None, neb_kwargs: dict[str, Any] | None = None) -> ase.mep.neb.NEB
@@ -95,21 +111,5 @@ Module Contents
 
    :raises RuntimeError: If the neb returned by :func:`run_energy_weighted_neb` does not
        contain energies.
-
-
-.. py:function:: plot_neb(images: list[ase.Atoms] | ase.mep.neb.BaseNEB, ax: matplotlib.pyplot.Axes | None = None, plot_kwargs: dict[str, Any] | None = None) -> matplotlib.pyplot.Axes
-
-   Plot a NEB calculation.
-
-   :param images: Images to plot, or NEB instance to get images from
-   :type images: list[Atoms] | BaseNEB
-   :param ax: Axes to plot on, or None to create a new one. Default = None.
-   :type ax: plt.Axes | None
-   :param plot_kwargs: Keyword arguments passed to :meth:`matplotlib.pyplot.Axes.plot`.
-                       Default = None.
-   :type plot_kwargs: dict[str, Any] | None
-
-   :returns: **ax** -- Axes that was plotted on.
-   :rtype: plt.Axes
 
 

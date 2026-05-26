@@ -51,7 +51,6 @@
 <li class="toctree-l1 current"><a class="reference internal" href="../../index.html">API Reference</a><ul class="current">
 <li class="toctree-l2 current"><a class="reference internal" href="../index.html">molecular_simulation_tools</a><ul class="current">
 <li class="toctree-l3 current"><a class="reference internal" href="../index.html#submodules">Submodules</a><ul class="current">
-<li class="toctree-l4"><a class="reference internal" href="../_version/index.html">molecular_simulation_tools._version</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../geometry/index.html">molecular_simulation_tools.geometry</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../io/index.html">molecular_simulation_tools.io</a></li>
 <li class="toctree-l4 current"><a class="current reference internal" href="#">molecular_simulation_tools.neb</a></li>
@@ -99,14 +98,14 @@
 <tr class="row-odd"><td><p><a class="reference internal" href="#molecular_simulation_tools.neb.get_images_for_neb" title="molecular_simulation_tools.neb.get_images_for_neb"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_images_for_neb</span></code></a>(→ list[ase.Atoms])</p></td>
 <td><p>Get images to use for NEB calculations using <code class="xref py py-class docutils literal notranslate"><span class="pre">ase.mep.neb.NEB</span></code>.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#molecular_simulation_tools.neb.run_energy_weighted_neb" title="molecular_simulation_tools.neb.run_energy_weighted_neb"><code class="xref py py-obj docutils literal notranslate"><span class="pre">run_energy_weighted_neb</span></code></a>(→ ase.mep.neb.NEB)</p></td>
-<td><p>Do an energy-weighted climbing image nudged elastic band (EW-CI-NEB) calculation.</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#molecular_simulation_tools.neb.run_neb_ts" title="molecular_simulation_tools.neb.run_neb_ts"><code class="xref py py-obj docutils literal notranslate"><span class="pre">run_neb_ts</span></code></a>(→ tuple[list[ase.Atoms], ase.Atoms])</p></td>
-<td><p>Do a NEB-TS calculation.</p></td>
-</tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#molecular_simulation_tools.neb.plot_neb" title="molecular_simulation_tools.neb.plot_neb"><code class="xref py py-obj docutils literal notranslate"><span class="pre">plot_neb</span></code></a>(→ matplotlib.pyplot.Axes)</p></td>
 <td><p>Plot a NEB calculation.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#molecular_simulation_tools.neb.run_energy_weighted_neb" title="molecular_simulation_tools.neb.run_energy_weighted_neb"><code class="xref py py-obj docutils literal notranslate"><span class="pre">run_energy_weighted_neb</span></code></a>(→ ase.mep.neb.NEB)</p></td>
+<td><p>Do an energy-weighted climbing image nudged elastic band (EW-CI-NEB) calculation.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#molecular_simulation_tools.neb.run_neb_ts" title="molecular_simulation_tools.neb.run_neb_ts"><code class="xref py py-obj docutils literal notranslate"><span class="pre">run_neb_ts</span></code></a>(→ tuple[list[ase.Atoms], ase.Atoms])</p></td>
+<td><p>Do a NEB-TS calculation.</p></td>
 </tr>
 </tbody>
 </table>
@@ -131,6 +130,28 @@
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>list[Atoms]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="molecular_simulation_tools.neb.plot_neb">
+<span class="sig-prename descclassname"><span class="pre">molecular_simulation_tools.neb.</span></span><span class="sig-name descname"><span class="pre">plot_neb</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">images</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">ase.Atoms</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">ase.mep.neb.BaseNEB</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ax</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">matplotlib.pyplot.Axes</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">plot_kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">matplotlib.pyplot.Axes</span></span></span><a class="reference internal" href="../../../_modules/molecular_simulation_tools/neb.html#plot_neb"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#molecular_simulation_tools.neb.plot_neb" title="Link to this definition"></a></dt>
+<dd><p>Plot a NEB calculation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>images</strong> (<em>list</em><em>[</em><em>Atoms</em><em>] </em><em>| </em><em>BaseNEB</em>) – Images to plot, or NEB instance to get images from</p></li>
+<li><p><strong>ax</strong> (<em>plt.Axes</em><em> | </em><em>None</em>) – Axes to plot on, or None to create a new one. Default = None.</p></li>
+<li><p><strong>plot_kwargs</strong> (<em>dict</em><em>[</em><em>str</em><em>, </em><em>Any</em><em>] </em><em>| </em><em>None</em>) – Keyword arguments passed to <code class="xref py py-meth docutils literal notranslate"><span class="pre">matplotlib.pyplot.Axes.plot()</span></code>.
+Default = None.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>ax</strong> – Axes that was plotted on.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>plt.Axes</p>
 </dd>
 </dl>
 </dd></dl>
@@ -194,28 +215,6 @@ with the transition state optimized.</p></li>
 <dt class="field-odd">Raises<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>RuntimeError</strong> – If the neb returned by <a class="reference internal" href="#molecular_simulation_tools.neb.run_energy_weighted_neb" title="molecular_simulation_tools.neb.run_energy_weighted_neb"><code class="xref py py-func docutils literal notranslate"><span class="pre">run_energy_weighted_neb()</span></code></a> does not
 contain energies.</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="molecular_simulation_tools.neb.plot_neb">
-<span class="sig-prename descclassname"><span class="pre">molecular_simulation_tools.neb.</span></span><span class="sig-name descname"><span class="pre">plot_neb</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">images</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">ase.Atoms</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">ase.mep.neb.BaseNEB</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ax</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">matplotlib.pyplot.Axes</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">plot_kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">matplotlib.pyplot.Axes</span></span></span><a class="reference internal" href="../../../_modules/molecular_simulation_tools/neb.html#plot_neb"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#molecular_simulation_tools.neb.plot_neb" title="Link to this definition"></a></dt>
-<dd><p>Plot a NEB calculation.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>images</strong> (<em>list</em><em>[</em><em>Atoms</em><em>] </em><em>| </em><em>BaseNEB</em>) – Images to plot, or NEB instance to get images from</p></li>
-<li><p><strong>ax</strong> (<em>plt.Axes</em><em> | </em><em>None</em>) – Axes to plot on, or None to create a new one. Default = None.</p></li>
-<li><p><strong>plot_kwargs</strong> (<em>dict</em><em>[</em><em>str</em><em>, </em><em>Any</em><em>] </em><em>| </em><em>None</em>) – Keyword arguments passed to <code class="xref py py-meth docutils literal notranslate"><span class="pre">matplotlib.pyplot.Axes.plot()</span></code>.
-Default = None.</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>ax</strong> – Axes that was plotted on.</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>plt.Axes</p>
 </dd>
 </dl>
 </dd></dl>
