@@ -22,7 +22,6 @@ Functions
    molecular_simulation_tools.geometry.find_min_height_for_distance
    molecular_simulation_tools.geometry.icosahedron_unit_sphere
    molecular_simulation_tools.geometry.sample_new_point
-   molecular_simulation_tools.geometry.turn_grid_into_position_vectors
 
 
 Module Contents
@@ -194,18 +193,5 @@ Module Contents
    :rtype: np.ndarray
 
    :raises ValueError: If `minimum_distance` or `initial_spawn_distance` is less or equal to 0
-
-
-.. py:function:: turn_grid_into_position_vectors(grid_matrices: tuple[numpy.ndarray, Ellipsis]) -> numpy.ndarray
-
-   Turn a grid created by :func:`numpy.meshgrid` into position vectors.
-
-   Taken from https://stackoverflow.com/questions/12864445/how-to-convert-the-output-of-meshgrid-to-the-corresponding-array-of-points
-
-   :param grid_matrices: Tuple of N grid matrices with M points.
-   :type grid_matrices: tuple[np.ndarray, ...]
-
-   :returns: MxN numpy array of the grid positions in N dimensions.
-   :rtype: np.ndarray
 
 

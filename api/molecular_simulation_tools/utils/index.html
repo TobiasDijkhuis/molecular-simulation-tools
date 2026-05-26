@@ -94,17 +94,23 @@
 <h2>Functions<a class="headerlink" href="#functions" title="Link to this heading"></a></h2>
 <table class="autosummary longtable docutils align-default">
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#molecular_simulation_tools.utils.convert_spherical_to_cartesian" title="molecular_simulation_tools.utils.convert_spherical_to_cartesian"><code class="xref py py-obj docutils literal notranslate"><span class="pre">convert_spherical_to_cartesian</span></code></a>(→ numpy.ndarray)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#molecular_simulation_tools.utils.convert_cartesian_to_spherical" title="molecular_simulation_tools.utils.convert_cartesian_to_spherical"><code class="xref py py-obj docutils literal notranslate"><span class="pre">convert_cartesian_to_spherical</span></code></a>(→ tuple[float, float, ...)</p></td>
+<td><p>Convert cartesian coordinates to spherical coordinates.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#molecular_simulation_tools.utils.convert_spherical_to_cartesian" title="molecular_simulation_tools.utils.convert_spherical_to_cartesian"><code class="xref py py-obj docutils literal notranslate"><span class="pre">convert_spherical_to_cartesian</span></code></a>(→ numpy.ndarray)</p></td>
 <td><p>Convert spherical coordinates to cartesian coordinates.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#molecular_simulation_tools.utils.project_on_unit_sphere" title="molecular_simulation_tools.utils.project_on_unit_sphere"><code class="xref py py-obj docutils literal notranslate"><span class="pre">project_on_unit_sphere</span></code></a>(→ numpy.ndarray)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#molecular_simulation_tools.utils.project_on_unit_sphere" title="molecular_simulation_tools.utils.project_on_unit_sphere"><code class="xref py py-obj docutils literal notranslate"><span class="pre">project_on_unit_sphere</span></code></a>(→ numpy.ndarray)</p></td>
 <td><p>Project a vector on the unit sphere, by dividing it by its length.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#molecular_simulation_tools.utils.random_on_unit_sphere" title="molecular_simulation_tools.utils.random_on_unit_sphere"><code class="xref py py-obj docutils literal notranslate"><span class="pre">random_on_unit_sphere</span></code></a>(→ numpy.ndarray)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#molecular_simulation_tools.utils.random_on_unit_sphere" title="molecular_simulation_tools.utils.random_on_unit_sphere"><code class="xref py py-obj docutils literal notranslate"><span class="pre">random_on_unit_sphere</span></code></a>(→ numpy.ndarray)</p></td>
 <td><p>Get a random vector on the unit sphere.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#molecular_simulation_tools.utils.sample_random_rotation" title="molecular_simulation_tools.utils.sample_random_rotation"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sample_random_rotation</span></code></a>(→ tuple[numpy.ndarray, float])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#molecular_simulation_tools.utils.sample_random_rotation" title="molecular_simulation_tools.utils.sample_random_rotation"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sample_random_rotation</span></code></a>(→ tuple[numpy.ndarray, float])</p></td>
 <td><p>Get a random rotation axis and rotation angle.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#molecular_simulation_tools.utils.turn_grid_into_position_vectors" title="molecular_simulation_tools.utils.turn_grid_into_position_vectors"><code class="xref py py-obj docutils literal notranslate"><span class="pre">turn_grid_into_position_vectors</span></code></a>(→ numpy.ndarray)</p></td>
+<td><p>Turn a grid created by <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.meshgrid.html#numpy.meshgrid" title="(in NumPy v2.4)"><code class="xref py py-func docutils literal notranslate"><span class="pre">numpy.meshgrid()</span></code></a> into position vectors.</p></td>
 </tr>
 </tbody>
 </table>
@@ -112,15 +118,37 @@
 <section id="module-contents">
 <h2>Module Contents<a class="headerlink" href="#module-contents" title="Link to this heading"></a></h2>
 <dl class="py function">
+<dt class="sig sig-object py" id="molecular_simulation_tools.utils.convert_cartesian_to_spherical">
+<span class="sig-prename descclassname"><span class="pre">molecular_simulation_tools.utils.</span></span><span class="sig-name descname"><span class="pre">convert_cartesian_to_spherical</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">position</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.4)"><span class="pre">numpy.ndarray</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.14)"><span class="pre">tuple</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../../_modules/molecular_simulation_tools/utils.html#convert_cartesian_to_spherical"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#molecular_simulation_tools.utils.convert_cartesian_to_spherical" title="Link to this definition"></a></dt>
+<dd><p>Convert cartesian coordinates to spherical coordinates.</p>
+<p>See <a class="reference external" href="https://en.wikipedia.org/wiki/Spherical_coordinate_system#Cartesian_coordinates">https://en.wikipedia.org/wiki/Spherical_coordinate_system#Cartesian_coordinates</a></p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>position</strong> (<em>np.ndarray</em>) – Cartesian coordinate vector</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Tuple containing (r, theta, phi)</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.14)">tuple</a>[<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)">float</a>, <a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)">float</a>, <a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)">float</a>]</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.14)"><strong>ValueError</strong></a> – If <cite>position</cite> is not a 3D vector, i.e. does not have shape <code class="docutils literal notranslate"><span class="pre">(3,)</span></code>.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
 <dt class="sig sig-object py" id="molecular_simulation_tools.utils.convert_spherical_to_cartesian">
-<span class="sig-prename descclassname"><span class="pre">molecular_simulation_tools.utils.</span></span><span class="sig-name descname"><span class="pre">convert_spherical_to_cartesian</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">r</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">theta</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">phi</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">numpy.ndarray</span></span></span><a class="reference internal" href="../../../_modules/molecular_simulation_tools/utils.html#convert_spherical_to_cartesian"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#molecular_simulation_tools.utils.convert_spherical_to_cartesian" title="Link to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">molecular_simulation_tools.utils.</span></span><span class="sig-name descname"><span class="pre">convert_spherical_to_cartesian</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">r</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">theta</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">phi</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.4)"><span class="pre">numpy.ndarray</span></a></span></span><a class="reference internal" href="../../../_modules/molecular_simulation_tools/utils.html#convert_spherical_to_cartesian"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#molecular_simulation_tools.utils.convert_spherical_to_cartesian" title="Link to this definition"></a></dt>
 <dd><p>Convert spherical coordinates to cartesian coordinates.</p>
+<p>See <a class="reference external" href="https://en.wikipedia.org/wiki/Spherical_coordinate_system#Cartesian_coordinates">https://en.wikipedia.org/wiki/Spherical_coordinate_system#Cartesian_coordinates</a></p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>r</strong> (<em>float</em>) – Radial distance</p></li>
-<li><p><strong>theta</strong> (<em>float</em>) – Polar angle in radians</p></li>
-<li><p><strong>phi</strong> (<em>float</em>) – Azimuthal angle in radians</p></li>
+<li><p><strong>r</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><em>float</em></a>) – Radial distance</p></li>
+<li><p><strong>theta</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><em>float</em></a>) – Polar angle in radians</p></li>
+<li><p><strong>phi</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><em>float</em></a>) – Azimuthal angle in radians</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -134,7 +162,7 @@
 
 <dl class="py function">
 <dt class="sig sig-object py" id="molecular_simulation_tools.utils.project_on_unit_sphere">
-<span class="sig-prename descclassname"><span class="pre">molecular_simulation_tools.utils.</span></span><span class="sig-name descname"><span class="pre">project_on_unit_sphere</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">numpy.ndarray</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">numpy.ndarray</span></span></span><a class="reference internal" href="../../../_modules/molecular_simulation_tools/utils.html#project_on_unit_sphere"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#molecular_simulation_tools.utils.project_on_unit_sphere" title="Link to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">molecular_simulation_tools.utils.</span></span><span class="sig-name descname"><span class="pre">project_on_unit_sphere</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.4)"><span class="pre">numpy.ndarray</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.4)"><span class="pre">numpy.ndarray</span></a></span></span><a class="reference internal" href="../../../_modules/molecular_simulation_tools/utils.html#project_on_unit_sphere"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#molecular_simulation_tools.utils.project_on_unit_sphere" title="Link to this definition"></a></dt>
 <dd><p>Project a vector on the unit sphere, by dividing it by its length.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -151,12 +179,12 @@
 
 <dl class="py function">
 <dt class="sig sig-object py" id="molecular_simulation_tools.utils.random_on_unit_sphere">
-<span class="sig-prename descclassname"><span class="pre">molecular_simulation_tools.utils.</span></span><span class="sig-name descname"><span class="pre">random_on_unit_sphere</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">numpy.ndarray</span></span></span><a class="reference internal" href="../../../_modules/molecular_simulation_tools/utils.html#random_on_unit_sphere"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#molecular_simulation_tools.utils.random_on_unit_sphere" title="Link to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">molecular_simulation_tools.utils.</span></span><span class="sig-name descname"><span class="pre">random_on_unit_sphere</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.4)"><span class="pre">numpy.ndarray</span></a></span></span><a class="reference internal" href="../../../_modules/molecular_simulation_tools/utils.html#random_on_unit_sphere"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#molecular_simulation_tools.utils.random_on_unit_sphere" title="Link to this definition"></a></dt>
 <dd><p>Get a random vector on the unit sphere.</p>
 <p>Uses method described in <a class="reference external" href="https://mathworld.wolfram.com/SpherePointPicking.html">https://mathworld.wolfram.com/SpherePointPicking.html</a></p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>n</strong> (<em>int</em>) – Number of vectors to generate. Default = 1</p>
+<dd class="field-odd"><p><strong>n</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a>) – Number of vectors to generate. Default = 1</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><strong>vectors</strong> – Numpy matrix of shape Nx3, or just vector of shape (3,) if
@@ -170,7 +198,7 @@
 
 <dl class="py function">
 <dt class="sig sig-object py" id="molecular_simulation_tools.utils.sample_random_rotation">
-<span class="sig-prename descclassname"><span class="pre">molecular_simulation_tools.utils.</span></span><span class="sig-name descname"><span class="pre">sample_random_rotation</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">numpy.ndarray</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../../_modules/molecular_simulation_tools/utils.html#sample_random_rotation"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#molecular_simulation_tools.utils.sample_random_rotation" title="Link to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">molecular_simulation_tools.utils.</span></span><span class="sig-name descname"><span class="pre">sample_random_rotation</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.14)"><span class="pre">tuple</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.4)"><span class="pre">numpy.ndarray</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../../_modules/molecular_simulation_tools/utils.html#sample_random_rotation"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#molecular_simulation_tools.utils.sample_random_rotation" title="Link to this definition"></a></dt>
 <dd><p>Get a random rotation axis and rotation angle.</p>
 <p>Uses method described in <a class="reference external" href="https://math.stackexchange.com/questions/442418/random-generation-of-rotation-matrices">https://math.stackexchange.com/questions/442418/random-generation-of-rotation-matrices</a></p>
 <dl class="field-list simple">
@@ -180,6 +208,24 @@
 <li><p><strong>rotation_angle</strong> (<em>float</em>) – Rotation angle in radians.</p></li>
 </ul>
 </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="molecular_simulation_tools.utils.turn_grid_into_position_vectors">
+<span class="sig-prename descclassname"><span class="pre">molecular_simulation_tools.utils.</span></span><span class="sig-name descname"><span class="pre">turn_grid_into_position_vectors</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">grid_matrices</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.14)"><span class="pre">tuple</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.4)"><span class="pre">numpy.ndarray</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Ellipsis</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.4)"><span class="pre">numpy.ndarray</span></a></span></span><a class="reference internal" href="../../../_modules/molecular_simulation_tools/utils.html#turn_grid_into_position_vectors"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#molecular_simulation_tools.utils.turn_grid_into_position_vectors" title="Link to this definition"></a></dt>
+<dd><p>Turn a grid created by <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.meshgrid.html#numpy.meshgrid" title="(in NumPy v2.4)"><code class="xref py py-func docutils literal notranslate"><span class="pre">numpy.meshgrid()</span></code></a> into position vectors.</p>
+<p>Taken from <a class="reference external" href="https://stackoverflow.com/questions/12864445/how-to-convert-the-output-of-meshgrid-to-the-corresponding-array-of-points">https://stackoverflow.com/questions/12864445/how-to-convert-the-output-of-meshgrid-to-the-corresponding-array-of-points</a></p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>grid_matrices</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.14)"><em>tuple</em></a><em>[</em><em>np.ndarray</em><em>, </em><em>...</em><em>]</em>) – Tuple of N grid matrices with M points.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>MxN numpy array of the grid positions in N dimensions.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>np.ndarray</p>
 </dd>
 </dl>
 </dd></dl>

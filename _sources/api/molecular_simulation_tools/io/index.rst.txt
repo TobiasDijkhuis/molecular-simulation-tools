@@ -9,26 +9,18 @@ molecular_simulation_tools.io
 
 
 
-Attributes
-----------
-
-.. autoapisummary::
-
-   molecular_simulation_tools.io.znh5md_avail
-
-
 Functions
 ---------
 
 .. autoapisummary::
 
-   molecular_simulation_tools.io.read_based_on_filetype
+   molecular_simulation_tools.io.read
 
 
 Module Contents
 ---------------
 
-.. py:function:: read_based_on_filetype(path: str | pathlib.Path, index: int | str | slice = -1) -> ase.Atoms | list[ase.Atoms]
+.. py:function:: read(path: str | pathlib.Path, index: int | str | slice = -1) -> ase.Atoms | list[ase.Atoms]
 
    Read the file based on the filetype.
 
@@ -41,9 +33,5 @@ Module Contents
    :rtype: Atoms | list[Atoms]
 
    :raises ImportError: If `path` ends with `.h5`, but ``znh5md`` is not available.
-
-
-.. py:data:: znh5md_avail
-   :value: True
 
 

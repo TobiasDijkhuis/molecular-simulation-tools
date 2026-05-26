@@ -14,18 +14,37 @@ Functions
 
 .. autoapisummary::
 
+   molecular_simulation_tools.utils.convert_cartesian_to_spherical
    molecular_simulation_tools.utils.convert_spherical_to_cartesian
    molecular_simulation_tools.utils.project_on_unit_sphere
    molecular_simulation_tools.utils.random_on_unit_sphere
    molecular_simulation_tools.utils.sample_random_rotation
+   molecular_simulation_tools.utils.turn_grid_into_position_vectors
 
 
 Module Contents
 ---------------
 
+.. py:function:: convert_cartesian_to_spherical(position: numpy.ndarray) -> tuple[float, float, float]
+
+   Convert cartesian coordinates to spherical coordinates.
+
+   See https://en.wikipedia.org/wiki/Spherical_coordinate_system#Cartesian_coordinates
+
+   :param position: Cartesian coordinate vector
+   :type position: np.ndarray
+
+   :returns: Tuple containing (r, theta, phi)
+   :rtype: tuple[float, float, float]
+
+   :raises ValueError: If `position` is not a 3D vector, i.e. does not have shape ``(3,)``.
+
+
 .. py:function:: convert_spherical_to_cartesian(r: float, theta: float, phi: float) -> numpy.ndarray
 
    Convert spherical coordinates to cartesian coordinates.
+
+   See https://en.wikipedia.org/wiki/Spherical_coordinate_system#Cartesian_coordinates
 
    :param r: Radial distance
    :type r: float
@@ -71,5 +90,18 @@ Module Contents
 
    :returns: * **rotation_axis** (*np.ndarray*) -- 3-dimensional rotation axis.
              * **rotation_angle** (*float*) -- Rotation angle in radians.
+
+
+.. py:function:: turn_grid_into_position_vectors(grid_matrices: tuple[numpy.ndarray, Ellipsis]) -> numpy.ndarray
+
+   Turn a grid created by :func:`numpy.meshgrid` into position vectors.
+
+   Taken from https://stackoverflow.com/questions/12864445/how-to-convert-the-output-of-meshgrid-to-the-corresponding-array-of-points
+
+   :param grid_matrices: Tuple of N grid matrices with M points.
+   :type grid_matrices: tuple[np.ndarray, ...]
+
+   :returns: MxN numpy array of the grid positions in N dimensions.
+   :rtype: np.ndarray
 
 
