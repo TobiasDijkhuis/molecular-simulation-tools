@@ -225,27 +225,6 @@ def find_min_height_for_adsorbate_on_surface(
     return grid_x, grid_y, sample_heights
 
 
-def turn_grid_into_position_vectors(
-    grid_matrices: tuple[np.ndarray, ...],
-) -> np.ndarray:
-    """Turn a grid created by :func:`numpy.meshgrid` into position vectors.
-
-    Taken from https://stackoverflow.com/questions/12864445/how-to-convert-the-output-of-meshgrid-to-the-corresponding-array-of-points
-
-    Parameters
-    ----------
-    grid_matrices : tuple[np.ndarray, ...]
-        Tuple of N grid matrices with M points.
-
-    Returns
-    -------
-    np.ndarray
-        MxN numpy array of the grid positions in N dimensions.
-
-    """
-    return np.vstack(list(map(np.ravel, grid_matrices))).T
-
-
 def calculate_rmsd(
     atoms: Atoms,
     target: Atoms,
@@ -463,8 +442,6 @@ def icosahedron_unit_sphere(level: int = 0, subdivision: int = 2) -> np.ndarray:
     if level < 0:
         raise ValueError()
 
-    # Teanby et al, 2006.
-    # https://sci-hub.se/https://doi.org/10.1016/j.cageo.2006.01.007
     if level == 0:
         phi = 2.0 * np.cos(np.pi / 5.0)
         vertices = np.array(

@@ -3,19 +3,17 @@
 from pathlib import Path
 
 from ase import Atoms
-from ase.io import read
+from ase.io import read as ase_read
 
 try:
     import znh5md
 
-    znh5md_avail = True
+    _znh5md_avail = True
 except ImportError:
-    znh5md_avail = False
+    _znh5md_avail = False
 
 
-def read_based_on_filetype(
-    path: str | Path, index: int | str | slice = -1
-) -> Atoms | list[Atoms]:
+def read(path: str | Path, index: int | str | slice = -1) -> Atoms | list[Atoms]:
     """Read the file based on the filetype.
 
     Parameters
@@ -37,10 +35,10 @@ def read_based_on_filetype(
 
     """
     if str(path).endswith(".h5"):
-        if not znh5md_avail:
-            msg = "Reading h5 files requires znh5md, but it was not available."
+        if not _znh5md_avail:
+            msg = "Reading h5md files requires znh5md, but it was not available."
             raise ImportError(msg)
         if isinstance(index, str) and index == ":":
             index = slice(None, None, None)
         return znh5md.znh5md.read(path, index=index)  # ty: ignore[invalid-argument-type]
-    return read(path, index=index)
+    return ase_read(path, index=index)

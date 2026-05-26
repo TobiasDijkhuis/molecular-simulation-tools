@@ -4,7 +4,6 @@ import pytest
 from molecular_simulation_tools.geometry import (
     construct_grid_in_cell,
     discretize_cell_length,
-    turn_grid_into_position_vectors,
 )
 
 discretization_data = [
@@ -51,19 +50,3 @@ def test_construct_grid_in_cell(cell, num, expected_output):
     output = construct_grid_in_cell(cell, num)
     assert np.allclose(output[0], expected_output[0])
     assert np.allclose(output[1], expected_output[1])
-
-
-position_vector_data = [
-    (
-        (
-            np.array([[0.25, 0.25], [0.75, 0.75]]),
-            np.array([[0.25, 0.75], [0.25, 0.75]]),
-        ),
-        np.array([[0.25, 0.25], [0.25, 0.75], [0.75, 0.25], [0.75, 0.75]]),
-    ),
-]
-
-
-@pytest.mark.parametrize("grid_tuple, expected_output", position_vector_data)
-def test_turn_grid_into_position_vectors(grid_tuple, expected_output):
-    assert np.allclose(turn_grid_into_position_vectors(grid_tuple), expected_output)

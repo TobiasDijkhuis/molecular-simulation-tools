@@ -5,8 +5,31 @@ from random import random
 import numpy as np
 
 
+def turn_grid_into_position_vectors(
+    grid_matrices: tuple[np.ndarray, ...],
+) -> np.ndarray:
+    """Turn a grid created by :func:`numpy.meshgrid` into position vectors.
+
+    Taken from https://stackoverflow.com/questions/12864445/how-to-convert-the-output-of-meshgrid-to-the-corresponding-array-of-points
+
+    Parameters
+    ----------
+    grid_matrices : tuple[np.ndarray, ...]
+        Tuple of N grid matrices with M points.
+
+    Returns
+    -------
+    np.ndarray
+        MxN numpy array of the grid positions in N dimensions.
+
+    """
+    return np.vstack(list(map(np.ravel, grid_matrices))).T
+
+
 def convert_spherical_to_cartesian(r: float, theta: float, phi: float) -> np.ndarray:
     """Convert spherical coordinates to cartesian coordinates.
+
+    See https://en.wikipedia.org/wiki/Spherical_coordinate_system#Cartesian_coordinates
 
     Parameters
     ----------
@@ -23,7 +46,6 @@ def convert_spherical_to_cartesian(r: float, theta: float, phi: float) -> np.nda
         numpy array containing (x, y, z)
 
     """
-    # https://en.wikipedia.org/wiki/Spherical_coordinate_system#Coordinate_system_conversions
     return np.array(
         [
             r * np.sin(theta) * np.cos(phi),
@@ -31,6 +53,35 @@ def convert_spherical_to_cartesian(r: float, theta: float, phi: float) -> np.nda
             r * np.cos(theta),
         ]
     )
+
+
+def convert_cartesian_to_spherical(position: np.ndarray) -> tuple[float, float, float]:
+    """Convert cartesian coordinates to spherical coordinates.
+
+    See https://en.wikipedia.org/wiki/Spherical_coordinate_system#Cartesian_coordinates
+
+    Parameters
+    ----------
+    position : np.ndarray
+        Cartesian coordinate vector
+
+    Returns
+    -------
+    tuple[float, float, float]
+        Tuple containing (r, theta, phi)
+
+    Raises
+    ------
+    ValueError
+        If `position` is not a 3D vector, i.e. does not have shape ``(3,)``.
+
+    """
+    if not position.shape == (3,):
+        raise ValueError()
+    r: float = np.linalg.norm(position)  # type: ignore[assignment, ty:invalid-assignment]
+    theta = np.arccos(position[2] / r)
+    phi = np.atan2(position[1], position[0])
+    return r, theta, phi
 
 
 def project_on_unit_sphere(vector: np.ndarray) -> np.ndarray:
