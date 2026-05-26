@@ -6,6 +6,12 @@ import sys
 import numpy as np
 from ase import Atoms
 from ase.geometry import find_mic
+from scipy.spatial import ConvexHull
+
+from molecular_simulation_tools.utils import (
+    project_on_unit_sphere,
+    random_on_unit_sphere,
+)
 
 
 def construct_grid_in_cell(
@@ -28,18 +34,9 @@ def construct_grid_in_cell(
     Y : np.ndarray
         Grid of y coordinates
 
-    Raises
-    ------
-    ValueError
-        If `ngrid` is not a 2-tuple.
-
     """
     if isinstance(ngrid, int):
         ngrid = (ngrid, ngrid)
-
-    if len(ngrid) != 2:
-        msg = f"Number of dimensions of ngrid needs to be 2, but was {len(ngrid)}"
-        raise ValueError(msg)
 
     x = discretize_cell_length(cell[0, 0], ngrid[0])
     y = discretize_cell_length(cell[1, 1], ngrid[1])
@@ -334,3 +331,178 @@ def calculate_rmsd(
     else:
         return_atoms = (atoms[indices], target[indices])
     return min_rmsd, return_atoms
+
+
+def sample_new_point(
+    points: np.ndarray,
+    minimum_distance: float,
+    initial_spawn_distance: float | None = None,
+    rtol: float = 1e-5,
+    atol: float = 1e-8,
+    n: int = 1,
+) -> np.ndarray:
+    """Generate a new point in a random direction that is a certain distance from other points.
+
+    Parameters
+    ----------
+    points : np.ndarray
+        NxM array of coordinates of all old points,
+        where N is the number of points and M the dimension
+    minimum_distance : float
+        Minimum distance for the newly generated
+        point to be from all other points
+    initial_spawn_distance : float | None
+        Initial distance from origin.
+        If None, is the same as minimum_distance. Default = None
+    rtol : float
+        Relative tolerance. Default: 1e-5
+    atol : float
+        Absolute tolerance. Default: 1e-8
+    n : int
+        number of points to generate. Default: 1
+
+    Returns
+    -------
+    r_vec : np.ndarray
+        Array of length M of coordinates of new point.
+        Shape n*M if multiple points are being generated.
+
+    Raises
+    ------
+    ValueError
+        If `minimum_distance` or `initial_spawn_distance` is less or equal to 0
+
+    """
+    # If points is only a 1d array (when only one initial point is supplied)
+    # make sure it is 2d so we index it correctly.
+    points = np.atleast_2d(points)
+
+    if n > 1:
+        n_initial_points = np.shape(points)[0]
+
+        # Add n (for now filled with zeros) vectors to points
+        points = np.pad(points, ((0, n), (0, 0)))
+        for i in range(n):
+            new_point = sample_new_point(
+                points[: n_initial_points + i, :],
+                minimum_distance,
+                initial_spawn_distance=initial_spawn_distance,
+                rtol=rtol,
+                atol=atol,
+            )
+            points[n_initial_points + i, :] = new_point
+        return points[n_initial_points:, :]
+
+    minimum_distance = float(minimum_distance)
+
+    if initial_spawn_distance is None:
+        initial_spawn_distance = minimum_distance
+
+    if minimum_distance <= 0.0 or initial_spawn_distance <= 0.0:
+        raise ValueError()
+
+    r_unit = random_on_unit_sphere()
+    r_vec = r_unit * initial_spawn_distance
+
+    distances = np.linalg.norm(points - r_vec, axis=1)
+    while not np.isclose(np.min(distances), minimum_distance, rtol=rtol, atol=atol):
+        min_distance_position = points[np.argmin(distances), :]
+        r_length = np.linalg.norm(r_vec)
+
+        b = 2.0 * r_length - 2.0 * np.dot(min_distance_position, r_unit)
+        c = (
+            -2.0 * r_length * np.dot(min_distance_position, r_unit)
+            + np.linalg.norm(min_distance_position) ** 2
+            - minimum_distance**2
+            + r_length**2
+        )
+        D = b**2 - 4.0 * c  # noqa: N806
+
+        k = (-b + np.sqrt(D)) / (2.0)
+        r_vec += k * r_unit
+
+        distances = np.linalg.norm(points - r_vec, axis=1)
+    return r_vec
+
+
+def icosahedron_unit_sphere(level: int = 0, subdivision: int = 2) -> np.ndarray:
+    """Get vertices of an icosahedron for even sampling of a unit sphere.
+
+    Teanby et al, 2006. https://sci-hub.se/https://doi.org/10.1016/j.cageo.2006.01.007
+    Recursive. Might be
+
+    Parameters
+    ----------
+    level : int
+        Level. Default = 1
+    subdivision : int
+        Prime integer, currently only 2 implemented. Default = 2
+
+    Returns
+    -------
+    vertices : np.ndarray
+        Numpy array of shape Nx3, with N vertices
+
+    Raises
+    ------
+    NotImplementedError
+        If `subdivision` is not 2
+    ValueError
+        If `level` is less than 0.
+
+    """
+    if subdivision != 2:
+        msg = f"Only subdivision == 2 (bisection) is implemented at the moment, but was {subdivision}"
+        raise NotImplementedError(msg)
+
+    if subdivision not in {2, 3, 5, 7, 11}:
+        # Check only up to 11 for now.
+        msg = f"Subdivision needs to be a prime integer, but was {subdivision}"
+        raise ValueError(msg)
+
+    if level < 0:
+        raise ValueError()
+
+    # Teanby et al, 2006.
+    # https://sci-hub.se/https://doi.org/10.1016/j.cageo.2006.01.007
+    if level == 0:
+        phi = 2.0 * np.cos(np.pi / 5.0)
+        vertices = np.array(
+            [
+                [0.0, phi, 1.0],
+                [0.0, -phi, 1.0],
+                [0.0, phi, -1.0],
+                [0.0, -phi, -1.0],
+                [1.0, 0.0, phi],
+                [-1.0, 0.0, phi],
+                [1.0, 0.0, -phi],
+                [-1.0, 0.0, -phi],
+                [phi, 1.0, 0.0],
+                [-phi, 1.0, 0.0],
+                [phi, -1.0, 0.0],
+                [-phi, -1.0, 0.0],
+            ]
+        )
+        normalization = 1.0 / np.sqrt(1.0 + 4.0 * (np.cos(np.pi / 5.0)) ** 2)
+        return vertices * normalization
+
+    vertices_below = icosahedron_unit_sphere(level - 1, subdivision=subdivision)
+    hull = ConvexHull(points=vertices_below, incremental=False)
+    triangle_indices = hull.simplices
+
+    ntriangles = np.shape(triangle_indices)[0]
+
+    new_points = np.empty(shape=(ntriangles * 3, 3))
+    for triangle_idx in range(ntriangles):
+        vertices_of_triangle = triangle_indices[triangle_idx, :]
+
+        edges = itertools.combinations(iterable=vertices_of_triangle, r=2)
+
+        new_points[triangle_idx * 3 : triangle_idx * 3 + 3, :] = np.array(
+            [
+                project_on_unit_sphere(np.sum(vertices_below[edge, :], axis=0))
+                for edge in edges
+            ]
+        )
+    vertices = np.append(vertices_below, new_points, axis=0)
+    return vertices

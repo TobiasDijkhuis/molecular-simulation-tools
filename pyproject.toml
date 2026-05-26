@@ -51,7 +51,7 @@ select = ["E", "F", "I", "W", "D", "E", "B",
 extend-ignore = [
     "E501", "E731", "E741", "E402", "E203", "E204",
     "SIM108", "SIM102", 
-    "S603", "S607", "S404", "S602", 
+    "S603", "S607", "S404", "S602", "S311",
     "PLR2004", "PLR0911", "PLR1702", "PLR0912", "PLR0913", "PLR0915", "PLR0917", "PLR0914", "PLR0904"
 ]
 pycodestyle.max-doc-length = 100
