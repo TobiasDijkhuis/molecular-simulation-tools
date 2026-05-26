@@ -32,14 +32,6 @@ extensions = [
     "autoapi.extension",
 ]
 
-autodoc_mock_imports = ["bmesh", "bpy"]
-autodoc_default_options = {
-    "members": True,
-    "member-order": "bysource",
-    "undoc-members": True,
-    "show-inheritance": True,
-}
-
 # Insert both class docstring and __init__ docstring into documentation of class
 autoclass_content = "both"
 
@@ -65,3 +57,20 @@ intersphinx_mapping = {
 }
 
 autoapi_dirs = ["../molecular_simulation_tools"]
+
+autoapi_root = "api"
+autoapi_add_toctree_entry = True
+autoapi_options = [
+    "members",
+    "undoc-members",
+    "show-inheritance",
+    "show-module-summary",
+    "imported-members",
+]
+autoapi_ignore = [
+    "*/__pycache__/*",
+    "*/tests/*",
+    "**/test_*.py",
+]
+autoapi_member_order = "groupwise"
+autoapi_python_class_content = "both"
