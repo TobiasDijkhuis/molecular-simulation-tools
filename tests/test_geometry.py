@@ -1,7 +1,9 @@
 import numpy as np
 import pytest
+from ase import Atoms
 
 from molecular_simulation_tools.geometry import (
+    calculate_rmsd,
     construct_grid_in_cell,
     discretize_cell_length,
     sample_new_point,
@@ -86,3 +88,41 @@ def test_sample_multiple_new_point(_initial_points, minimum_distance, atol, rtol
                 >= minimum_distance - atol,
                 where=[idx != point_idx for idx in range(npoints)],
             )
+
+
+def test_calculate_rmsd_with_different_symbols_raises():
+    with pytest.raises(ValueError):
+        calculate_rmsd(
+            Atoms(symbols="H", positions=[[0, 0, 0]]),
+            Atoms(symbols="O", positions=[[0, 0, 0]]),
+            None,
+        )
+
+
+rmsd_data = [
+    (Atoms("H", positions=[[0, 0, 0]]), Atoms("H", positions=[[0, 0, 0]]), True, 0),
+    (Atoms("H", positions=[[0, 0, 0]]), Atoms("H", positions=[[1, 0, 0]]), True, 1.0),
+    (
+        Atoms("H", positions=[[0, 0, 0]], cell=[1.0, 1.0, 1.0], pbc=True),
+        Atoms("H", positions=[[1, 0, 0]], cell=[1.0, 1.0, 1.0], pbc=True),
+        True,
+        0.0,
+    ),
+    (
+        Atoms("H2", positions=[[0, 0, 0], [0, 0, 1]]),
+        Atoms("H2", positions=[[0, 0, 1], [0, 0, 0]]),
+        True,
+        0.0,
+    ),
+    (
+        Atoms("H2", positions=[[0, 0, 0], [0, 0, 1]]),
+        Atoms("H2", positions=[[0, 0, 1], [0, 0, 0]]),
+        False,
+        1.0,
+    ),
+]
+
+
+@pytest.mark.parametrize("atoms_a, atoms_b, permute, expected_rmsd", rmsd_data)
+def test_calculate_rmsd(atoms_a, atoms_b, permute, expected_rmsd):
+    assert calculate_rmsd(atoms_a, atoms_b, None, permute)[0] == expected_rmsd

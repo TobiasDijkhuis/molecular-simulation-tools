@@ -271,7 +271,7 @@ def calculate_rmsd(
     if np.any(atoms.cell != target.cell):
         msg = f"Cell of atoms ({atoms.cell}) is not the same as the cell of target ({target.cell})"
         raise ValueError(msg)
-    if np.any(atoms.symbols != target.symbols):
+    if np.any(atoms.numbers != target.numbers):
         msg = f"atoms does not have the same symbols ({atoms.symbols}) as target ({target.symbols})"
         raise ValueError(msg)
 
@@ -304,9 +304,11 @@ def calculate_rmsd(
 
         rmsd = np.sqrt(np.sum(distances**2) / n_atoms_for_rmsd)
 
-        min_rmsd = min(min_rmsd, rmsd)
+        if rmsd < min_rmsd:
+            min_rmsd = rmsd
+            min_permutation = permutation
     if return_permuted_target:
-        return_atoms = (atoms[indices], target[permutation])
+        return_atoms = (atoms[indices], target[min_permutation])
     else:
         return_atoms = (atoms[indices], target[indices])
     return min_rmsd, return_atoms
