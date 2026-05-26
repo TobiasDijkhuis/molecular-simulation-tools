@@ -28,7 +28,6 @@ extensions = [
     "sphinx.ext.doctest",
     "sphinx.ext.autodoc",
     "sphinx.ext.viewcode",
-    "sphinxcontrib.video",
     "sphinx_copybutton",
 ]
 
