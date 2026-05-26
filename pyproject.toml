@@ -57,7 +57,7 @@ extend-ignore = [
 pycodestyle.max-doc-length = 100
 pydocstyle.convention = 'numpy'
 preview = true
-
+exclude = ["docs/*.py"]
 
 [tool.ruff.lint.per-file-ignores]
 # E402: Module level import not at top of file - normal for notebook-derived files
