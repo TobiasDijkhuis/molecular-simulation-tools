@@ -28,7 +28,7 @@ extensions = [
     "sphinx.ext.doctest",
     "sphinx.ext.autodoc",
     "sphinx.ext.viewcode",
-    "sphinx_copybutton",
+    "sphinx.ext.Intersphinxsphinx_copybutton",
     "autoapi.extension",
 ]
 
