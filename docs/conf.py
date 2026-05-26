@@ -75,3 +75,16 @@ autoapi_ignore = [
 ]
 autoapi_member_order = "groupwise"
 autoapi_python_class_content = "both"
+
+
+# Change 'np' to 'numpy' to generate correct clickable references.
+# Same for 'plt' to 'matplotlib.pyplot'
+# See https://github.com/sphinx-doc/sphinx/issues/10151
+def autodoc_process_docstring(app, what, name, obj, options, lines):
+    for i in range(len(lines)):
+        lines[i] = lines[i].replace("np.", "numpy.")
+        lines[i] = lines[i].replace("plt.", "matplotlib.pyplot.")
+
+
+def setup(app):
+    app.connect("autodoc-process-docstring", autodoc_process_docstring)
