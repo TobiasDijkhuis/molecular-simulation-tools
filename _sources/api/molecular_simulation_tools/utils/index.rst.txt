@@ -32,7 +32,7 @@ Module Contents
    See https://en.wikipedia.org/wiki/Spherical_coordinate_system#Cartesian_coordinates
 
    :param position: Cartesian coordinate vector
-   :type position: np.ndarray
+   :type position: numpy.ndarray
 
    :returns: Tuple containing (r, theta, phi)
    :rtype: tuple[float, float, float]
@@ -54,7 +54,7 @@ Module Contents
    :type phi: float
 
    :returns: numpy array containing (x, y, z)
-   :rtype: np.ndarray
+   :rtype: numpy.ndarray
 
 
 .. py:function:: project_on_unit_sphere(vector: numpy.ndarray) -> numpy.ndarray
@@ -62,10 +62,10 @@ Module Contents
    Project a vector on the unit sphere, by dividing it by its length.
 
    :param vector: N-dimensional vector
-   :type vector: np.ndarray
+   :type vector: numpy.ndarray
 
    :returns: Vector projected on N-dimensional unit sphere
-   :rtype: np.ndarray
+   :rtype: numpy.ndarray
 
 
 .. py:function:: random_on_unit_sphere(n: int = 1) -> numpy.ndarray
@@ -79,7 +79,7 @@ Module Contents
 
    :returns: **vectors** -- Numpy matrix of shape Nx3, or just vector of shape (3,) if
              `n` is 1.
-   :rtype: np.ndarray
+   :rtype: numpy.ndarray
 
 
 .. py:function:: sample_random_rotation() -> tuple[numpy.ndarray, float]
@@ -88,7 +88,7 @@ Module Contents
 
    Uses method described in https://math.stackexchange.com/questions/442418/random-generation-of-rotation-matrices
 
-   :returns: * **rotation_axis** (*np.ndarray*) -- 3-dimensional rotation axis.
+   :returns: * **rotation_axis** (*numpy.ndarray*) -- 3-dimensional rotation axis.
              * **rotation_angle** (*float*) -- Rotation angle in radians.
 
 
@@ -99,9 +99,9 @@ Module Contents
    Taken from https://stackoverflow.com/questions/12864445/how-to-convert-the-output-of-meshgrid-to-the-corresponding-array-of-points
 
    :param grid_matrices: Tuple of N grid matrices with M points.
-   :type grid_matrices: tuple[np.ndarray, ...]
+   :type grid_matrices: tuple[numpy.ndarray, ...]
 
    :returns: MxN numpy array of the grid positions in N dimensions.
-   :rtype: np.ndarray
+   :rtype: numpy.ndarray
 
 

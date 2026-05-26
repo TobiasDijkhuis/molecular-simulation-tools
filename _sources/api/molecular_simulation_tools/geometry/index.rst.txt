@@ -58,13 +58,13 @@ Module Contents
    Create a grid of points sampled equally in the cell.
 
    :param cell: 3x3 matrix of cell dimensions.
-   :type cell: np.ndarray
+   :type cell: numpy.ndarray
    :param ngrid: Number of grid points to sample along x and y. If an integer,
                  takes the same number of points along x and y.
    :type ngrid: int | tuple[int, int]
 
-   :returns: * **X** (*np.ndarray*) -- Grid of x coordinates
-             * **Y** (*np.ndarray*) -- Grid of y coordinates
+   :returns: * **X** (*numpy.ndarray*) -- Grid of x coordinates
+             * **Y** (*numpy.ndarray*) -- Grid of y coordinates
 
 
 .. py:function:: correct_distance_for_pbc(distance: numpy.ndarray, box_length: float) -> numpy.ndarray
@@ -72,12 +72,12 @@ Module Contents
    Correct a distance for periodic boundary conditions.
 
    :param distance: Array of distances
-   :type distance: np.ndarray
+   :type distance: numpy.ndarray
    :param box_length: Length of the periodic box along the dimension of `distance`
    :type box_length: float
 
    :returns: **distance** -- Corrected distance
-   :rtype: np.ndarray
+   :rtype: numpy.ndarray
 
 
 .. py:function:: discretize_cell_length(length: int | float, ngrid: int) -> numpy.ndarray
@@ -93,7 +93,7 @@ Module Contents
    :type ngrid: int
 
    :returns: array containing equidistant points along the length `length`.
-   :rtype: np.ndarray
+   :rtype: numpy.ndarray
 
 
 .. py:function:: find_min_height_for_adsorbate_on_surface(surface: ase.Atoms, ngrid: int | tuple[int, int], distance: float, adsorbate: ase.Atoms | None = None) -> tuple[numpy.ndarray, numpy.ndarray, numpy.ndarray]
@@ -117,9 +117,9 @@ Module Contents
                      Default = None.
    :type adsorbate: Atoms | None
 
-   :returns: * **grid_x** (*np.ndarray*) -- grid of positions along x
-             * **grid_y** (*np.ndarray*) -- grid of positions along y
-             * **sample_heights** (*np.ndarray*) -- height of the points corresponding to the points in `grid_x` and `grid_y.
+   :returns: * **grid_x** (*numpy.ndarray*) -- grid of positions along x
+             * **grid_y** (*numpy.ndarray*) -- grid of positions along y
+             * **sample_heights** (*numpy.ndarray*) -- height of the points corresponding to the points in `grid_x` and `grid_y.
 
 
 .. py:function:: find_min_height_for_distance(x: float, y: float, point_coordinates: numpy.ndarray, distance: float, box_size: numpy.ndarray | None = None) -> float
@@ -134,12 +134,12 @@ Module Contents
    :param y: y-coordinate of desired point
    :type y: float
    :param point_coordinates: Nx2 (or more) array of N point coordinates.
-   :type point_coordinates: np.ndarray
+   :type point_coordinates: numpy.ndarray
    :param distance: Minimum distance to all other points.
    :type distance: float
    :param box_size: Size of the box. If None, do not include periodic boundary conditions.
                     Default = None.
-   :type box_size: np.ndarray | None
+   :type box_size: numpy.ndarray | None
 
    :returns: **height** -- Minimum height required for ``(x, y)`` to be `distance` away from all other
              points.
@@ -162,7 +162,7 @@ Module Contents
    :type subdivision: int
 
    :returns: **vertices** -- Numpy array of shape Nx3, with N vertices
-   :rtype: np.ndarray
+   :rtype: numpy.ndarray
 
    :raises NotImplementedError: If `subdivision` is not 2
    :raises ValueError: If `level` is less than 0.
@@ -174,7 +174,7 @@ Module Contents
 
    :param points: NxM array of coordinates of all old points,
                   where N is the number of points and M the dimension
-   :type points: np.ndarray
+   :type points: numpy.ndarray
    :param minimum_distance: Minimum distance for the newly generated
                             point to be from all other points
    :type minimum_distance: float
@@ -190,7 +190,7 @@ Module Contents
 
    :returns: **r_vec** -- Array of length M of coordinates of new point.
              Shape n*M if multiple points are being generated.
-   :rtype: np.ndarray
+   :rtype: numpy.ndarray
 
    :raises ValueError: If `minimum_distance` or `initial_spawn_distance` is less or equal to 0
 

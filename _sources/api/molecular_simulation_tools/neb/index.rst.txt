@@ -47,13 +47,13 @@ Module Contents
    :param images: Images to plot, or NEB instance to get images from
    :type images: list[Atoms] | BaseNEB
    :param ax: Axes to plot on, or None to create a new one. Default = None.
-   :type ax: plt.Axes | None
+   :type ax: matplotlib.pyplot.Axes | None
    :param plot_kwargs: Keyword arguments passed to :meth:`matplotlib.pyplot.Axes.plot`.
                        Default = None.
    :type plot_kwargs: dict[str, Any] | None
 
    :returns: **ax** -- Axes that was plotted on.
-   :rtype: plt.Axes
+   :rtype: matplotlib.pyplot.Axes
 
 
 .. py:function:: run_energy_weighted_neb(images: list[ase.Atoms], calc: ase.calculators.calculator.Calculator, fmax: float = 0.05, optimizer: type[ase.optimize.optimize.Optimizer] = LBFGS, interpolate: Literal['linear', 'idpp'] | None = None, neb_kwargs: dict[str, Any] | None = None) -> ase.mep.neb.NEB
