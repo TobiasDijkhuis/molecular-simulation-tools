@@ -29,6 +29,7 @@ extensions = [
     "sphinx.ext.autodoc",
     "sphinx.ext.viewcode",
     "sphinx_copybutton",
+    "autoapi.extension",
 ]
 
 autodoc_mock_imports = ["bmesh", "bpy"]
@@ -52,3 +53,15 @@ html_theme = "sphinx_rtd_theme"
 html_static_path = ["_static"]
 
 html_show_sourcelink = False
+
+
+# Intersphinx configuration - link to other projects
+intersphinx_mapping = {
+    "python": ("https://docs.python.org/3", None),
+    "numpy": ("https://numpy.org/doc/stable/", None),
+    "pandas": ("https://pandas.pydata.org/docs/", None),
+    "matplotlib": ("https://matplotlib.org/stable/", None),
+    "ase": ("https://ase-lib.org", None),
+}
+
+autoapi_dirs = ["../molecular_simulation_tools"]
