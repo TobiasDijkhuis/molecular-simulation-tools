@@ -1,0 +1,257 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>molecular_simulation_tools.neb &mdash; molecular-simulation-tools  documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/graphviz.css?v=4ae1632d" />
+
+  
+      <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="../../../_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
+      <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
+      <script src="../../../_static/copybutton.js?v=f281be69"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+    <link rel="next" title="molecular_simulation_tools.utils" href="../utils/index.html" />
+    <link rel="prev" title="molecular_simulation_tools.io" href="../io/index.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            molecular-simulation-tools
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../../index.html">API Reference</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="../index.html">molecular_simulation_tools</a><ul class="current">
+<li class="toctree-l3 current"><a class="reference internal" href="../index.html#submodules">Submodules</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="../_version/index.html">molecular_simulation_tools._version</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../geometry/index.html">molecular_simulation_tools.geometry</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../io/index.html">molecular_simulation_tools.io</a></li>
+<li class="toctree-l4 current"><a class="current reference internal" href="#">molecular_simulation_tools.neb</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../utils/index.html">molecular_simulation_tools.utils</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">molecular-simulation-tools</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">API Reference</a></li>
+          <li class="breadcrumb-item"><a href="../index.html">molecular_simulation_tools</a></li>
+      <li class="breadcrumb-item active">molecular_simulation_tools.neb</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-molecular_simulation_tools.neb">
+<span id="molecular-simulation-tools-neb"></span><h1>molecular_simulation_tools.neb<a class="headerlink" href="#module-molecular_simulation_tools.neb" title="Link to this heading"></a></h1>
+<p>Collection of tools to run NEB calculations.</p>
+<section id="functions">
+<h2>Functions<a class="headerlink" href="#functions" title="Link to this heading"></a></h2>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#molecular_simulation_tools.neb.get_images_for_neb" title="molecular_simulation_tools.neb.get_images_for_neb"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_images_for_neb</span></code></a>(→ list[ase.Atoms])</p></td>
+<td><p>Get images to use for NEB calculations using <code class="xref py py-class docutils literal notranslate"><span class="pre">ase.mep.neb.NEB</span></code>.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#molecular_simulation_tools.neb.run_energy_weighted_neb" title="molecular_simulation_tools.neb.run_energy_weighted_neb"><code class="xref py py-obj docutils literal notranslate"><span class="pre">run_energy_weighted_neb</span></code></a>(→ ase.mep.neb.NEB)</p></td>
+<td><p>Do an energy-weighted climbing image nudged elastic band (EW-CI-NEB) calculation.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#molecular_simulation_tools.neb.run_neb_ts" title="molecular_simulation_tools.neb.run_neb_ts"><code class="xref py py-obj docutils literal notranslate"><span class="pre">run_neb_ts</span></code></a>(→ tuple[list[ase.Atoms], ase.Atoms])</p></td>
+<td><p>Do a NEB-TS calculation.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#molecular_simulation_tools.neb.plot_neb" title="molecular_simulation_tools.neb.plot_neb"><code class="xref py py-obj docutils literal notranslate"><span class="pre">plot_neb</span></code></a>(→ matplotlib.pyplot.Axes)</p></td>
+<td><p>Plot a NEB calculation.</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="module-contents">
+<h2>Module Contents<a class="headerlink" href="#module-contents" title="Link to this heading"></a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="molecular_simulation_tools.neb.get_images_for_neb">
+<span class="sig-prename descclassname"><span class="pre">molecular_simulation_tools.neb.</span></span><span class="sig-name descname"><span class="pre">get_images_for_neb</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">initial</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ase.Atoms</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">final</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ase.Atoms</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_images</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">ase.Atoms</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../../_modules/molecular_simulation_tools/neb.html#get_images_for_neb"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#molecular_simulation_tools.neb.get_images_for_neb" title="Link to this definition"></a></dt>
+<dd><p>Get images to use for NEB calculations using <code class="xref py py-class docutils literal notranslate"><span class="pre">ase.mep.neb.NEB</span></code>.</p>
+<p>Creates <code class="docutils literal notranslate"><span class="pre">n_images-1</span></code> copies of <cite>initial</cite>, and one copy of <cite>final</cite>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>initial</strong> (<em>Atoms</em>) – Starting geometry</p></li>
+<li><p><strong>final</strong> (<em>Atoms</em>) – Final geometry of the NEB</p></li>
+<li><p><strong>n_images</strong> (<em>int</em>) – Number of images, including initial and final image</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>images</strong> – List of images</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>list[Atoms]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="molecular_simulation_tools.neb.run_energy_weighted_neb">
+<span class="sig-prename descclassname"><span class="pre">molecular_simulation_tools.neb.</span></span><span class="sig-name descname"><span class="pre">run_energy_weighted_neb</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">images</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">ase.Atoms</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">calc</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ase.calculators.calculator.Calculator</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fmax</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.05</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">optimizer</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">type</span><span class="p"><span class="pre">[</span></span><span class="pre">ase.optimize.optimize.Optimizer</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">LBFGS</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">interpolate</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Literal</span><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'linear'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'idpp'</span></span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">neb_kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ase.mep.neb.NEB</span></span></span><a class="reference internal" href="../../../_modules/molecular_simulation_tools/neb.html#run_energy_weighted_neb"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#molecular_simulation_tools.neb.run_energy_weighted_neb" title="Link to this definition"></a></dt>
+<dd><p>Do an energy-weighted climbing image nudged elastic band (EW-CI-NEB) calculation.</p>
+<p>See <a class="reference external" href="https://pubs.acs.org/doi/full/10.1021/acs.jctc.1c00462">https://pubs.acs.org/doi/full/10.1021/acs.jctc.1c00462</a>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>images</strong> (<em>list</em><em>[</em><em>Atoms</em><em>]</em>) – List of atoms, from initial to final frame.</p></li>
+<li><p><strong>calc</strong> (<em>Calculator</em>) – Calculator that can calculate the potential energy and forces of the images.</p></li>
+<li><p><strong>fmax</strong> (<em>float</em>) – Maximum force on the highest energy component in eV/Angstrom. Default = 0.05.</p></li>
+<li><p><strong>optimizer</strong> (<em>type</em><em>[</em><em>Optimizer</em><em>]</em>) – Optimizer to use for the NEB. Default = LBFGS.</p></li>
+<li><p><strong>interpolate</strong> (<em>Literal</em><em>[</em><em>'linear'</em><em>, </em><em>'idpp'</em><em>] </em><em>| </em><em>None</em>) – Method to interpolate see <code class="xref py py-meth docutils literal notranslate"><span class="pre">ase.mep.neb.NEB.interpolate()</span></code>.
+If None, do not interpolate images. Default = None.</p></li>
+<li><p><strong>neb_kwargs</strong> (<em>dict</em><em>[</em><em>str</em><em>, </em><em>Any</em><em>] </em><em>| </em><em>None</em>) – Keyword arguments passed to <code class="xref py py-class docutils literal notranslate"><span class="pre">ase.mep.neb.NEB</span></code>. Default = None.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>neb</strong> – Calculated minimum energy path</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>NEB</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="molecular_simulation_tools.neb.run_neb_ts">
+<span class="sig-prename descclassname"><span class="pre">molecular_simulation_tools.neb.</span></span><span class="sig-name descname"><span class="pre">run_neb_ts</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">images</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">ase.Atoms</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">calc</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ase.calculators.calculator.Calculator</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_displacement</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.01</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fmax_ts</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.05</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">replace_ts_guess</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">energy_weighted_neb_kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">ase.Atoms</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">ase.Atoms</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../../_modules/molecular_simulation_tools/neb.html#run_neb_ts"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#molecular_simulation_tools.neb.run_neb_ts" title="Link to this definition"></a></dt>
+<dd><p>Do a NEB-TS calculation.</p>
+<p>NEB-TS calculations consist of first doing an EW-CI-NEB calculation,
+and then a TS optimization on the climbing image.
+See <a class="reference external" href="https://pubs.acs.org/doi/full/10.1021/acs.jctc.1c00462">https://pubs.acs.org/doi/full/10.1021/acs.jctc.1c00462</a></p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>images</strong> (<em>list</em><em>[</em><em>Atoms</em><em>]</em>) – List of images to find the minimum energy path for.</p></li>
+<li><p><strong>calc</strong> (<em>Calculator</em>) – Calculator that can calculate the potential energy and forces of the images.</p></li>
+<li><p><strong>max_displacement</strong> (<em>float</em>) – Maximum displacement of the NEB along the minimum mode in Angstrom.
+Default = 0.02.</p></li>
+<li><p><strong>fmax_ts</strong> (<em>float</em>) – Maximum force component criterion on the transition state in eV/Angstrom.
+Default = 0.05.</p></li>
+<li><p><strong>replace_ts_guess</strong> (<em>bool</em>) – Whether to replace the TS guess of the EW-CI-NEB calculation with the
+optimized true transition state. If False, adds it to the list
+in the order according to the rmsd from the initial frame. Default = True.</p></li>
+<li><p><strong>energy_weighted_neb_kwargs</strong> (<em>dict</em><em>[</em><em>str</em><em>, </em><em>Any</em><em>] </em><em>| </em><em>None</em>) – Keyword arguments to pass to <a class="reference internal" href="#molecular_simulation_tools.neb.run_energy_weighted_neb" title="molecular_simulation_tools.neb.run_energy_weighted_neb"><code class="xref py py-func docutils literal notranslate"><span class="pre">run_energy_weighted_neb()</span></code></a>. Default = None.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>images</strong> (<em>list[Atoms]</em>) – Minimum energy path between the initial and final frame,
+with the transition state optimized.</p></li>
+<li><p><strong>transition_state</strong> (<em>Atoms</em>) – Optimized transition state</p></li>
+</ul>
+</p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>RuntimeError</strong> – If the neb returned by <a class="reference internal" href="#molecular_simulation_tools.neb.run_energy_weighted_neb" title="molecular_simulation_tools.neb.run_energy_weighted_neb"><code class="xref py py-func docutils literal notranslate"><span class="pre">run_energy_weighted_neb()</span></code></a> does not
+contain energies.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="molecular_simulation_tools.neb.plot_neb">
+<span class="sig-prename descclassname"><span class="pre">molecular_simulation_tools.neb.</span></span><span class="sig-name descname"><span class="pre">plot_neb</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">images</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">ase.Atoms</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">ase.mep.neb.BaseNEB</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ax</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">matplotlib.pyplot.Axes</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">plot_kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">matplotlib.pyplot.Axes</span></span></span><a class="reference internal" href="../../../_modules/molecular_simulation_tools/neb.html#plot_neb"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#molecular_simulation_tools.neb.plot_neb" title="Link to this definition"></a></dt>
+<dd><p>Plot a NEB calculation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>images</strong> (<em>list</em><em>[</em><em>Atoms</em><em>] </em><em>| </em><em>BaseNEB</em>) – Images to plot, or NEB instance to get images from</p></li>
+<li><p><strong>ax</strong> (<em>plt.Axes</em><em> | </em><em>None</em>) – Axes to plot on, or None to create a new one. Default = None.</p></li>
+<li><p><strong>plot_kwargs</strong> (<em>dict</em><em>[</em><em>str</em><em>, </em><em>Any</em><em>] </em><em>| </em><em>None</em>) – Keyword arguments passed to <code class="xref py py-meth docutils literal notranslate"><span class="pre">matplotlib.pyplot.Axes.plot()</span></code>.
+Default = None.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>ax</strong> – Axes that was plotted on.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>plt.Axes</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="../io/index.html" class="btn btn-neutral float-left" title="molecular_simulation_tools.io" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../utils/index.html" class="btn btn-neutral float-right" title="molecular_simulation_tools.utils" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2026, Tobias Dijkhuis.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

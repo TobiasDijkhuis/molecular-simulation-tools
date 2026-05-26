@@ -1,0 +1,49 @@
+molecular_simulation_tools.io
+=============================
+
+.. py:module:: molecular_simulation_tools.io
+
+.. autoapi-nested-parse::
+
+   Collection of tools for input/output.
+
+
+
+Attributes
+----------
+
+.. autoapisummary::
+
+   molecular_simulation_tools.io.znh5md_avail
+
+
+Functions
+---------
+
+.. autoapisummary::
+
+   molecular_simulation_tools.io.read_based_on_filetype
+
+
+Module Contents
+---------------
+
+.. py:data:: znh5md_avail
+   :value: True
+
+
+.. py:function:: read_based_on_filetype(path: str | pathlib.Path, index: int | str | slice = -1) -> ase.Atoms | list[ase.Atoms]
+
+   Read the file based on the filetype.
+
+   :param path: path to file
+   :type path: str | Path
+   :param index: Indices of frames to read. Default = -1 (only last frame).
+   :type index: int | str | slice
+
+   :returns: Read file
+   :rtype: Atoms | list[Atoms]
+
+   :raises ImportError: If `path` ends with `.h5`, but ``znh5md`` is not available.
+
+

@@ -1,0 +1,640 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>molecular_simulation_tools.geometry &mdash; molecular-simulation-tools  documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
+      <link rel="stylesheet" type="text/css" href="../../_static/graphviz.css?v=4ae1632d" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
+      <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
+      <script src="../../_static/copybutton.js?v=f281be69"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            molecular-simulation-tools
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../autoapi/index.html">API Reference</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">molecular-simulation-tools</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">molecular_simulation_tools.geometry</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for molecular_simulation_tools.geometry</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;Collection of geometry tools.&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">itertools</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">ase</span> <span class="kn">import</span> <span class="n">Atoms</span>
+<span class="kn">from</span> <span class="nn">ase.geometry</span> <span class="kn">import</span> <span class="n">find_mic</span>
+<span class="kn">from</span> <span class="nn">scipy.spatial</span> <span class="kn">import</span> <span class="n">ConvexHull</span>
+
+<span class="kn">from</span> <span class="nn">molecular_simulation_tools.utils</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">project_on_unit_sphere</span><span class="p">,</span>
+    <span class="n">random_on_unit_sphere</span><span class="p">,</span>
+<span class="p">)</span>
+
+
+<div class="viewcode-block" id="construct_grid_in_cell">
+<a class="viewcode-back" href="../../autoapi/molecular_simulation_tools/geometry/index.html#molecular_simulation_tools.geometry.construct_grid_in_cell">[docs]</a>
+<span class="k">def</span> <span class="nf">construct_grid_in_cell</span><span class="p">(</span>
+    <span class="n">cell</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">ngrid</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Create a grid of points sampled equally in the cell.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    cell : np.ndarray</span>
+<span class="sd">        3x3 matrix of cell dimensions.</span>
+<span class="sd">    ngrid : int | tuple[int, int]</span>
+<span class="sd">        Number of grid points to sample along x and y. If an integer,</span>
+<span class="sd">        takes the same number of points along x and y.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    X : np.ndarray</span>
+<span class="sd">        Grid of x coordinates</span>
+<span class="sd">    Y : np.ndarray</span>
+<span class="sd">        Grid of y coordinates</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">ngrid</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
+        <span class="n">ngrid</span> <span class="o">=</span> <span class="p">(</span><span class="n">ngrid</span><span class="p">,</span> <span class="n">ngrid</span><span class="p">)</span>
+
+    <span class="n">x</span> <span class="o">=</span> <span class="n">discretize_cell_length</span><span class="p">(</span><span class="n">cell</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">ngrid</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+    <span class="n">y</span> <span class="o">=</span> <span class="n">discretize_cell_length</span><span class="p">(</span><span class="n">cell</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">ngrid</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+    <span class="n">X</span><span class="p">,</span> <span class="n">Y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">meshgrid</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">indexing</span><span class="o">=</span><span class="s2">&quot;ij&quot;</span><span class="p">)</span>  <span class="c1"># noqa: N806</span>
+    <span class="k">return</span> <span class="n">X</span><span class="p">,</span> <span class="n">Y</span></div>
+
+
+
+<div class="viewcode-block" id="discretize_cell_length">
+<a class="viewcode-back" href="../../autoapi/molecular_simulation_tools/geometry/index.html#molecular_simulation_tools.geometry.discretize_cell_length">[docs]</a>
+<span class="k">def</span> <span class="nf">discretize_cell_length</span><span class="p">(</span><span class="n">length</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="nb">float</span><span class="p">,</span> <span class="n">ngrid</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Discretize the length of a cell.</span>
+
+<span class="sd">    Places the points such that they are all equidistant, including the first and</span>
+<span class="sd">    last point, if you include periodic boundary conditions.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    length : int | float</span>
+<span class="sd">        Length to discretize</span>
+<span class="sd">    ngrid : int</span>
+<span class="sd">        Number of points</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    np.ndarray</span>
+<span class="sd">        array containing equidistant points along the length `length`.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">spacing</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">length</span><span class="p">)</span> <span class="o">/</span> <span class="n">ngrid</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="n">spacing</span> <span class="o">/</span> <span class="mi">2</span><span class="p">,</span> <span class="n">length</span> <span class="o">-</span> <span class="n">spacing</span> <span class="o">/</span> <span class="mi">2</span><span class="p">,</span> <span class="n">num</span><span class="o">=</span><span class="n">ngrid</span><span class="p">,</span> <span class="n">endpoint</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="correct_distance_for_pbc">
+<a class="viewcode-back" href="../../autoapi/molecular_simulation_tools/geometry/index.html#molecular_simulation_tools.geometry.correct_distance_for_pbc">[docs]</a>
+<span class="k">def</span> <span class="nf">correct_distance_for_pbc</span><span class="p">(</span><span class="n">distance</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">box_length</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Correct a distance for periodic boundary conditions.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    distance : np.ndarray</span>
+<span class="sd">        Array of distances</span>
+<span class="sd">    box_length : float</span>
+<span class="sd">        Length of the periodic box along the dimension of `distance`</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    distance : np.ndarray</span>
+<span class="sd">        Corrected distance</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">distance</span><span class="p">[</span><span class="n">distance</span> <span class="o">&gt;</span> <span class="n">box_length</span> <span class="o">*</span> <span class="mf">0.5</span><span class="p">]</span> <span class="o">-=</span> <span class="n">box_length</span>
+    <span class="n">distance</span><span class="p">[</span><span class="n">distance</span> <span class="o">&lt;=</span> <span class="o">-</span><span class="n">box_length</span> <span class="o">*</span> <span class="mf">0.5</span><span class="p">]</span> <span class="o">+=</span> <span class="n">box_length</span>
+    <span class="k">return</span> <span class="n">distance</span></div>
+
+
+
+<div class="viewcode-block" id="find_min_height_for_distance">
+<a class="viewcode-back" href="../../autoapi/molecular_simulation_tools/geometry/index.html#molecular_simulation_tools.geometry.find_min_height_for_distance">[docs]</a>
+<span class="k">def</span> <span class="nf">find_min_height_for_distance</span><span class="p">(</span>
+    <span class="n">x</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+    <span class="n">y</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+    <span class="n">point_coordinates</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+    <span class="n">distance</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+    <span class="n">box_size</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Find the minimum height for a point to be `distance` away from other points.</span>
+
+<span class="sd">    Calculate the minimum height ``z`` for a point ``(x, y)`` for it to be at least</span>
+<span class="sd">    `distance` away from all points in `point_coordinates`.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    x : float</span>
+<span class="sd">        x-coordinate of desired point</span>
+<span class="sd">    y : float</span>
+<span class="sd">        y-coordinate of desired point</span>
+<span class="sd">    point_coordinates : np.ndarray</span>
+<span class="sd">        Nx2 (or more) array of N point coordinates.</span>
+<span class="sd">    distance : float</span>
+<span class="sd">        Minimum distance to all other points.</span>
+<span class="sd">    box_size : np.ndarray | None</span>
+<span class="sd">        Size of the box. If None, do not include periodic boundary conditions.</span>
+<span class="sd">        Default = None.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    height : float</span>
+<span class="sd">        Minimum height required for ``(x, y)`` to be `distance` away from all other</span>
+<span class="sd">        points.</span>
+
+<span class="sd">    Raises</span>
+<span class="sd">    ------</span>
+<span class="sd">    ValueError</span>
+<span class="sd">        If no points within radius `distance` from ``(x, y)``</span>
+<span class="sd">        are found in `point_coordinates` (in a 2D projection).</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">delta_x</span> <span class="o">=</span> <span class="n">point_coordinates</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">x</span>
+    <span class="n">delta_y</span> <span class="o">=</span> <span class="n">point_coordinates</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">y</span>
+
+    <span class="k">if</span> <span class="n">box_size</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">delta_x</span> <span class="o">=</span> <span class="n">correct_distance_for_pbc</span><span class="p">(</span><span class="n">delta_x</span><span class="p">,</span> <span class="n">box_size</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="n">delta_y</span> <span class="o">=</span> <span class="n">correct_distance_for_pbc</span><span class="p">(</span><span class="n">delta_y</span><span class="p">,</span> <span class="n">box_size</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+
+    <span class="n">delta_x_squared</span> <span class="o">=</span> <span class="n">delta_x</span><span class="o">**</span><span class="mi">2</span>
+    <span class="n">delta_y_squared</span> <span class="o">=</span> <span class="n">delta_y</span><span class="o">**</span><span class="mi">2</span>
+
+    <span class="n">in_cylinder</span> <span class="o">=</span> <span class="p">(</span><span class="n">distance</span><span class="o">**</span><span class="mi">2</span> <span class="o">-</span> <span class="n">delta_x_squared</span> <span class="o">-</span> <span class="n">delta_y_squared</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="mf">0.0</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">in_cylinder</span><span class="p">):</span>
+        <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;No points found within a radius of </span><span class="si">{</span><span class="n">distance</span><span class="si">}</span><span class="s2"> of (</span><span class="si">{</span><span class="n">x</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">y</span><span class="si">}</span><span class="s2">) in a 2D projection&quot;</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+
+    <span class="n">point_coordinates</span> <span class="o">=</span> <span class="n">point_coordinates</span><span class="p">[</span><span class="n">in_cylinder</span><span class="p">,</span> <span class="p">:]</span>
+    <span class="n">delta_x_squared</span> <span class="o">=</span> <span class="n">delta_x_squared</span><span class="p">[</span><span class="n">in_cylinder</span><span class="p">]</span>
+    <span class="n">delta_y_squared</span> <span class="o">=</span> <span class="n">delta_y_squared</span><span class="p">[</span><span class="n">in_cylinder</span><span class="p">]</span>
+
+    <span class="n">necessary_delta_z_squared</span> <span class="o">=</span> <span class="n">distance</span><span class="o">**</span><span class="mi">2</span> <span class="o">-</span> <span class="n">delta_x_squared</span> <span class="o">-</span> <span class="n">delta_y_squared</span>
+
+    <span class="n">height</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">point_coordinates</span><span class="p">[:,</span> <span class="mi">2</span><span class="p">]</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">necessary_delta_z_squared</span><span class="p">))</span>
+
+    <span class="k">return</span> <span class="n">height</span></div>
+
+
+
+<div class="viewcode-block" id="find_min_height_for_adsorbate_on_surface">
+<a class="viewcode-back" href="../../autoapi/molecular_simulation_tools/geometry/index.html#molecular_simulation_tools.geometry.find_min_height_for_adsorbate_on_surface">[docs]</a>
+<span class="k">def</span> <span class="nf">find_min_height_for_adsorbate_on_surface</span><span class="p">(</span>
+    <span class="n">surface</span><span class="p">:</span> <span class="n">Atoms</span><span class="p">,</span>
+    <span class="n">ngrid</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span>
+    <span class="n">distance</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+    <span class="n">adsorbate</span><span class="p">:</span> <span class="n">Atoms</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Find the minimum height to place an adsorbate at least `distance` away from surface atoms.</span>
+
+<span class="sd">    Calculate the minimum height for `adsorbate` for it to have all its</span>
+<span class="sd">    atoms at least `distance` away from the other atoms in `surface`.</span>
+
+<span class="sd">    The returned points correspond to placing the center-of-mass of `adsorbate`</span>
+<span class="sd">    at ``(x, y, z)``, such that the minimum distance to any atom in the surface is</span>
+<span class="sd">    `distance`.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    surface : Atoms</span>
+<span class="sd">        Surface</span>
+<span class="sd">    ngrid : int | tuple[int, int]</span>
+<span class="sd">        Number of grid points along x and y</span>
+<span class="sd">    distance : float</span>
+<span class="sd">        Distance from all other atoms.</span>
+<span class="sd">    adsorbate : Atoms | None</span>
+<span class="sd">        Adsorbate. If None, create a dummy Atoms instance with one atom.</span>
+<span class="sd">        Default = None.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    grid_x : np.ndarray</span>
+<span class="sd">        grid of positions along x</span>
+<span class="sd">    grid_y : np.ndarray</span>
+<span class="sd">        grid of positions along y</span>
+<span class="sd">    sample_heights : np.ndarray</span>
+<span class="sd">        height of the points corresponding to the points in `grid_x` and `grid_y.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">adsorbate</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="c1"># Dummy, single atom</span>
+        <span class="n">adsorbate</span> <span class="o">=</span> <span class="n">Atoms</span><span class="p">(</span><span class="s2">&quot;H&quot;</span><span class="p">,</span> <span class="p">[[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]])</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">adsorbate</span> <span class="o">=</span> <span class="n">adsorbate</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="n">adsorbate</span><span class="o">.</span><span class="n">set_center_of_mass</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">])</span>
+
+    <span class="n">n_atoms_in_adsorbate</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">adsorbate</span><span class="p">)</span>
+
+    <span class="n">grid_x</span><span class="p">,</span> <span class="n">grid_y</span> <span class="o">=</span> <span class="n">construct_grid_in_cell</span><span class="p">(</span><span class="n">surface</span><span class="o">.</span><span class="n">get_cell</span><span class="p">(),</span> <span class="n">ngrid</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">ngrid</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
+        <span class="n">ngrid</span> <span class="o">=</span> <span class="p">(</span><span class="n">ngrid</span><span class="p">,</span> <span class="n">ngrid</span><span class="p">)</span>
+
+    <span class="n">sample_heights</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">((</span><span class="n">ngrid</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">ngrid</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span>
+    <span class="n">cell</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">diag</span><span class="p">(</span><span class="n">surface</span><span class="o">.</span><span class="n">get_cell</span><span class="p">())</span>
+    <span class="k">for</span> <span class="n">i_x</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">ngrid</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
+        <span class="k">for</span> <span class="n">i_y</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">ngrid</span><span class="p">[</span><span class="mi">1</span><span class="p">]):</span>
+            <span class="n">max_height</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">float_info</span><span class="o">.</span><span class="n">min</span>
+
+            <span class="k">for</span> <span class="n">atom_idx</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_atoms_in_adsorbate</span><span class="p">):</span>
+                <span class="n">pos</span> <span class="o">=</span> <span class="n">adsorbate</span><span class="o">.</span><span class="n">positions</span><span class="p">[</span><span class="n">atom_idx</span><span class="p">,</span> <span class="p">:]</span>
+
+                <span class="n">height</span> <span class="o">=</span> <span class="n">find_min_height_for_distance</span><span class="p">(</span>
+                    <span class="n">pos</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="n">grid_x</span><span class="p">[</span><span class="n">i_x</span><span class="p">,</span> <span class="n">i_y</span><span class="p">],</span>
+                    <span class="n">pos</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">grid_y</span><span class="p">[</span><span class="n">i_x</span><span class="p">,</span> <span class="n">i_y</span><span class="p">],</span>
+                    <span class="n">surface</span><span class="o">.</span><span class="n">positions</span><span class="p">,</span>
+                    <span class="n">distance</span><span class="p">,</span>
+                    <span class="n">box_size</span><span class="o">=</span><span class="n">cell</span><span class="p">,</span>
+                <span class="p">)</span>
+                <span class="n">max_height</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">max_height</span><span class="p">,</span> <span class="n">height</span><span class="p">)</span>
+            <span class="n">sample_heights</span><span class="p">[</span><span class="n">i_x</span><span class="p">,</span> <span class="n">i_y</span><span class="p">]</span> <span class="o">=</span> <span class="n">max_height</span>
+    <span class="k">return</span> <span class="n">grid_x</span><span class="p">,</span> <span class="n">grid_y</span><span class="p">,</span> <span class="n">sample_heights</span></div>
+
+
+
+<div class="viewcode-block" id="turn_grid_into_position_vectors">
+<a class="viewcode-back" href="../../autoapi/molecular_simulation_tools/geometry/index.html#molecular_simulation_tools.geometry.turn_grid_into_position_vectors">[docs]</a>
+<span class="k">def</span> <span class="nf">turn_grid_into_position_vectors</span><span class="p">(</span>
+    <span class="n">grid_matrices</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="o">...</span><span class="p">],</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Turn a grid created by :func:`numpy.meshgrid` into position vectors.</span>
+
+<span class="sd">    Taken from https://stackoverflow.com/questions/12864445/how-to-convert-the-output-of-meshgrid-to-the-corresponding-array-of-points</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    grid_matrices : tuple[np.ndarray, ...]</span>
+<span class="sd">        Tuple of N grid matrices with M points.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    np.ndarray</span>
+<span class="sd">        MxN numpy array of the grid positions in N dimensions.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">ravel</span><span class="p">,</span> <span class="n">grid_matrices</span><span class="p">)))</span><span class="o">.</span><span class="n">T</span></div>
+
+
+
+<div class="viewcode-block" id="calculate_rmsd">
+<a class="viewcode-back" href="../../autoapi/molecular_simulation_tools/geometry/index.html#molecular_simulation_tools.geometry.calculate_rmsd">[docs]</a>
+<span class="k">def</span> <span class="nf">calculate_rmsd</span><span class="p">(</span>
+    <span class="n">atoms</span><span class="p">:</span> <span class="n">Atoms</span><span class="p">,</span>
+    <span class="n">target</span><span class="p">:</span> <span class="n">Atoms</span><span class="p">,</span>
+    <span class="n">indices</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">permute</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+    <span class="n">return_permuted_target</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">Atoms</span><span class="p">,</span> <span class="n">Atoms</span><span class="p">]]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Calculate the root-mean-squared-displacement (rmsd) between atoms `atoms` and `target`.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    atoms : Atoms</span>
+<span class="sd">        atoms</span>
+<span class="sd">    target : Atoms</span>
+<span class="sd">        target</span>
+<span class="sd">    indices : list[int] | None</span>
+<span class="sd">        List of indices, or None if all atoms.</span>
+<span class="sd">    permute : bool</span>
+<span class="sd">        Whether to permute the atom indices to get the minimum</span>
+<span class="sd">        rmsd. Only permutes between identical elements. Default = True.</span>
+<span class="sd">    return_permuted_target : bool</span>
+<span class="sd">        Whether to return the permuted target,</span>
+<span class="sd">        that has the minimum rmsd. Default = True.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    min_rmsd : float</span>
+<span class="sd">        minimum rmsd</span>
+<span class="sd">    return_atoms : tuple[Atoms, Atoms]</span>
+<span class="sd">        tuple of `atoms` and `target` with only the indices in `indices`.</span>
+<span class="sd">        If `return_permuted_target` is True, returns the permuted `target` that leads</span>
+<span class="sd">        to the minimum rmsd.</span>
+
+<span class="sd">    Raises</span>
+<span class="sd">    ------</span>
+<span class="sd">    ValueError</span>
+<span class="sd">        If the number of atoms, order of elements or cells are different between</span>
+<span class="sd">        `atoms` and `target`.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">atoms</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">target</span><span class="p">):</span>
+        <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Number of atoms in atoms (</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">atoms</span><span class="p">)</span><span class="si">}</span><span class="s2">) was not the same as the number of atoms in target (</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">target</span><span class="p">)</span><span class="si">}</span><span class="s2">)&quot;</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">atoms</span><span class="o">.</span><span class="n">cell</span> <span class="o">!=</span> <span class="n">target</span><span class="o">.</span><span class="n">cell</span><span class="p">):</span>
+        <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Cell of atoms (</span><span class="si">{</span><span class="n">atoms</span><span class="o">.</span><span class="n">cell</span><span class="si">}</span><span class="s2">) is not the same as the cell of target (</span><span class="si">{</span><span class="n">target</span><span class="o">.</span><span class="n">cell</span><span class="si">}</span><span class="s2">)&quot;</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">atoms</span><span class="o">.</span><span class="n">symbols</span> <span class="o">!=</span> <span class="n">target</span><span class="o">.</span><span class="n">symbols</span><span class="p">):</span>
+        <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;atoms does not have the same symbols (</span><span class="si">{</span><span class="n">atoms</span><span class="o">.</span><span class="n">symbols</span><span class="si">}</span><span class="s2">) as target (</span><span class="si">{</span><span class="n">target</span><span class="o">.</span><span class="n">symbols</span><span class="si">}</span><span class="s2">)&quot;</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">indices</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">indices</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">atoms</span><span class="p">)))</span>
+    <span class="n">n_atoms_for_rmsd</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">indices</span><span class="p">)</span>
+
+    <span class="n">original_positions</span> <span class="o">=</span> <span class="n">atoms</span><span class="o">.</span><span class="n">get_positions</span><span class="p">()</span>
+    <span class="n">target_positions</span> <span class="o">=</span> <span class="n">target</span><span class="o">.</span><span class="n">get_positions</span><span class="p">()</span>
+
+    <span class="k">if</span> <span class="n">permute</span><span class="p">:</span>
+        <span class="n">permutations</span><span class="p">:</span> <span class="n">itertools</span><span class="o">.</span><span class="n">permutations</span> <span class="o">|</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">int</span><span class="p">]]</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">itertools</span><span class="o">.</span><span class="n">permutations</span><span class="p">(</span><span class="n">indices</span><span class="p">)</span>
+        <span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">permutations</span> <span class="o">=</span> <span class="p">(</span><span class="n">indices</span><span class="o">.</span><span class="n">copy</span><span class="p">(),)</span>
+
+    <span class="n">min_rmsd</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">float_info</span><span class="o">.</span><span class="n">max</span>
+    <span class="k">for</span> <span class="n">permutation</span> <span class="ow">in</span> <span class="n">permutations</span><span class="p">:</span>
+        <span class="n">permutation</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">permutation</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">atoms</span><span class="o">.</span><span class="n">numbers</span><span class="p">[</span><span class="n">indices</span><span class="p">]</span> <span class="o">==</span> <span class="n">target</span><span class="o">.</span><span class="n">numbers</span><span class="p">[</span><span class="n">permutation</span><span class="p">]):</span>
+            <span class="c1"># Only exchange identical atoms</span>
+            <span class="k">continue</span>
+
+        <span class="n">_</span><span class="p">,</span> <span class="n">distances</span> <span class="o">=</span> <span class="n">find_mic</span><span class="p">(</span>
+            <span class="n">original_positions</span><span class="p">[</span><span class="n">indices</span><span class="p">,</span> <span class="p">:]</span> <span class="o">-</span> <span class="n">target_positions</span><span class="p">[</span><span class="n">permutation</span><span class="p">,</span> <span class="p">:],</span>
+            <span class="n">atoms</span><span class="o">.</span><span class="n">cell</span><span class="p">,</span>
+            <span class="n">atoms</span><span class="o">.</span><span class="n">pbc</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="n">rmsd</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">distances</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span> <span class="o">/</span> <span class="n">n_atoms_for_rmsd</span><span class="p">)</span>
+
+        <span class="n">min_rmsd</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">min_rmsd</span><span class="p">,</span> <span class="n">rmsd</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">return_permuted_target</span><span class="p">:</span>
+        <span class="n">return_atoms</span> <span class="o">=</span> <span class="p">(</span><span class="n">atoms</span><span class="p">[</span><span class="n">indices</span><span class="p">],</span> <span class="n">target</span><span class="p">[</span><span class="n">permutation</span><span class="p">])</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">return_atoms</span> <span class="o">=</span> <span class="p">(</span><span class="n">atoms</span><span class="p">[</span><span class="n">indices</span><span class="p">],</span> <span class="n">target</span><span class="p">[</span><span class="n">indices</span><span class="p">])</span>
+    <span class="k">return</span> <span class="n">min_rmsd</span><span class="p">,</span> <span class="n">return_atoms</span></div>
+
+
+
+<div class="viewcode-block" id="sample_new_point">
+<a class="viewcode-back" href="../../autoapi/molecular_simulation_tools/geometry/index.html#molecular_simulation_tools.geometry.sample_new_point">[docs]</a>
+<span class="k">def</span> <span class="nf">sample_new_point</span><span class="p">(</span>
+    <span class="n">points</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+    <span class="n">minimum_distance</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+    <span class="n">initial_spawn_distance</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">rtol</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1e-5</span><span class="p">,</span>
+    <span class="n">atol</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1e-8</span><span class="p">,</span>
+    <span class="n">n</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Generate a new point in a random direction that is a certain distance from other points.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    points : np.ndarray</span>
+<span class="sd">        NxM array of coordinates of all old points,</span>
+<span class="sd">        where N is the number of points and M the dimension</span>
+<span class="sd">    minimum_distance : float</span>
+<span class="sd">        Minimum distance for the newly generated</span>
+<span class="sd">        point to be from all other points</span>
+<span class="sd">    initial_spawn_distance : float | None</span>
+<span class="sd">        Initial distance from origin.</span>
+<span class="sd">        If None, is the same as minimum_distance. Default = None</span>
+<span class="sd">    rtol : float</span>
+<span class="sd">        Relative tolerance. Default: 1e-5</span>
+<span class="sd">    atol : float</span>
+<span class="sd">        Absolute tolerance. Default: 1e-8</span>
+<span class="sd">    n : int</span>
+<span class="sd">        number of points to generate. Default: 1</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    r_vec : np.ndarray</span>
+<span class="sd">        Array of length M of coordinates of new point.</span>
+<span class="sd">        Shape n*M if multiple points are being generated.</span>
+
+<span class="sd">    Raises</span>
+<span class="sd">    ------</span>
+<span class="sd">    ValueError</span>
+<span class="sd">        If `minimum_distance` or `initial_spawn_distance` is less or equal to 0</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># If points is only a 1d array (when only one initial point is supplied)</span>
+    <span class="c1"># make sure it is 2d so we index it correctly.</span>
+    <span class="n">points</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">atleast_2d</span><span class="p">(</span><span class="n">points</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">n</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="n">n_initial_points</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">shape</span><span class="p">(</span><span class="n">points</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+
+        <span class="c1"># Add n (for now filled with zeros) vectors to points</span>
+        <span class="n">points</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">pad</span><span class="p">(</span><span class="n">points</span><span class="p">,</span> <span class="p">((</span><span class="mi">0</span><span class="p">,</span> <span class="n">n</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)))</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
+            <span class="n">new_point</span> <span class="o">=</span> <span class="n">sample_new_point</span><span class="p">(</span>
+                <span class="n">points</span><span class="p">[:</span> <span class="n">n_initial_points</span> <span class="o">+</span> <span class="n">i</span><span class="p">,</span> <span class="p">:],</span>
+                <span class="n">minimum_distance</span><span class="p">,</span>
+                <span class="n">initial_spawn_distance</span><span class="o">=</span><span class="n">initial_spawn_distance</span><span class="p">,</span>
+                <span class="n">rtol</span><span class="o">=</span><span class="n">rtol</span><span class="p">,</span>
+                <span class="n">atol</span><span class="o">=</span><span class="n">atol</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="n">points</span><span class="p">[</span><span class="n">n_initial_points</span> <span class="o">+</span> <span class="n">i</span><span class="p">,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">new_point</span>
+        <span class="k">return</span> <span class="n">points</span><span class="p">[</span><span class="n">n_initial_points</span><span class="p">:,</span> <span class="p">:]</span>
+
+    <span class="n">minimum_distance</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">minimum_distance</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">initial_spawn_distance</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">initial_spawn_distance</span> <span class="o">=</span> <span class="n">minimum_distance</span>
+
+    <span class="k">if</span> <span class="n">minimum_distance</span> <span class="o">&lt;=</span> <span class="mf">0.0</span> <span class="ow">or</span> <span class="n">initial_spawn_distance</span> <span class="o">&lt;=</span> <span class="mf">0.0</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">()</span>
+
+    <span class="n">r_unit</span> <span class="o">=</span> <span class="n">random_on_unit_sphere</span><span class="p">()</span>
+    <span class="n">r_vec</span> <span class="o">=</span> <span class="n">r_unit</span> <span class="o">*</span> <span class="n">initial_spawn_distance</span>
+
+    <span class="n">distances</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">points</span> <span class="o">-</span> <span class="n">r_vec</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+    <span class="k">while</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">isclose</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">distances</span><span class="p">),</span> <span class="n">minimum_distance</span><span class="p">,</span> <span class="n">rtol</span><span class="o">=</span><span class="n">rtol</span><span class="p">,</span> <span class="n">atol</span><span class="o">=</span><span class="n">atol</span><span class="p">):</span>
+        <span class="n">min_distance_position</span> <span class="o">=</span> <span class="n">points</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">argmin</span><span class="p">(</span><span class="n">distances</span><span class="p">),</span> <span class="p">:]</span>
+        <span class="n">r_length</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">r_vec</span><span class="p">)</span>
+
+        <span class="n">b</span> <span class="o">=</span> <span class="mf">2.0</span> <span class="o">*</span> <span class="n">r_length</span> <span class="o">-</span> <span class="mf">2.0</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">min_distance_position</span><span class="p">,</span> <span class="n">r_unit</span><span class="p">)</span>
+        <span class="n">c</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="o">-</span><span class="mf">2.0</span> <span class="o">*</span> <span class="n">r_length</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">min_distance_position</span><span class="p">,</span> <span class="n">r_unit</span><span class="p">)</span>
+            <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">min_distance_position</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span>
+            <span class="o">-</span> <span class="n">minimum_distance</span><span class="o">**</span><span class="mi">2</span>
+            <span class="o">+</span> <span class="n">r_length</span><span class="o">**</span><span class="mi">2</span>
+        <span class="p">)</span>
+        <span class="n">D</span> <span class="o">=</span> <span class="n">b</span><span class="o">**</span><span class="mi">2</span> <span class="o">-</span> <span class="mf">4.0</span> <span class="o">*</span> <span class="n">c</span>  <span class="c1"># noqa: N806</span>
+
+        <span class="n">k</span> <span class="o">=</span> <span class="p">(</span><span class="o">-</span><span class="n">b</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">D</span><span class="p">))</span> <span class="o">/</span> <span class="p">(</span><span class="mf">2.0</span><span class="p">)</span>
+        <span class="n">r_vec</span> <span class="o">+=</span> <span class="n">k</span> <span class="o">*</span> <span class="n">r_unit</span>
+
+        <span class="n">distances</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">points</span> <span class="o">-</span> <span class="n">r_vec</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">r_vec</span></div>
+
+
+
+<div class="viewcode-block" id="icosahedron_unit_sphere">
+<a class="viewcode-back" href="../../autoapi/molecular_simulation_tools/geometry/index.html#molecular_simulation_tools.geometry.icosahedron_unit_sphere">[docs]</a>
+<span class="k">def</span> <span class="nf">icosahedron_unit_sphere</span><span class="p">(</span><span class="n">level</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">subdivision</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">2</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Get vertices of an icosahedron for even sampling of a unit sphere.</span>
+
+<span class="sd">    Teanby et al, 2006. https://sci-hub.se/https://doi.org/10.1016/j.cageo.2006.01.007</span>
+<span class="sd">    Recursive. Might be</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    level : int</span>
+<span class="sd">        Level. Default = 1</span>
+<span class="sd">    subdivision : int</span>
+<span class="sd">        Prime integer, currently only 2 implemented. Default = 2</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    vertices : np.ndarray</span>
+<span class="sd">        Numpy array of shape Nx3, with N vertices</span>
+
+<span class="sd">    Raises</span>
+<span class="sd">    ------</span>
+<span class="sd">    NotImplementedError</span>
+<span class="sd">        If `subdivision` is not 2</span>
+<span class="sd">    ValueError</span>
+<span class="sd">        If `level` is less than 0.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">subdivision</span> <span class="o">!=</span> <span class="mi">2</span><span class="p">:</span>
+        <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Only subdivision == 2 (bisection) is implemented at the moment, but was </span><span class="si">{</span><span class="n">subdivision</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">subdivision</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">{</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">11</span><span class="p">}:</span>
+        <span class="c1"># Check only up to 11 for now.</span>
+        <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Subdivision needs to be a prime integer, but was </span><span class="si">{</span><span class="n">subdivision</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">level</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">()</span>
+
+    <span class="c1"># Teanby et al, 2006.</span>
+    <span class="c1"># https://sci-hub.se/https://doi.org/10.1016/j.cageo.2006.01.007</span>
+    <span class="k">if</span> <span class="n">level</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">phi</span> <span class="o">=</span> <span class="mf">2.0</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">/</span> <span class="mf">5.0</span><span class="p">)</span>
+        <span class="n">vertices</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span>
+            <span class="p">[</span>
+                <span class="p">[</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">phi</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">],</span>
+                <span class="p">[</span><span class="mf">0.0</span><span class="p">,</span> <span class="o">-</span><span class="n">phi</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">],</span>
+                <span class="p">[</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">phi</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.0</span><span class="p">],</span>
+                <span class="p">[</span><span class="mf">0.0</span><span class="p">,</span> <span class="o">-</span><span class="n">phi</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.0</span><span class="p">],</span>
+                <span class="p">[</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="n">phi</span><span class="p">],</span>
+                <span class="p">[</span><span class="o">-</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="n">phi</span><span class="p">],</span>
+                <span class="p">[</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="o">-</span><span class="n">phi</span><span class="p">],</span>
+                <span class="p">[</span><span class="o">-</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="o">-</span><span class="n">phi</span><span class="p">],</span>
+                <span class="p">[</span><span class="n">phi</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">],</span>
+                <span class="p">[</span><span class="o">-</span><span class="n">phi</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">],</span>
+                <span class="p">[</span><span class="n">phi</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">],</span>
+                <span class="p">[</span><span class="o">-</span><span class="n">phi</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">],</span>
+            <span class="p">]</span>
+        <span class="p">)</span>
+        <span class="n">normalization</span> <span class="o">=</span> <span class="mf">1.0</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mf">1.0</span> <span class="o">+</span> <span class="mf">4.0</span> <span class="o">*</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">/</span> <span class="mf">5.0</span><span class="p">))</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">vertices</span> <span class="o">*</span> <span class="n">normalization</span>
+
+    <span class="n">vertices_below</span> <span class="o">=</span> <span class="n">icosahedron_unit_sphere</span><span class="p">(</span><span class="n">level</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="n">subdivision</span><span class="o">=</span><span class="n">subdivision</span><span class="p">)</span>
+    <span class="n">hull</span> <span class="o">=</span> <span class="n">ConvexHull</span><span class="p">(</span><span class="n">points</span><span class="o">=</span><span class="n">vertices_below</span><span class="p">,</span> <span class="n">incremental</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">triangle_indices</span> <span class="o">=</span> <span class="n">hull</span><span class="o">.</span><span class="n">simplices</span>
+
+    <span class="n">ntriangles</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">shape</span><span class="p">(</span><span class="n">triangle_indices</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+
+    <span class="n">new_points</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="n">ntriangles</span> <span class="o">*</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">))</span>
+    <span class="k">for</span> <span class="n">triangle_idx</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">ntriangles</span><span class="p">):</span>
+        <span class="n">vertices_of_triangle</span> <span class="o">=</span> <span class="n">triangle_indices</span><span class="p">[</span><span class="n">triangle_idx</span><span class="p">,</span> <span class="p">:]</span>
+
+        <span class="n">edges</span> <span class="o">=</span> <span class="n">itertools</span><span class="o">.</span><span class="n">combinations</span><span class="p">(</span><span class="n">iterable</span><span class="o">=</span><span class="n">vertices_of_triangle</span><span class="p">,</span> <span class="n">r</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+
+        <span class="n">new_points</span><span class="p">[</span><span class="n">triangle_idx</span> <span class="o">*</span> <span class="mi">3</span> <span class="p">:</span> <span class="n">triangle_idx</span> <span class="o">*</span> <span class="mi">3</span> <span class="o">+</span> <span class="mi">3</span><span class="p">,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span>
+            <span class="p">[</span>
+                <span class="n">project_on_unit_sphere</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">vertices_below</span><span class="p">[</span><span class="n">edge</span><span class="p">,</span> <span class="p">:],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">))</span>
+                <span class="k">for</span> <span class="n">edge</span> <span class="ow">in</span> <span class="n">edges</span>
+            <span class="p">]</span>
+        <span class="p">)</span>
+    <span class="n">vertices</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">vertices_below</span><span class="p">,</span> <span class="n">new_points</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">vertices</span></div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2026, Tobias Dijkhuis.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

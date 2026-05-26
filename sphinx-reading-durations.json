@@ -1,3 +1,10 @@
 {
-    "index": 0.014
+    "autoapi/index": 0.015,
+    "autoapi/molecular_simulation_tools/_version/index": 0.011,
+    "autoapi/molecular_simulation_tools/geometry/index": 0.152,
+    "autoapi/molecular_simulation_tools/index": 0.002,
+    "autoapi/molecular_simulation_tools/io/index": 0.01,
+    "autoapi/molecular_simulation_tools/neb/index": 0.035,
+    "autoapi/molecular_simulation_tools/utils/index": 0.016,
+    "index": 0.003
 }

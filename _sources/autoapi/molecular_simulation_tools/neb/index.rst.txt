@@ -1,0 +1,115 @@
+molecular_simulation_tools.neb
+==============================
+
+.. py:module:: molecular_simulation_tools.neb
+
+.. autoapi-nested-parse::
+
+   Collection of tools to run NEB calculations.
+
+
+
+Functions
+---------
+
+.. autoapisummary::
+
+   molecular_simulation_tools.neb.get_images_for_neb
+   molecular_simulation_tools.neb.run_energy_weighted_neb
+   molecular_simulation_tools.neb.run_neb_ts
+   molecular_simulation_tools.neb.plot_neb
+
+
+Module Contents
+---------------
+
+.. py:function:: get_images_for_neb(initial: ase.Atoms, final: ase.Atoms, n_images: int) -> list[ase.Atoms]
+
+   Get images to use for NEB calculations using :class:`ase.mep.neb.NEB`.
+
+   Creates ``n_images-1`` copies of `initial`, and one copy of `final`.
+
+   :param initial: Starting geometry
+   :type initial: Atoms
+   :param final: Final geometry of the NEB
+   :type final: Atoms
+   :param n_images: Number of images, including initial and final image
+   :type n_images: int
+
+   :returns: **images** -- List of images
+   :rtype: list[Atoms]
+
+
+.. py:function:: run_energy_weighted_neb(images: list[ase.Atoms], calc: ase.calculators.calculator.Calculator, fmax: float = 0.05, optimizer: type[ase.optimize.optimize.Optimizer] = LBFGS, interpolate: Literal['linear', 'idpp'] | None = None, neb_kwargs: dict[str, Any] | None = None) -> ase.mep.neb.NEB
+
+   Do an energy-weighted climbing image nudged elastic band (EW-CI-NEB) calculation.
+
+   See https://pubs.acs.org/doi/full/10.1021/acs.jctc.1c00462.
+
+   :param images: List of atoms, from initial to final frame.
+   :type images: list[Atoms]
+   :param calc: Calculator that can calculate the potential energy and forces of the images.
+   :type calc: Calculator
+   :param fmax: Maximum force on the highest energy component in eV/Angstrom. Default = 0.05.
+   :type fmax: float
+   :param optimizer: Optimizer to use for the NEB. Default = LBFGS.
+   :type optimizer: type[Optimizer]
+   :param interpolate: Method to interpolate see :meth:`ase.mep.neb.NEB.interpolate`.
+                       If None, do not interpolate images. Default = None.
+   :type interpolate: Literal['linear', 'idpp'] | None
+   :param neb_kwargs: Keyword arguments passed to :class:`ase.mep.neb.NEB`. Default = None.
+   :type neb_kwargs: dict[str, Any] | None
+
+   :returns: **neb** -- Calculated minimum energy path
+   :rtype: NEB
+
+
+.. py:function:: run_neb_ts(images: list[ase.Atoms], calc: ase.calculators.calculator.Calculator, max_displacement: float = 0.01, fmax_ts: float = 0.05, replace_ts_guess: bool = True, energy_weighted_neb_kwargs: dict[str, Any] | None = None) -> tuple[list[ase.Atoms], ase.Atoms]
+
+   Do a NEB-TS calculation.
+
+   NEB-TS calculations consist of first doing an EW-CI-NEB calculation,
+   and then a TS optimization on the climbing image.
+   See https://pubs.acs.org/doi/full/10.1021/acs.jctc.1c00462
+
+   :param images: List of images to find the minimum energy path for.
+   :type images: list[Atoms]
+   :param calc: Calculator that can calculate the potential energy and forces of the images.
+   :type calc: Calculator
+   :param max_displacement: Maximum displacement of the NEB along the minimum mode in Angstrom.
+                            Default = 0.02.
+   :type max_displacement: float
+   :param fmax_ts: Maximum force component criterion on the transition state in eV/Angstrom.
+                   Default = 0.05.
+   :type fmax_ts: float
+   :param replace_ts_guess: Whether to replace the TS guess of the EW-CI-NEB calculation with the
+                            optimized true transition state. If False, adds it to the list
+                            in the order according to the rmsd from the initial frame. Default = True.
+   :type replace_ts_guess: bool
+   :param energy_weighted_neb_kwargs: Keyword arguments to pass to :func:`run_energy_weighted_neb`. Default = None.
+   :type energy_weighted_neb_kwargs: dict[str, Any] | None
+
+   :returns: * **images** (*list[Atoms]*) -- Minimum energy path between the initial and final frame,
+               with the transition state optimized.
+             * **transition_state** (*Atoms*) -- Optimized transition state
+
+   :raises RuntimeError: If the neb returned by :func:`run_energy_weighted_neb` does not
+       contain energies.
+
+
+.. py:function:: plot_neb(images: list[ase.Atoms] | ase.mep.neb.BaseNEB, ax: matplotlib.pyplot.Axes | None = None, plot_kwargs: dict[str, Any] | None = None) -> matplotlib.pyplot.Axes
+
+   Plot a NEB calculation.
+
+   :param images: Images to plot, or NEB instance to get images from
+   :type images: list[Atoms] | BaseNEB
+   :param ax: Axes to plot on, or None to create a new one. Default = None.
+   :type ax: plt.Axes | None
+   :param plot_kwargs: Keyword arguments passed to :meth:`matplotlib.pyplot.Axes.plot`.
+                       Default = None.
+   :type plot_kwargs: dict[str, Any] | None
+
+   :returns: **ax** -- Axes that was plotted on.
+   :rtype: plt.Axes
+
+

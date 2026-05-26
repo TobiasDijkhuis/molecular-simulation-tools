@@ -1,0 +1,368 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>molecular_simulation_tools.neb &mdash; molecular-simulation-tools  documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
+      <link rel="stylesheet" type="text/css" href="../../_static/graphviz.css?v=4ae1632d" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
+      <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
+      <script src="../../_static/copybutton.js?v=f281be69"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            molecular-simulation-tools
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../autoapi/index.html">API Reference</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">molecular-simulation-tools</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">molecular_simulation_tools.neb</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for molecular_simulation_tools.neb</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;Collection of tools to run NEB calculations.&quot;&quot;&quot;</span>
+
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Literal</span>
+
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">ase</span> <span class="kn">import</span> <span class="n">Atoms</span>
+<span class="kn">from</span> <span class="nn">ase.calculators.calculator</span> <span class="kn">import</span> <span class="n">Calculator</span>
+<span class="kn">from</span> <span class="nn">ase.geometry</span> <span class="kn">import</span> <span class="n">conditional_find_mic</span>
+<span class="kn">from</span> <span class="nn">ase.mep.dimer</span> <span class="kn">import</span> <span class="n">DimerControl</span><span class="p">,</span> <span class="n">MinModeAtoms</span><span class="p">,</span> <span class="n">MinModeTranslate</span>
+<span class="kn">from</span> <span class="nn">ase.mep.neb</span> <span class="kn">import</span> <span class="n">NEB</span><span class="p">,</span> <span class="n">BaseNEB</span>
+<span class="kn">from</span> <span class="nn">ase.optimize.lbfgs</span> <span class="kn">import</span> <span class="n">LBFGS</span>
+<span class="kn">from</span> <span class="nn">ase.optimize.optimize</span> <span class="kn">import</span> <span class="n">Optimizer</span>
+<span class="kn">from</span> <span class="nn">ase.utils.forcecurve</span> <span class="kn">import</span> <span class="n">ForceFit</span><span class="p">,</span> <span class="n">fit_images</span>
+
+
+<div class="viewcode-block" id="get_images_for_neb">
+<a class="viewcode-back" href="../../autoapi/molecular_simulation_tools/neb/index.html#molecular_simulation_tools.neb.get_images_for_neb">[docs]</a>
+<span class="k">def</span> <span class="nf">get_images_for_neb</span><span class="p">(</span>
+    <span class="n">initial</span><span class="p">:</span> <span class="n">Atoms</span><span class="p">,</span>
+    <span class="n">final</span><span class="p">:</span> <span class="n">Atoms</span><span class="p">,</span>
+    <span class="n">n_images</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">Atoms</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Get images to use for NEB calculations using :class:`ase.mep.neb.NEB`.</span>
+
+<span class="sd">    Creates ``n_images-1`` copies of `initial`, and one copy of `final`.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    initial : Atoms</span>
+<span class="sd">        Starting geometry</span>
+<span class="sd">    final : Atoms</span>
+<span class="sd">        Final geometry of the NEB</span>
+<span class="sd">    n_images : int</span>
+<span class="sd">        Number of images, including initial and final image</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    images : list[Atoms]</span>
+<span class="sd">        List of images</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">images</span> <span class="o">=</span> <span class="p">[</span><span class="n">initial</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_images</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)]</span> <span class="o">+</span> <span class="p">[</span><span class="n">final</span><span class="o">.</span><span class="n">copy</span><span class="p">()]</span>
+    <span class="k">return</span> <span class="n">images</span></div>
+
+
+
+<div class="viewcode-block" id="run_energy_weighted_neb">
+<a class="viewcode-back" href="../../autoapi/molecular_simulation_tools/neb/index.html#molecular_simulation_tools.neb.run_energy_weighted_neb">[docs]</a>
+<span class="k">def</span> <span class="nf">run_energy_weighted_neb</span><span class="p">(</span>
+    <span class="n">images</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">Atoms</span><span class="p">],</span>
+    <span class="n">calc</span><span class="p">:</span> <span class="n">Calculator</span><span class="p">,</span>
+    <span class="n">fmax</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.05</span><span class="p">,</span>
+    <span class="n">optimizer</span><span class="p">:</span> <span class="nb">type</span><span class="p">[</span><span class="n">Optimizer</span><span class="p">]</span> <span class="o">=</span> <span class="n">LBFGS</span><span class="p">,</span>
+    <span class="n">interpolate</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;linear&quot;</span><span class="p">,</span> <span class="s2">&quot;idpp&quot;</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">neb_kwargs</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">NEB</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Do an energy-weighted climbing image nudged elastic band (EW-CI-NEB) calculation.</span>
+
+<span class="sd">    See https://pubs.acs.org/doi/full/10.1021/acs.jctc.1c00462.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    images : list[Atoms]</span>
+<span class="sd">        List of atoms, from initial to final frame.</span>
+<span class="sd">    calc : Calculator</span>
+<span class="sd">        Calculator that can calculate the potential energy and forces of the images.</span>
+<span class="sd">    fmax : float</span>
+<span class="sd">        Maximum force on the highest energy component in eV/Angstrom. Default = 0.05.</span>
+<span class="sd">    optimizer : type[Optimizer]</span>
+<span class="sd">        Optimizer to use for the NEB. Default = LBFGS.</span>
+<span class="sd">    interpolate : Literal[&#39;linear&#39;, &#39;idpp&#39;] | None</span>
+<span class="sd">        Method to interpolate see :meth:`ase.mep.neb.NEB.interpolate`.</span>
+<span class="sd">        If None, do not interpolate images. Default = None.</span>
+<span class="sd">    neb_kwargs : dict[str, Any] | None</span>
+<span class="sd">        Keyword arguments passed to :class:`ase.mep.neb.NEB`. Default = None.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    neb : NEB</span>
+<span class="sd">        Calculated minimum energy path</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">neb_kwargs</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">neb_kwargs</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="n">neb</span> <span class="o">=</span> <span class="n">NEB</span><span class="p">(</span>
+        <span class="n">images</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">neb_kwargs</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="k">if</span> <span class="n">interpolate</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">neb</span><span class="o">.</span><span class="n">images</span> <span class="o">=</span> <span class="n">neb</span><span class="o">.</span><span class="n">interpolate</span><span class="p">(</span><span class="n">method</span><span class="o">=</span><span class="n">interpolate</span><span class="p">,</span> <span class="n">mic</span><span class="o">=</span><span class="n">images</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">pbc</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">image</span> <span class="ow">in</span> <span class="n">neb</span><span class="o">.</span><span class="n">images</span><span class="p">:</span>
+        <span class="n">image</span><span class="o">.</span><span class="n">calc</span> <span class="o">=</span> <span class="n">calc</span>
+
+    <span class="k">with</span> <span class="n">optimizer</span><span class="p">(</span><span class="n">neb</span><span class="p">,</span> <span class="n">logfile</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span> <span class="k">as</span> <span class="n">opt</span><span class="p">:</span>  <span class="c1"># ty: ignore[invalid-argument-type]</span>
+        <span class="n">opt</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">fmax</span><span class="o">=</span><span class="n">fmax</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;EW NEB:&quot;</span><span class="p">,</span> <span class="n">opt</span><span class="o">.</span><span class="n">nsteps</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">neb</span></div>
+
+
+
+<div class="viewcode-block" id="run_neb_ts">
+<a class="viewcode-back" href="../../autoapi/molecular_simulation_tools/neb/index.html#molecular_simulation_tools.neb.run_neb_ts">[docs]</a>
+<span class="k">def</span> <span class="nf">run_neb_ts</span><span class="p">(</span>
+    <span class="n">images</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">Atoms</span><span class="p">],</span>
+    <span class="n">calc</span><span class="p">:</span> <span class="n">Calculator</span><span class="p">,</span>
+    <span class="n">max_displacement</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1e-2</span><span class="p">,</span>
+    <span class="n">fmax_ts</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.05</span><span class="p">,</span>
+    <span class="n">replace_ts_guess</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+    <span class="n">energy_weighted_neb_kwargs</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="n">Atoms</span><span class="p">],</span> <span class="n">Atoms</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Do a NEB-TS calculation.</span>
+
+<span class="sd">    NEB-TS calculations consist of first doing an EW-CI-NEB calculation,</span>
+<span class="sd">    and then a TS optimization on the climbing image.</span>
+<span class="sd">    See https://pubs.acs.org/doi/full/10.1021/acs.jctc.1c00462</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    images : list[Atoms]</span>
+<span class="sd">        List of images to find the minimum energy path for.</span>
+<span class="sd">    calc : Calculator</span>
+<span class="sd">        Calculator that can calculate the potential energy and forces of the images.</span>
+<span class="sd">    max_displacement : float</span>
+<span class="sd">        Maximum displacement of the NEB along the minimum mode in Angstrom.</span>
+<span class="sd">        Default = 0.02.</span>
+<span class="sd">    fmax_ts : float</span>
+<span class="sd">        Maximum force component criterion on the transition state in eV/Angstrom.</span>
+<span class="sd">        Default = 0.05.</span>
+<span class="sd">    replace_ts_guess : bool</span>
+<span class="sd">        Whether to replace the TS guess of the EW-CI-NEB calculation with the</span>
+<span class="sd">        optimized true transition state. If False, adds it to the list</span>
+<span class="sd">        in the order according to the rmsd from the initial frame. Default = True.</span>
+<span class="sd">    energy_weighted_neb_kwargs : dict[str, Any] | None</span>
+<span class="sd">        Keyword arguments to pass to :func:`run_energy_weighted_neb`. Default = None.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    images : list[Atoms]</span>
+<span class="sd">        Minimum energy path between the initial and final frame,</span>
+<span class="sd">        with the transition state optimized.</span>
+<span class="sd">    transition_state : Atoms</span>
+<span class="sd">        Optimized transition state</span>
+
+<span class="sd">    Raises</span>
+<span class="sd">    ------</span>
+<span class="sd">    RuntimeError</span>
+<span class="sd">        If the neb returned by :func:`run_energy_weighted_neb` does not</span>
+<span class="sd">        contain energies.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">energy_weighted_neb_kwargs</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">energy_weighted_neb_kwargs</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="n">neb</span><span class="p">:</span> <span class="n">NEB</span> <span class="o">=</span> <span class="n">run_energy_weighted_neb</span><span class="p">(</span><span class="n">images</span><span class="p">,</span> <span class="n">calc</span><span class="p">,</span> <span class="o">**</span><span class="n">energy_weighted_neb_kwargs</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">neb</span><span class="o">.</span><span class="n">energies</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">msg</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="s2">&quot;NEB instance returned by &#39;run_energy_weighted_neb&#39; does not have energies&quot;</span>
+        <span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+
+    <span class="n">images</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">neb</span><span class="o">.</span><span class="n">iterimages</span><span class="p">())</span>
+    <span class="n">max_index</span> <span class="o">=</span> <span class="n">neb</span><span class="o">.</span><span class="n">imax</span>
+    <span class="n">ts_guess</span> <span class="o">=</span> <span class="n">images</span><span class="p">[</span><span class="n">max_index</span><span class="p">]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+    <span class="n">ts_guess</span><span class="o">.</span><span class="n">calc</span> <span class="o">=</span> <span class="n">calc</span>
+
+    <span class="c1"># Find the image closest in energy to the transition state.</span>
+    <span class="k">if</span> <span class="n">neb</span><span class="o">.</span><span class="n">energies</span><span class="p">[</span><span class="n">neb</span><span class="o">.</span><span class="n">imax</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">neb</span><span class="o">.</span><span class="n">energies</span><span class="p">[</span><span class="n">neb</span><span class="o">.</span><span class="n">imax</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]:</span>
+        <span class="n">closest_max_index</span> <span class="o">=</span> <span class="n">neb</span><span class="o">.</span><span class="n">imax</span> <span class="o">-</span> <span class="mi">1</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">closest_max_index</span> <span class="o">=</span> <span class="n">neb</span><span class="o">.</span><span class="n">imax</span> <span class="o">+</span> <span class="mi">1</span>
+    <span class="n">closest_to_ts</span> <span class="o">=</span> <span class="n">images</span><span class="p">[</span><span class="n">closest_max_index</span><span class="p">]</span>
+
+    <span class="n">dr</span><span class="p">,</span> <span class="n">lengths</span> <span class="o">=</span> <span class="n">conditional_find_mic</span><span class="p">(</span>
+        <span class="n">ts_guess</span><span class="o">.</span><span class="n">positions</span> <span class="o">-</span> <span class="n">closest_to_ts</span><span class="o">.</span><span class="n">positions</span><span class="p">,</span>
+        <span class="n">cell</span><span class="o">=</span><span class="n">ts_guess</span><span class="o">.</span><span class="n">cell</span><span class="p">,</span>
+        <span class="n">pbc</span><span class="o">=</span><span class="n">ts_guess</span><span class="o">.</span><span class="n">pbc</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">dr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">(</span><span class="n">dr</span><span class="p">)</span>
+    <span class="n">displacement_vector</span> <span class="o">=</span> <span class="n">dr</span> <span class="o">*</span> <span class="n">max_displacement</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">lengths</span><span class="p">)</span>
+
+    <span class="c1"># Set up the dimer</span>
+    <span class="k">with</span> <span class="n">DimerControl</span><span class="p">(</span>
+        <span class="n">initial_eigenmode_method</span><span class="o">=</span><span class="s2">&quot;displacement&quot;</span><span class="p">,</span>
+        <span class="n">displacement_method</span><span class="o">=</span><span class="s2">&quot;vector&quot;</span><span class="p">,</span>
+        <span class="n">logfile</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">mask</span><span class="o">=</span><span class="p">[</span><span class="kc">True</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">ts_guess</span><span class="p">))],</span>
+    <span class="p">)</span> <span class="k">as</span> <span class="n">d_control</span><span class="p">:</span>
+        <span class="n">d_atoms</span> <span class="o">=</span> <span class="n">MinModeAtoms</span><span class="p">(</span><span class="n">ts_guess</span><span class="p">,</span> <span class="n">d_control</span><span class="p">)</span>
+
+        <span class="n">d_atoms</span><span class="o">.</span><span class="n">displace</span><span class="p">(</span><span class="n">displacement_vector</span><span class="o">=</span><span class="n">displacement_vector</span><span class="p">)</span>
+
+        <span class="c1"># Converge to a saddle point</span>
+        <span class="k">with</span> <span class="n">MinModeTranslate</span><span class="p">(</span><span class="n">d_atoms</span><span class="p">,</span> <span class="n">logfile</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span> <span class="k">as</span> <span class="n">dim_rlx</span><span class="p">:</span>
+            <span class="n">dim_rlx</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">fmax</span><span class="o">=</span><span class="n">fmax_ts</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="n">dim_rlx</span><span class="o">.</span><span class="n">nsteps</span><span class="p">)</span>
+        <span class="n">transition_state</span> <span class="o">=</span> <span class="n">d_atoms</span><span class="o">.</span><span class="n">get_atoms</span><span class="p">()</span>
+
+    <span class="k">if</span> <span class="n">replace_ts_guess</span><span class="p">:</span>
+        <span class="c1"># Replace TS guess with actual TS</span>
+        <span class="n">images</span><span class="p">[</span><span class="n">max_index</span><span class="p">]</span> <span class="o">=</span> <span class="n">transition_state</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="c1"># We need to figure out whether it should be placed before or after the TS,</span>
+        <span class="c1"># based on the displacement from the reactant image.</span>
+        <span class="n">reactant</span> <span class="o">=</span> <span class="n">images</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">_</span><span class="p">,</span> <span class="n">lengths_guess</span> <span class="o">=</span> <span class="n">conditional_find_mic</span><span class="p">(</span>
+            <span class="n">reactant</span><span class="o">.</span><span class="n">positions</span> <span class="o">-</span> <span class="n">images</span><span class="p">[</span><span class="n">max_index</span><span class="p">]</span><span class="o">.</span><span class="n">positions</span><span class="p">,</span>
+            <span class="n">cell</span><span class="o">=</span><span class="n">reactant</span><span class="o">.</span><span class="n">cell</span><span class="p">,</span>
+            <span class="n">pbc</span><span class="o">=</span><span class="n">reactant</span><span class="o">.</span><span class="n">pbc</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">_</span><span class="p">,</span> <span class="n">lengths_ts</span> <span class="o">=</span> <span class="n">conditional_find_mic</span><span class="p">(</span>
+            <span class="n">reactant</span><span class="o">.</span><span class="n">positions</span> <span class="o">-</span> <span class="n">transition_state</span><span class="o">.</span><span class="n">positions</span><span class="p">,</span>
+            <span class="n">cell</span><span class="o">=</span><span class="n">reactant</span><span class="o">.</span><span class="n">cell</span><span class="p">,</span>
+            <span class="n">pbc</span><span class="o">=</span><span class="n">reactant</span><span class="o">.</span><span class="n">pbc</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="n">rmsd</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">lengths</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">average</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">lengths</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span><span class="p">))</span>
+        <span class="k">if</span> <span class="n">rmsd</span><span class="p">(</span><span class="n">lengths_ts</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">rmsd</span><span class="p">(</span><span class="n">lengths_guess</span><span class="p">):</span>
+            <span class="c1"># TS comes before TS guess</span>
+            <span class="n">images</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">max_index</span><span class="p">,</span> <span class="n">transition_state</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># TS comes after TS guess in path</span>
+            <span class="n">images</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">max_index</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">transition_state</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">images</span><span class="p">,</span> <span class="n">transition_state</span></div>
+
+
+
+<div class="viewcode-block" id="plot_neb">
+<a class="viewcode-back" href="../../autoapi/molecular_simulation_tools/neb/index.html#molecular_simulation_tools.neb.plot_neb">[docs]</a>
+<span class="k">def</span> <span class="nf">plot_neb</span><span class="p">(</span>
+    <span class="n">images</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">Atoms</span><span class="p">]</span> <span class="o">|</span> <span class="n">BaseNEB</span><span class="p">,</span>
+    <span class="n">ax</span><span class="p">:</span> <span class="n">plt</span><span class="o">.</span><span class="n">Axes</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">plot_kwargs</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">plt</span><span class="o">.</span><span class="n">Axes</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Plot a NEB calculation.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    images : list[Atoms] | BaseNEB</span>
+<span class="sd">        Images to plot, or NEB instance to get images from</span>
+<span class="sd">    ax : plt.Axes | None</span>
+<span class="sd">        Axes to plot on, or None to create a new one. Default = None.</span>
+<span class="sd">    plot_kwargs : dict[str, Any] | None</span>
+<span class="sd">        Keyword arguments passed to :meth:`matplotlib.pyplot.Axes.plot`.</span>
+<span class="sd">        Default = None.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    ax : plt.Axes</span>
+<span class="sd">        Axes that was plotted on.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">plot_kwargs</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">plot_kwargs</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">if</span> <span class="n">ax</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">gca</span><span class="p">()</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">images</span><span class="p">,</span> <span class="n">BaseNEB</span><span class="p">):</span>
+        <span class="n">images</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">images</span><span class="o">.</span><span class="n">iterimages</span><span class="p">())</span>
+    <span class="n">force_fit</span><span class="p">:</span> <span class="n">ForceFit</span> <span class="o">=</span> <span class="n">fit_images</span><span class="p">(</span><span class="n">images</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">force_fit</span><span class="o">.</span><span class="n">path</span><span class="p">,</span> <span class="n">force_fit</span><span class="o">.</span><span class="n">energies</span><span class="p">,</span> <span class="n">marker</span><span class="o">=</span><span class="s2">&quot;o&quot;</span><span class="p">,</span> <span class="o">**</span><span class="n">plot_kwargs</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">ax</span></div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2026, Tobias Dijkhuis.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

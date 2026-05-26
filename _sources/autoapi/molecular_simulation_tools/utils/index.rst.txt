@@ -1,0 +1,75 @@
+molecular_simulation_tools.utils
+================================
+
+.. py:module:: molecular_simulation_tools.utils
+
+.. autoapi-nested-parse::
+
+   Collection of utility functions.
+
+
+
+Functions
+---------
+
+.. autoapisummary::
+
+   molecular_simulation_tools.utils.convert_spherical_to_cartesian
+   molecular_simulation_tools.utils.project_on_unit_sphere
+   molecular_simulation_tools.utils.random_on_unit_sphere
+   molecular_simulation_tools.utils.sample_random_rotation
+
+
+Module Contents
+---------------
+
+.. py:function:: convert_spherical_to_cartesian(r: float, theta: float, phi: float) -> numpy.ndarray
+
+   Convert spherical coordinates to cartesian coordinates.
+
+   :param r: Radial distance
+   :type r: float
+   :param theta: Polar angle in radians
+   :type theta: float
+   :param phi: Azimuthal angle in radians
+   :type phi: float
+
+   :returns: numpy array containing (x, y, z)
+   :rtype: np.ndarray
+
+
+.. py:function:: project_on_unit_sphere(vector: numpy.ndarray) -> numpy.ndarray
+
+   Project a vector on the unit sphere, by dividing it by its length.
+
+   :param vector: N-dimensional vector
+   :type vector: np.ndarray
+
+   :returns: Vector projected on N-dimensional unit sphere
+   :rtype: np.ndarray
+
+
+.. py:function:: random_on_unit_sphere(n: int = 1) -> numpy.ndarray
+
+   Get a random vector on the unit sphere.
+
+   Uses method described in https://mathworld.wolfram.com/SpherePointPicking.html
+
+   :param n: Number of vectors to generate. Default = 1
+   :type n: int
+
+   :returns: **vectors** -- Numpy matrix of shape Nx3, or just vector of shape (3,) if
+             `n` is 1.
+   :rtype: np.ndarray
+
+
+.. py:function:: sample_random_rotation() -> tuple[numpy.ndarray, float]
+
+   Get a random rotation axis and rotation angle.
+
+   Uses method described in https://math.stackexchange.com/questions/442418/random-generation-of-rotation-matrices
+
+   :returns: * **rotation_axis** (*np.ndarray*) -- 3-dimensional rotation axis.
+             * **rotation_angle** (*float*) -- Rotation angle in radians.
+
+
