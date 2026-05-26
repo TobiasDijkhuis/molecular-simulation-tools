@@ -9,6 +9,7 @@ from molecular_simulation_tools.geometry import (
 
 discretization_data = [
     (1.0, 2, np.array([0.25, 0.75])),
+    (5.0, 2, np.array([1.25, 3.75])),
     (1.0, 3, np.array([1.0 / 6.0, 0.5, 5.0 / 6.0])),
     (1.0, 4, np.array([1.0 / 8.0, 3.0 / 8.0, 5.0 / 8.0, 7.0 / 8.0])),
 ]
