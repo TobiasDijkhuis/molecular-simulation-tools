@@ -219,3 +219,6 @@ __marimo__/
 
 # pymend docstring changes
 *.patch
+
+# hatch-vcs generated version file
+apax/_version.py

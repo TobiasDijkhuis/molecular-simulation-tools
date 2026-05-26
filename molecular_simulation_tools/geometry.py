@@ -359,8 +359,13 @@ def sample_new_point(
     if n > 1:
         n_initial_points = np.shape(points)[0]
 
-        # Add n (for now filled with zeros) vectors to points
-        points = np.pad(points, ((0, n), (0, 0)))
+        new_points = np.zeros((n_initial_points + n, 3), dtype=float)
+
+        # Add original points into this array
+        new_points[:n_initial_points, :] = points
+
+        # Overwrite original points
+        points = new_points
         for i in range(n):
             new_point = sample_new_point(
                 points[: n_initial_points + i, :],
@@ -401,6 +406,7 @@ def sample_new_point(
         r_vec += k * r_unit
 
         distances = np.linalg.norm(points - r_vec, axis=1)
+
     return r_vec
 
 

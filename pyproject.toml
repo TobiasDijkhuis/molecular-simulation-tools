@@ -28,6 +28,7 @@ dependencies = [
 
 [project.urls]
 Repository = "https://github.com/TobiasDijkhuis/molecular-simulation-tools"
+Documentation = "https://tobiasdijkhuis.github.io/molecular-simulation-tools"
 
 [tool.ruff.lint]
 select = ["E", "F", "I", "W", "D", "E", "B", 

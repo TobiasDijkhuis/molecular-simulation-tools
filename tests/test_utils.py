@@ -4,8 +4,18 @@ import pytest
 from molecular_simulation_tools.utils import (
     convert_cartesian_to_spherical,
     convert_spherical_to_cartesian,
+    project_on_unit_sphere,
     turn_grid_into_position_vectors,
 )
+
+
+def test_project_on_unit_sphere():
+    for dimensions in range(2, 8):
+        random_vec = np.random.random(dimensions)
+        projected_vec = project_on_unit_sphere(random_vec)
+        length = np.linalg.norm(projected_vec)
+        assert np.allclose(length, 1.0)
+
 
 spherical_data = [
     ((1.0, 0.0, 0.0), np.array([0.0, 0.0, 1.0])),
