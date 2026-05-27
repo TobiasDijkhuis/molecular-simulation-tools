@@ -104,6 +104,30 @@
 
 
 
+<div class="viewcode-block" id="correct_distance_for_pbc">
+<a class="viewcode-back" href="../../api/molecular_simulation_tools/utils/index.html#molecular_simulation_tools.utils.correct_distance_for_pbc">[docs]</a>
+<span class="k">def</span> <span class="nf">correct_distance_for_pbc</span><span class="p">(</span><span class="n">distance</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">box_length</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Correct a distance for periodic boundary conditions.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    distance : np.ndarray</span>
+<span class="sd">        Array of distances</span>
+<span class="sd">    box_length : float</span>
+<span class="sd">        Length of the periodic box along the dimension of `distance`</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    distance : np.ndarray</span>
+<span class="sd">        Corrected distance</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">distance</span><span class="p">[</span><span class="n">distance</span> <span class="o">&gt;</span> <span class="n">box_length</span> <span class="o">*</span> <span class="mf">0.5</span><span class="p">]</span> <span class="o">-=</span> <span class="n">box_length</span>
+    <span class="n">distance</span><span class="p">[</span><span class="n">distance</span> <span class="o">&lt;=</span> <span class="o">-</span><span class="n">box_length</span> <span class="o">*</span> <span class="mf">0.5</span><span class="p">]</span> <span class="o">+=</span> <span class="n">box_length</span>
+    <span class="k">return</span> <span class="n">distance</span></div>
+
+
+
 <div class="viewcode-block" id="convert_spherical_to_cartesian">
 <a class="viewcode-back" href="../../api/molecular_simulation_tools/utils/index.html#molecular_simulation_tools.utils.convert_spherical_to_cartesian">[docs]</a>
 <span class="k">def</span> <span class="nf">convert_spherical_to_cartesian</span><span class="p">(</span><span class="n">r</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">theta</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">phi</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>

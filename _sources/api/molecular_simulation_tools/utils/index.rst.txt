@@ -16,6 +16,7 @@ Functions
 
    molecular_simulation_tools.utils.convert_cartesian_to_spherical
    molecular_simulation_tools.utils.convert_spherical_to_cartesian
+   molecular_simulation_tools.utils.correct_distance_for_pbc
    molecular_simulation_tools.utils.project_on_unit_sphere
    molecular_simulation_tools.utils.random_on_unit_sphere
    molecular_simulation_tools.utils.sample_random_rotation
@@ -54,6 +55,19 @@ Module Contents
    :type phi: float
 
    :returns: numpy array containing (x, y, z)
+   :rtype: numpy.ndarray
+
+
+.. py:function:: correct_distance_for_pbc(distance: numpy.ndarray, box_length: float) -> numpy.ndarray
+
+   Correct a distance for periodic boundary conditions.
+
+   :param distance: Array of distances
+   :type distance: numpy.ndarray
+   :param box_length: Length of the periodic box along the dimension of `distance`
+   :type box_length: float
+
+   :returns: **distance** -- Corrected distance
    :rtype: numpy.ndarray
 
 

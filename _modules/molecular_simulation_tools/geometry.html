@@ -84,6 +84,7 @@
 <span class="kn">from</span> <span class="nn">scipy.spatial</span> <span class="kn">import</span> <span class="n">ConvexHull</span>
 
 <span class="kn">from</span> <span class="nn">molecular_simulation_tools.utils</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">correct_distance_for_pbc</span><span class="p">,</span>
     <span class="n">project_on_unit_sphere</span><span class="p">,</span>
     <span class="n">random_on_unit_sphere</span><span class="p">,</span>
 <span class="p">)</span>
@@ -145,30 +146,6 @@
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">spacing</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">length</span><span class="p">)</span> <span class="o">/</span> <span class="n">ngrid</span>
     <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="n">spacing</span> <span class="o">/</span> <span class="mi">2</span><span class="p">,</span> <span class="n">length</span> <span class="o">-</span> <span class="n">spacing</span> <span class="o">/</span> <span class="mi">2</span><span class="p">,</span> <span class="n">num</span><span class="o">=</span><span class="n">ngrid</span><span class="p">,</span> <span class="n">endpoint</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
-
-
-
-<div class="viewcode-block" id="correct_distance_for_pbc">
-<a class="viewcode-back" href="../../api/molecular_simulation_tools/geometry/index.html#molecular_simulation_tools.geometry.correct_distance_for_pbc">[docs]</a>
-<span class="k">def</span> <span class="nf">correct_distance_for_pbc</span><span class="p">(</span><span class="n">distance</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">box_length</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Correct a distance for periodic boundary conditions.</span>
-
-<span class="sd">    Parameters</span>
-<span class="sd">    ----------</span>
-<span class="sd">    distance : np.ndarray</span>
-<span class="sd">        Array of distances</span>
-<span class="sd">    box_length : float</span>
-<span class="sd">        Length of the periodic box along the dimension of `distance`</span>
-
-<span class="sd">    Returns</span>
-<span class="sd">    -------</span>
-<span class="sd">    distance : np.ndarray</span>
-<span class="sd">        Corrected distance</span>
-
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">distance</span><span class="p">[</span><span class="n">distance</span> <span class="o">&gt;</span> <span class="n">box_length</span> <span class="o">*</span> <span class="mf">0.5</span><span class="p">]</span> <span class="o">-=</span> <span class="n">box_length</span>
-    <span class="n">distance</span><span class="p">[</span><span class="n">distance</span> <span class="o">&lt;=</span> <span class="o">-</span><span class="n">box_length</span> <span class="o">*</span> <span class="mf">0.5</span><span class="p">]</span> <span class="o">+=</span> <span class="n">box_length</span>
-    <span class="k">return</span> <span class="n">distance</span></div>
 
 
 
@@ -497,13 +474,15 @@
             <span class="o">-</span> <span class="n">minimum_distance</span><span class="o">**</span><span class="mi">2</span>
             <span class="o">+</span> <span class="n">r_length</span><span class="o">**</span><span class="mi">2</span>
         <span class="p">)</span>
-        <span class="n">D</span> <span class="o">=</span> <span class="n">b</span><span class="o">**</span><span class="mi">2</span> <span class="o">-</span> <span class="mf">4.0</span> <span class="o">*</span> <span class="n">c</span>  <span class="c1"># noqa: N806</span>
 
-        <span class="n">k</span> <span class="o">=</span> <span class="p">(</span><span class="o">-</span><span class="n">b</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">D</span><span class="p">))</span> <span class="o">/</span> <span class="p">(</span><span class="mf">2.0</span><span class="p">)</span>
+        <span class="c1"># D = b**2 - 4.0 * c  # noqa: ERA001</span>
+        <span class="c1"># k = (-b + np.sqrt(D)) / (2.0) # noqa: ERA001</span>
+
+        <span class="n">roots</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">polynomial</span><span class="o">.</span><span class="n">polynomial</span><span class="o">.</span><span class="n">polyroots</span><span class="p">([</span><span class="n">c</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">])</span>
+        <span class="n">k</span> <span class="o">=</span> <span class="p">(</span><span class="n">roots</span><span class="p">[</span><span class="n">roots</span> <span class="o">&gt;=</span> <span class="mf">0.0</span><span class="p">])</span><span class="o">.</span><span class="n">min</span><span class="p">()</span>
         <span class="n">r_vec</span> <span class="o">+=</span> <span class="n">k</span> <span class="o">*</span> <span class="n">r_unit</span>
 
         <span class="n">distances</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">points</span> <span class="o">-</span> <span class="n">r_vec</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
-
     <span class="k">return</span> <span class="n">r_vec</span></div>
 
 

@@ -16,7 +16,6 @@ Functions
 
    molecular_simulation_tools.geometry.calculate_rmsd
    molecular_simulation_tools.geometry.construct_grid_in_cell
-   molecular_simulation_tools.geometry.correct_distance_for_pbc
    molecular_simulation_tools.geometry.discretize_cell_length
    molecular_simulation_tools.geometry.find_min_height_for_adsorbate_on_surface
    molecular_simulation_tools.geometry.find_min_height_for_distance
@@ -65,19 +64,6 @@ Module Contents
 
    :returns: * **X** (*numpy.ndarray*) -- Grid of x coordinates
              * **Y** (*numpy.ndarray*) -- Grid of y coordinates
-
-
-.. py:function:: correct_distance_for_pbc(distance: numpy.ndarray, box_length: float) -> numpy.ndarray
-
-   Correct a distance for periodic boundary conditions.
-
-   :param distance: Array of distances
-   :type distance: numpy.ndarray
-   :param box_length: Length of the periodic box along the dimension of `distance`
-   :type box_length: float
-
-   :returns: **distance** -- Corrected distance
-   :rtype: numpy.ndarray
 
 
 .. py:function:: discretize_cell_length(length: int | float, ngrid: int) -> numpy.ndarray
