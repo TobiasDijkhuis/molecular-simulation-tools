@@ -120,6 +120,12 @@ rmsd_data = [
         False,
         1.0,
     ),
+    (
+        Atoms("H2O", positions=[[0, 0, 0], [1, 0, 0], [0, 0, 0]]),
+        Atoms("H2O", positions=[[0, 0, 1], [0, 0, 0], [0, 0, 0]]),
+        True,
+        np.sqrt(2 / 3),
+    ),
 ]
 
 
