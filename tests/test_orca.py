@@ -7,7 +7,7 @@ from molecular_simulation_tools.orca import get_calculator_from_orca_inp
 
 orca_test_calculator = ORCA(
     profile=OrcaProfile("echo 'dummy'"),
-    orcasimpleinput="B3LYP def2-tZVPD",
+    orcasimpleinput="wB97M-D4 def2-TZVPD EnGrad TightSCF",
     charge=0,
     mult=2,
     orcablocks="% HFTyp UHF end\n% Guess PModel end",

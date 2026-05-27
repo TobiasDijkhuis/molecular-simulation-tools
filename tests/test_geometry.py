@@ -6,6 +6,7 @@ from molecular_simulation_tools.geometry import (
     calculate_rmsd,
     construct_grid_in_cell,
     discretize_cell_length,
+    find_min_height_for_distance,
     sample_new_point,
 )
 
@@ -132,3 +133,28 @@ rmsd_data = [
 @pytest.mark.parametrize("atoms_a, atoms_b, permute, expected_rmsd", rmsd_data)
 def test_calculate_rmsd(atoms_a, atoms_b, permute, expected_rmsd):
     assert calculate_rmsd(atoms_a, atoms_b, None, permute)[0] == expected_rmsd
+
+
+min_height_for_distance_data = [
+    # It needs to be at [1, 0, 1] (which is sqrt(2) distance from [0, 0, 0])
+    (1.0, 0.0, np.array([[0, 0, 0]]), np.sqrt(2), None, 1),
+    # Still needs to be at [1, 0, 1], because that is also sqrt(2) away from [0, 1, 1]
+    (1.0, 0.0, np.array([[0, 0, 0], [0, 1, 1]]), np.sqrt(2), None, 1),
+    # Due to PBCs, this one needs to be at z = 1 (it is directly above the point)
+    (1.0, 0.0, np.array([[0, 0, 0]]), 1, [1, 1, 1], 1),
+]
+
+
+@pytest.mark.parametrize(
+    "x, y, point_coordinates, distance, box_size, expected_height",
+    min_height_for_distance_data,
+)
+def test_find_min_height_for_distance(
+    x, y, point_coordinates, distance, box_size, expected_height
+):
+    assert np.allclose(
+        find_min_height_for_distance(
+            x, y, point_coordinates, distance, box_size=box_size
+        ),
+        expected_height,
+    )

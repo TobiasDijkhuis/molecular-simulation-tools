@@ -20,8 +20,8 @@ def get_calculator_from_orca_inp(
     Returns
     -------
     calc : ORCA
-        ORCA calculator instance, with the directory, charge, multiplicity, simpleinput
-        and orcablocks set.
+        :class:`ase.calculators.orca.ORCA` calculator instance, with its directory,
+        charge, multiplicity, orcasimpleinput and orcablocks set.
 
     """
     path = Path(path)
@@ -48,8 +48,8 @@ def get_calculator_from_orca_out(
     Returns
     -------
     calc : ORCA
-        ORCA calculator instance, with the directory, charge, multiplicity, simpleinput
-        and orcablocks set.
+        :class:`ase.calculators.orca.ORCA` calculator instance, with its directory,
+        charge, multiplicity, orcasimpleinput and orcablocks set.
 
     Raises
     ------
@@ -94,8 +94,8 @@ def _get_calculator_from_orca_inp_lines(
     Returns
     -------
     calc : ORCA
-        ORCA calculator instance, with the charge, multiplicity, simpleinput and orcablocks
-        set.
+        :class:`ase.calculators.orca.ORCA` calculator instance, with its charge,
+        multiplicity, orcasimpleinput and orcablocks set.
 
     Raises
     ------
