@@ -9,6 +9,7 @@ from ase.geometry import find_mic
 from scipy.spatial import ConvexHull
 
 from molecular_simulation_tools.utils import (
+    correct_distance_for_pbc,
     project_on_unit_sphere,
     random_on_unit_sphere,
 )
@@ -65,27 +66,6 @@ def discretize_cell_length(length: int | float, ngrid: int) -> np.ndarray:
     """
     spacing = float(length) / ngrid
     return np.linspace(spacing / 2, length - spacing / 2, num=ngrid, endpoint=True)
-
-
-def correct_distance_for_pbc(distance: np.ndarray, box_length: float) -> np.ndarray:
-    """Correct a distance for periodic boundary conditions.
-
-    Parameters
-    ----------
-    distance : np.ndarray
-        Array of distances
-    box_length : float
-        Length of the periodic box along the dimension of `distance`
-
-    Returns
-    -------
-    distance : np.ndarray
-        Corrected distance
-
-    """
-    distance[distance > box_length * 0.5] -= box_length
-    distance[distance <= -box_length * 0.5] += box_length
-    return distance
 
 
 def find_min_height_for_distance(
@@ -402,13 +382,15 @@ def sample_new_point(
             - minimum_distance**2
             + r_length**2
         )
-        D = b**2 - 4.0 * c  # noqa: N806
 
-        k = (-b + np.sqrt(D)) / (2.0)
+        # D = b**2 - 4.0 * c  # noqa: ERA001
+        # k = (-b + np.sqrt(D)) / (2.0) # noqa: ERA001
+
+        roots = np.polynomial.polynomial.polyroots([c, b, 1.0])
+        k = (roots[roots >= 0.0]).min()
         r_vec += k * r_unit
 
         distances = np.linalg.norm(points - r_vec, axis=1)
-
     return r_vec
 
 

@@ -26,6 +26,27 @@ def turn_grid_into_position_vectors(
     return np.vstack(list(map(np.ravel, grid_matrices))).T
 
 
+def correct_distance_for_pbc(distance: np.ndarray, box_length: float) -> np.ndarray:
+    """Correct a distance for periodic boundary conditions.
+
+    Parameters
+    ----------
+    distance : np.ndarray
+        Array of distances
+    box_length : float
+        Length of the periodic box along the dimension of `distance`
+
+    Returns
+    -------
+    distance : np.ndarray
+        Corrected distance
+
+    """
+    distance[distance > box_length * 0.5] -= box_length
+    distance[distance <= -box_length * 0.5] += box_length
+    return distance
+
+
 def convert_spherical_to_cartesian(r: float, theta: float, phi: float) -> np.ndarray:
     """Convert spherical coordinates to cartesian coordinates.
 
