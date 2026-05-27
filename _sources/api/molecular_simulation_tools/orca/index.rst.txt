@@ -21,27 +21,31 @@ Functions
 Module Contents
 ---------------
 
-.. py:function:: get_calculator_from_orca_inp(path: str | pathlib.Path) -> ase.calculators.orca.ORCA
+.. py:function:: get_calculator_from_orca_inp(path: str | pathlib.Path, profile: ase.calculators.orca.OrcaProfile | None = None) -> ase.calculators.orca.ORCA
 
    Create an ORCA instance from an ``orca.inp`` file.
 
    :param path: Path to ``orca.inp`` file.
    :type path: str | Path
+   :param profile: OrcaProfile with command to use. Default = None (infer from environment)
+   :type profile: OrcaProfile | None
 
-   :returns: **calc** -- ORCA calculator instance, with the directory, charge, multiplicity, simpleinput
-             and orcablocks set.
+   :returns: **calc** -- :class:`ase.calculators.orca.ORCA` calculator instance, with its directory,
+             charge, multiplicity, orcasimpleinput and orcablocks set.
    :rtype: ORCA
 
 
-.. py:function:: get_calculator_from_orca_out(path: str | pathlib.Path) -> ase.calculators.orca.ORCA
+.. py:function:: get_calculator_from_orca_out(path: str | pathlib.Path, profile: ase.calculators.orca.OrcaProfile | None = None) -> ase.calculators.orca.ORCA
 
    Create an ORCA instance from an ``orca.out`` file.
 
    :param path: Path to ``orca.out`` file.
    :type path: str | Path
+   :param profile: OrcaProfile with command to use. Default = None (infer from environment)
+   :type profile: OrcaProfile | None
 
-   :returns: **calc** -- ORCA calculator instance, with the directory, charge, multiplicity, simpleinput
-             and orcablocks set.
+   :returns: **calc** -- :class:`ase.calculators.orca.ORCA` calculator instance, with its directory,
+             charge, multiplicity, orcasimpleinput and orcablocks set.
    :rtype: ORCA
 
    :raises RuntimeError: If ``"INPUT_FILE"`` or ``"****END OF INPUT****"`` are not found in `path`.

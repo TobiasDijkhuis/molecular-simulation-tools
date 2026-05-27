@@ -77,31 +77,35 @@
 
 <span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
 
-<span class="kn">from</span> <span class="nn">ase.calculators.orca</span> <span class="kn">import</span> <span class="n">ORCA</span>
+<span class="kn">from</span> <span class="nn">ase.calculators.orca</span> <span class="kn">import</span> <span class="n">ORCA</span><span class="p">,</span> <span class="n">OrcaProfile</span>
 
 
 <div class="viewcode-block" id="get_calculator_from_orca_inp">
 <a class="viewcode-back" href="../../api/molecular_simulation_tools/orca/index.html#molecular_simulation_tools.orca.get_calculator_from_orca_inp">[docs]</a>
-<span class="k">def</span> <span class="nf">get_calculator_from_orca_inp</span><span class="p">(</span><span class="n">path</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">Path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ORCA</span><span class="p">:</span>
+<span class="k">def</span> <span class="nf">get_calculator_from_orca_inp</span><span class="p">(</span>
+    <span class="n">path</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">Path</span><span class="p">,</span> <span class="n">profile</span><span class="p">:</span> <span class="n">OrcaProfile</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ORCA</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Create an ORCA instance from an ``orca.inp`` file.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    path : str | Path</span>
 <span class="sd">        Path to ``orca.inp`` file.</span>
+<span class="sd">    profile : OrcaProfile | None</span>
+<span class="sd">        OrcaProfile with command to use. Default = None (infer from environment)</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    calc : ORCA</span>
-<span class="sd">        ORCA calculator instance, with the directory, charge, multiplicity, simpleinput</span>
-<span class="sd">        and orcablocks set.</span>
+<span class="sd">        :class:`ase.calculators.orca.ORCA` calculator instance, with its directory,</span>
+<span class="sd">        charge, multiplicity, orcasimpleinput and orcablocks set.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
     <span class="k">with</span> <span class="n">path</span><span class="o">.</span><span class="n">open</span><span class="p">()</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
         <span class="n">lines</span> <span class="o">=</span> <span class="n">file</span><span class="o">.</span><span class="n">readlines</span><span class="p">()</span>
 
-    <span class="n">calc</span> <span class="o">=</span> <span class="n">_get_calculator_from_orca_inp_lines</span><span class="p">(</span><span class="n">lines</span><span class="p">)</span>
+    <span class="n">calc</span> <span class="o">=</span> <span class="n">_get_calculator_from_orca_inp_lines</span><span class="p">(</span><span class="n">lines</span><span class="p">,</span> <span class="n">profile</span><span class="o">=</span><span class="n">profile</span><span class="p">)</span>
     <span class="n">calc</span><span class="o">.</span><span class="n">directory</span> <span class="o">=</span> <span class="n">path</span><span class="o">.</span><span class="n">parent</span>
     <span class="k">return</span> <span class="n">calc</span></div>
 
@@ -109,19 +113,23 @@
 
 <div class="viewcode-block" id="get_calculator_from_orca_out">
 <a class="viewcode-back" href="../../api/molecular_simulation_tools/orca/index.html#molecular_simulation_tools.orca.get_calculator_from_orca_out">[docs]</a>
-<span class="k">def</span> <span class="nf">get_calculator_from_orca_out</span><span class="p">(</span><span class="n">path</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">Path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ORCA</span><span class="p">:</span>
+<span class="k">def</span> <span class="nf">get_calculator_from_orca_out</span><span class="p">(</span>
+    <span class="n">path</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">Path</span><span class="p">,</span> <span class="n">profile</span><span class="p">:</span> <span class="n">OrcaProfile</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ORCA</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Create an ORCA instance from an ``orca.out`` file.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    path : str | Path</span>
 <span class="sd">        Path to ``orca.out`` file.</span>
+<span class="sd">    profile : OrcaProfile | None</span>
+<span class="sd">        OrcaProfile with command to use. Default = None (infer from environment)</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    calc : ORCA</span>
-<span class="sd">        ORCA calculator instance, with the directory, charge, multiplicity, simpleinput</span>
-<span class="sd">        and orcablocks set.</span>
+<span class="sd">        :class:`ase.calculators.orca.ORCA` calculator instance, with its directory,</span>
+<span class="sd">        charge, multiplicity, orcasimpleinput and orcablocks set.</span>
 
 <span class="sd">    Raises</span>
 <span class="sd">    ------</span>
@@ -144,25 +152,31 @@
     <span class="k">if</span> <span class="n">start_line_number</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">end_line_number</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">RuntimeError</span>
 
-    <span class="n">calc</span> <span class="o">=</span> <span class="n">_get_calculator_from_orca_inp_lines</span><span class="p">(</span><span class="n">lines</span><span class="p">[</span><span class="n">start_line_number</span><span class="p">:</span><span class="n">end_line_number</span><span class="p">])</span>
+    <span class="n">calc</span> <span class="o">=</span> <span class="n">_get_calculator_from_orca_inp_lines</span><span class="p">(</span>
+        <span class="n">lines</span><span class="p">[</span><span class="n">start_line_number</span><span class="p">:</span><span class="n">end_line_number</span><span class="p">],</span> <span class="n">profile</span><span class="o">=</span><span class="n">profile</span>
+    <span class="p">)</span>
     <span class="n">calc</span><span class="o">.</span><span class="n">directory</span> <span class="o">=</span> <span class="n">path</span><span class="o">.</span><span class="n">parent</span>
     <span class="k">return</span> <span class="n">calc</span></div>
 
 
 
-<span class="k">def</span> <span class="nf">_get_calculator_from_orca_inp_lines</span><span class="p">(</span><span class="n">lines</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">ORCA</span><span class="p">:</span>
+<span class="k">def</span> <span class="nf">_get_calculator_from_orca_inp_lines</span><span class="p">(</span>
+    <span class="n">lines</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">profile</span><span class="p">:</span> <span class="n">OrcaProfile</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ORCA</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Get an ORCA instance from some lines.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    lines : list[str]</span>
 <span class="sd">        lines of, for example, an ``orca.inp`` file.</span>
+<span class="sd">    profile : OrcaProfile | None</span>
+<span class="sd">        OrcaProfile with command to use. Default = None (infer from environment)</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    calc : ORCA</span>
-<span class="sd">        ORCA calculator instance, with the charge, multiplicity, simpleinput and orcablocks</span>
-<span class="sd">        set.</span>
+<span class="sd">        :class:`ase.calculators.orca.ORCA` calculator instance, with its charge,</span>
+<span class="sd">        multiplicity, orcasimpleinput and orcablocks set.</span>
 
 <span class="sd">    Raises</span>
 <span class="sd">    ------</span>
@@ -173,13 +187,13 @@
     <span class="n">orcablocks</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
     <span class="n">simpleinput</span><span class="p">,</span> <span class="n">charge</span><span class="p">,</span> <span class="n">mult</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span>
     <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">lines</span><span class="p">:</span>
-        <span class="n">line</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;&gt;&quot;</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">line</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;&gt;&quot;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
         <span class="n">line</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;#&quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
         <span class="n">line</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">line</span><span class="p">:</span>
             <span class="k">continue</span>
         <span class="k">if</span> <span class="n">line</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;!&quot;</span><span class="p">):</span>
-            <span class="n">simpleinput</span> <span class="o">=</span> <span class="n">line</span>
+            <span class="n">simpleinput</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;!&quot;</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
         <span class="k">elif</span> <span class="n">line</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;*&quot;</span><span class="p">):</span>
             <span class="n">split_line</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">()</span>
             <span class="n">charge</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">split_line</span><span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="p">])</span>
@@ -188,11 +202,16 @@
             <span class="k">break</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">orcablocks</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">((</span><span class="n">orcablocks</span><span class="p">,</span> <span class="n">line</span><span class="p">))</span>
+
     <span class="k">if</span> <span class="n">simpleinput</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">charge</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">mult</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">RuntimeError</span>
 
     <span class="n">calc</span> <span class="o">=</span> <span class="n">ORCA</span><span class="p">(</span>
-        <span class="n">orcasimpleinput</span><span class="o">=</span><span class="n">simpleinput</span><span class="p">,</span> <span class="n">orcablocks</span><span class="o">=</span><span class="n">orcablocks</span><span class="p">,</span> <span class="n">charge</span><span class="o">=</span><span class="n">charge</span><span class="p">,</span> <span class="n">mult</span><span class="o">=</span><span class="n">mult</span>
+        <span class="n">profile</span><span class="o">=</span><span class="n">profile</span><span class="p">,</span>
+        <span class="n">orcasimpleinput</span><span class="o">=</span><span class="n">simpleinput</span><span class="o">.</span><span class="n">strip</span><span class="p">(),</span>
+        <span class="n">orcablocks</span><span class="o">=</span><span class="n">orcablocks</span><span class="o">.</span><span class="n">strip</span><span class="p">(),</span>
+        <span class="n">charge</span><span class="o">=</span><span class="n">charge</span><span class="p">,</span>
+        <span class="n">mult</span><span class="o">=</span><span class="n">mult</span><span class="p">,</span>
     <span class="p">)</span>
 
     <span class="k">return</span> <span class="n">calc</span>
