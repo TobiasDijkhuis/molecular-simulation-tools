@@ -1,0 +1,53 @@
+molecular_simulation_tools.orca
+===============================
+
+.. py:module:: molecular_simulation_tools.orca
+
+.. autoapi-nested-parse::
+
+   Some utilities to perform ORCA calculations.
+
+
+
+Functions
+---------
+
+.. autoapisummary::
+
+   molecular_simulation_tools.orca.get_calculator_from_orca_inp
+   molecular_simulation_tools.orca.get_calculator_from_orca_out
+
+
+Module Contents
+---------------
+
+.. py:function:: get_calculator_from_orca_inp(path: str | pathlib.Path) -> ase.calculators.orca.ORCA
+
+   Create an ORCA instance from an ``orca.inp`` file.
+
+   :param path: Path to ``orca.inp`` file.
+   :type path: str | Path
+
+   :returns: **calc** --
+
+             ORCA calculator instance, with the directory, charge, multiplicity, simpleinput
+                 and orcablocks set.
+   :rtype: ORCA
+
+
+.. py:function:: get_calculator_from_orca_out(path: str | pathlib.Path) -> ase.calculators.orca.ORCA
+
+   Create an ORCA instance from an ``orca.out`` file.
+
+   :param path: Path to ``orca.out`` file.
+   :type path: str | Path
+
+   :returns: **calc** --
+
+             ORCA calculator instance, with the directory, charge, multiplicity, simpleinput
+                 and orcablocks set.
+   :rtype: ORCA
+
+   :raises RuntimeError: If ``"INPUT_FILE"`` or ``"****END OF INPUT****"`` are not found in `path`.
+
+
