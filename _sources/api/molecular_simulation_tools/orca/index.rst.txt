@@ -28,10 +28,8 @@ Module Contents
    :param path: Path to ``orca.inp`` file.
    :type path: str | Path
 
-   :returns: **calc** --
-
-             ORCA calculator instance, with the directory, charge, multiplicity, simpleinput
-                 and orcablocks set.
+   :returns: **calc** -- ORCA calculator instance, with the directory, charge, multiplicity, simpleinput
+             and orcablocks set.
    :rtype: ORCA
 
 
@@ -42,10 +40,8 @@ Module Contents
    :param path: Path to ``orca.out`` file.
    :type path: str | Path
 
-   :returns: **calc** --
-
-             ORCA calculator instance, with the directory, charge, multiplicity, simpleinput
-                 and orcablocks set.
+   :returns: **calc** -- ORCA calculator instance, with the directory, charge, multiplicity, simpleinput
+             and orcablocks set.
    :rtype: ORCA
 
    :raises RuntimeError: If ``"INPUT_FILE"`` or ``"****END OF INPUT****"`` are not found in `path`.
