@@ -16,6 +16,7 @@ Functions
 
    molecular_simulation_tools.geometry.calculate_rmsd
    molecular_simulation_tools.geometry.construct_grid_in_cell
+   molecular_simulation_tools.geometry.cut_out_atoms_within_radius
    molecular_simulation_tools.geometry.discretize_cell_length
    molecular_simulation_tools.geometry.find_min_height_for_adsorbate_on_surface
    molecular_simulation_tools.geometry.find_min_height_for_distance
@@ -64,6 +65,33 @@ Module Contents
 
    :returns: * **X** (*numpy.ndarray*) -- Grid of x coordinates
              * **Y** (*numpy.ndarray*) -- Grid of y coordinates
+
+
+.. py:function:: cut_out_atoms_within_radius(atoms: ase.Atoms, center: numpy.ndarray | list, radius: float, keep_molecules_intact: bool = True, allowed_molecules: list[str] | set[str] | None = None) -> ase.Atoms
+
+   Cut out atoms within a radius from some position.
+
+   :param atoms: Atoms to be cut out
+   :type atoms: Atoms
+   :param center: Center of sphere to be cut
+   :type center: numpy.ndarray | list
+   :param radius: Radius of sphere to be cut in Angstrom.
+   :type radius: float
+   :param keep_molecules_intact: Identify molecules using :func:`identify_molecules`, and keep each molecule
+                                 intact (i.e. if any of the atoms are inside the sphere, keep the whole molecule).
+                                 Requires networkx to be installed. Default = True.
+   :type keep_molecules_intact: bool
+   :param allowed_molecules: List of elementary compositions of allowed molecules.
+                             Required if `keep_molecules_intact` is True, and if it False, does nothing.
+                             Non-allowed molecules outside of `radius` are ignored. Default = None.
+   :type allowed_molecules: list[str] | set[str] | None
+
+   :returns: **cutout_atoms** -- Cut out atoms, with their ``pbc`` and ``cell`` attributes set to False and None.
+   :rtype: Atoms
+
+   :raises ValueError: If `radius` is more than half the minimum cell length of `atoms`.
+   :raises RuntimeError: If a no atoms are found within `radius` of `center`.
+   :raises RuntimeError: If a non-allowed molecule is within `radius` of `center`.
 
 
 .. py:function:: discretize_cell_length(length: int | float, ngrid: int) -> numpy.ndarray

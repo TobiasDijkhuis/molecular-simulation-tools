@@ -80,14 +80,128 @@
 
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">from</span> <span class="nn">ase</span> <span class="kn">import</span> <span class="n">Atoms</span>
-<span class="kn">from</span> <span class="nn">ase.geometry</span> <span class="kn">import</span> <span class="n">find_mic</span>
+<span class="kn">from</span> <span class="nn">ase.geometry</span> <span class="kn">import</span> <span class="n">conditional_find_mic</span><span class="p">,</span> <span class="n">find_mic</span>
 <span class="kn">from</span> <span class="nn">scipy.spatial</span> <span class="kn">import</span> <span class="n">ConvexHull</span>
 
+<span class="kn">from</span> <span class="nn">molecular_simulation_tools.connectivity</span> <span class="kn">import</span> <span class="n">identify_molecules</span>
 <span class="kn">from</span> <span class="nn">molecular_simulation_tools.utils</span> <span class="kn">import</span> <span class="p">(</span>
     <span class="n">correct_distance_for_pbc</span><span class="p">,</span>
     <span class="n">get_random_unit_vector</span><span class="p">,</span>
     <span class="n">project_on_unit_sphere</span><span class="p">,</span>
 <span class="p">)</span>
+
+
+<div class="viewcode-block" id="cut_out_atoms_within_radius">
+<a class="viewcode-back" href="../../api/molecular_simulation_tools/geometry/index.html#molecular_simulation_tools.geometry.cut_out_atoms_within_radius">[docs]</a>
+<span class="k">def</span> <span class="nf">cut_out_atoms_within_radius</span><span class="p">(</span>
+    <span class="n">atoms</span><span class="p">:</span> <span class="n">Atoms</span><span class="p">,</span>
+    <span class="n">center</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span> <span class="o">|</span> <span class="nb">list</span><span class="p">,</span>
+    <span class="n">radius</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+    <span class="n">keep_molecules_intact</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+    <span class="n">allowed_molecules</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="nb">set</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Atoms</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Cut out atoms within a radius from some position.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    atoms : Atoms</span>
+<span class="sd">        Atoms to be cut out</span>
+<span class="sd">    center : np.ndarray | list</span>
+<span class="sd">        Center of sphere to be cut</span>
+<span class="sd">    radius : float</span>
+<span class="sd">        Radius of sphere to be cut in Angstrom.</span>
+<span class="sd">    keep_molecules_intact : bool</span>
+<span class="sd">        Identify molecules using :func:`identify_molecules`, and keep each molecule</span>
+<span class="sd">        intact (i.e. if any of the atoms are inside the sphere, keep the whole molecule).</span>
+<span class="sd">        Requires networkx to be installed. Default = True.</span>
+<span class="sd">    allowed_molecules : list[str] | set[str] | None</span>
+<span class="sd">        List of elementary compositions of allowed molecules.</span>
+<span class="sd">        Required if `keep_molecules_intact` is True, and if it False, does nothing.</span>
+<span class="sd">        Non-allowed molecules outside of `radius` are ignored. Default = None.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    cutout_atoms : Atoms</span>
+<span class="sd">        Cut out atoms, with their ``pbc`` and ``cell`` attributes set to False and None.</span>
+
+<span class="sd">    Raises</span>
+<span class="sd">    ------</span>
+<span class="sd">    ValueError</span>
+<span class="sd">        If `radius` is more than half the minimum cell length of `atoms`.</span>
+<span class="sd">    RuntimeError</span>
+<span class="sd">        If a no atoms are found within `radius` of `center`.</span>
+<span class="sd">    RuntimeError</span>
+<span class="sd">        If a non-allowed molecule is within `radius` of `center`.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">center</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">center</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">atoms</span><span class="o">.</span><span class="n">cell</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">radius</span> <span class="o">&gt;=</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">atoms</span><span class="o">.</span><span class="n">cell</span><span class="o">.</span><span class="n">lengths</span><span class="p">()):</span>
+        <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Radius of </span><span class="si">{</span><span class="n">radius</span><span class="si">}</span><span class="s2"> Angstrom is too big for cell. Would include same atoms multiple times.&quot;</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+
+    <span class="n">relative_positions</span><span class="p">,</span> <span class="n">distance_from_center</span> <span class="o">=</span> <span class="n">conditional_find_mic</span><span class="p">(</span>
+        <span class="n">atoms</span><span class="o">.</span><span class="n">positions</span> <span class="o">-</span> <span class="n">center</span><span class="p">,</span> <span class="n">atoms</span><span class="o">.</span><span class="n">cell</span><span class="p">,</span> <span class="n">atoms</span><span class="o">.</span><span class="n">pbc</span>
+    <span class="p">)</span>
+    <span class="n">distance_from_center</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">distance_from_center</span><span class="p">)</span>
+    <span class="n">relative_positions</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">relative_positions</span><span class="p">)</span>
+    <span class="n">indices_within_radius</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">distance_from_center</span> <span class="o">&lt;=</span> <span class="n">radius</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+
+    <span class="k">if</span> <span class="n">indices_within_radius</span><span class="o">.</span><span class="n">size</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;No atoms were found within radius </span><span class="si">{</span><span class="n">radius</span><span class="si">}</span><span class="s2"> Angstrom of center </span><span class="si">{</span><span class="n">center</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">keep_molecules_intact</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">allowed_molecules</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span>
+        <span class="n">allowed_molecules</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">allowed_molecules</span><span class="p">)</span>
+
+        <span class="c1"># Create a neighborlist of the original atoms, and then</span>
+        <span class="c1"># make sure that any indices of `indices_within_radius` are kept</span>
+        <span class="c1"># fully connected to their neighbors.</span>
+        <span class="n">to_add</span><span class="p">:</span> <span class="nb">set</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+        <span class="n">incorrect_atoms</span><span class="p">:</span> <span class="nb">set</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+        <span class="n">molecules</span> <span class="o">=</span> <span class="n">identify_molecules</span><span class="p">(</span><span class="n">atoms</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">molecule</span> <span class="ow">in</span> <span class="n">molecules</span><span class="p">:</span>
+            <span class="n">formula</span> <span class="o">=</span> <span class="n">atoms</span><span class="o">.</span><span class="n">symbols</span><span class="p">[</span><span class="n">molecule</span><span class="p">]</span><span class="o">.</span><span class="n">get_chemical_formula</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s2">&quot;all&quot;</span><span class="p">)</span>
+            <span class="n">formula</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">sorted</span><span class="p">(</span><span class="n">formula</span><span class="p">))</span>
+            <span class="k">if</span> <span class="n">formula</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">allowed_molecules</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;Not allowed molecule with symbols &#39;</span><span class="si">{</span><span class="n">atoms</span><span class="o">.</span><span class="n">symbols</span><span class="p">[</span><span class="n">molecule</span><span class="p">]</span><span class="si">}</span><span class="s2">&#39; and formula &#39;</span><span class="si">{</span><span class="n">formula</span><span class="si">}</span><span class="s2">&#39; detected.&quot;</span>
+                <span class="p">)</span>
+                <span class="n">incorrect_atoms</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">molecule</span><span class="p">)</span>
+                <span class="k">continue</span>
+
+            <span class="k">for</span> <span class="n">index</span> <span class="ow">in</span> <span class="n">indices_within_radius</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">index</span> <span class="ow">in</span> <span class="n">molecule</span><span class="p">:</span>
+                    <span class="n">to_add</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">molecule</span><span class="p">)</span>
+
+        <span class="n">to_add</span><span class="o">.</span><span class="n">difference_update</span><span class="p">(</span><span class="n">indices_within_radius</span><span class="p">)</span>
+        <span class="n">to_add_list</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">to_add</span><span class="p">)</span>
+
+        <span class="n">where_to_insert</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">searchsorted</span><span class="p">(</span><span class="n">indices_within_radius</span><span class="p">,</span> <span class="n">to_add_list</span><span class="p">)</span>
+        <span class="n">indices_within_radius</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span>
+            <span class="n">indices_within_radius</span><span class="p">,</span> <span class="n">where_to_insert</span><span class="p">,</span> <span class="n">to_add_list</span>
+        <span class="p">)</span>
+
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">incorrect_atoms</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">any</span><span class="p">(</span>
+                <span class="n">index_within_radius</span> <span class="ow">in</span> <span class="n">incorrect_atoms</span>
+                <span class="k">for</span> <span class="n">index_within_radius</span> <span class="ow">in</span> <span class="n">indices_within_radius</span>
+            <span class="p">):</span>
+                <span class="k">raise</span> <span class="ne">RuntimeError</span>
+            <span class="nb">print</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;None of the molecules that are incorrect are within </span><span class="si">{</span><span class="n">radius</span><span class="si">}</span><span class="s2"> Angstrom of the center </span><span class="si">{</span><span class="n">center</span><span class="si">}</span><span class="s2">. Continuing.&quot;</span>
+            <span class="p">)</span>
+
+    <span class="n">cutout_atoms</span> <span class="o">=</span> <span class="n">atoms</span><span class="p">[</span><span class="n">indices_within_radius</span><span class="p">]</span>
+    <span class="n">cutout_atoms</span><span class="o">.</span><span class="n">positions</span> <span class="o">=</span> <span class="n">relative_positions</span><span class="p">[</span><span class="n">indices_within_radius</span><span class="p">,</span> <span class="p">:]</span>
+
+    <span class="n">cutout_atoms</span><span class="o">.</span><span class="n">pbc</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="n">cutout_atoms</span><span class="o">.</span><span class="n">cell</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="k">return</span> <span class="n">cutout_atoms</span></div>
+
 
 
 <div class="viewcode-block" id="construct_grid_in_cell">
@@ -475,8 +589,8 @@
             <span class="o">+</span> <span class="n">r_length</span><span class="o">**</span><span class="mi">2</span>
         <span class="p">)</span>
 
-        <span class="c1"># D = b**2 - 4.0 * c  # noqa: ERA001</span>
-        <span class="c1"># k = (-b + np.sqrt(D)) / (2.0) # noqa: ERA001</span>
+        <span class="c1"># D = b**2 - 4.0 * c</span>
+        <span class="c1"># k = (-b + np.sqrt(D)) / (2.0)</span>
 
         <span class="n">roots</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">polynomial</span><span class="o">.</span><span class="n">polynomial</span><span class="o">.</span><span class="n">polyroots</span><span class="p">([</span><span class="n">c</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">])</span>
         <span class="n">k</span> <span class="o">=</span> <span class="p">(</span><span class="n">roots</span><span class="p">[</span><span class="n">roots</span> <span class="o">&gt;=</span> <span class="mf">0.0</span><span class="p">])</span><span class="o">.</span><span class="n">min</span><span class="p">()</span>

@@ -24,7 +24,7 @@
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" />
     <link rel="next" title="molecular_simulation_tools.io" href="../io/index.html" />
-    <link rel="prev" title="molecular_simulation_tools" href="../index.html" /> 
+    <link rel="prev" title="molecular_simulation_tools.connectivity" href="../connectivity/index.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -51,6 +51,7 @@
 <li class="toctree-l1 current"><a class="reference internal" href="../../index.html">API Reference</a><ul class="current">
 <li class="toctree-l2 current"><a class="reference internal" href="../index.html">molecular_simulation_tools</a><ul class="current">
 <li class="toctree-l3 current"><a class="reference internal" href="../index.html#submodules">Submodules</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="../connectivity/index.html">molecular_simulation_tools.connectivity</a></li>
 <li class="toctree-l4 current"><a class="current reference internal" href="#">molecular_simulation_tools.geometry</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../io/index.html">molecular_simulation_tools.io</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../neb/index.html">molecular_simulation_tools.neb</a></li>
@@ -103,19 +104,22 @@
 <tr class="row-even"><td><p><a class="reference internal" href="#molecular_simulation_tools.geometry.construct_grid_in_cell" title="molecular_simulation_tools.geometry.construct_grid_in_cell"><code class="xref py py-obj docutils literal notranslate"><span class="pre">construct_grid_in_cell</span></code></a>(→ tuple[numpy.ndarray, ...)</p></td>
 <td><p>Create a grid of points sampled equally in the cell.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#molecular_simulation_tools.geometry.discretize_cell_length" title="molecular_simulation_tools.geometry.discretize_cell_length"><code class="xref py py-obj docutils literal notranslate"><span class="pre">discretize_cell_length</span></code></a>(→ numpy.ndarray)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#molecular_simulation_tools.geometry.cut_out_atoms_within_radius" title="molecular_simulation_tools.geometry.cut_out_atoms_within_radius"><code class="xref py py-obj docutils literal notranslate"><span class="pre">cut_out_atoms_within_radius</span></code></a>(→ ase.Atoms)</p></td>
+<td><p>Cut out atoms within a radius from some position.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#molecular_simulation_tools.geometry.discretize_cell_length" title="molecular_simulation_tools.geometry.discretize_cell_length"><code class="xref py py-obj docutils literal notranslate"><span class="pre">discretize_cell_length</span></code></a>(→ numpy.ndarray)</p></td>
 <td><p>Discretize the length of a cell.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#molecular_simulation_tools.geometry.find_min_height_for_adsorbate_on_surface" title="molecular_simulation_tools.geometry.find_min_height_for_adsorbate_on_surface"><code class="xref py py-obj docutils literal notranslate"><span class="pre">find_min_height_for_adsorbate_on_surface</span></code></a>(...)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#molecular_simulation_tools.geometry.find_min_height_for_adsorbate_on_surface" title="molecular_simulation_tools.geometry.find_min_height_for_adsorbate_on_surface"><code class="xref py py-obj docutils literal notranslate"><span class="pre">find_min_height_for_adsorbate_on_surface</span></code></a>(...)</p></td>
 <td><p>Find the minimum height to place an adsorbate at least <cite>distance</cite> away from surface atoms.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#molecular_simulation_tools.geometry.find_min_height_for_distance" title="molecular_simulation_tools.geometry.find_min_height_for_distance"><code class="xref py py-obj docutils literal notranslate"><span class="pre">find_min_height_for_distance</span></code></a>(→ float)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#molecular_simulation_tools.geometry.find_min_height_for_distance" title="molecular_simulation_tools.geometry.find_min_height_for_distance"><code class="xref py py-obj docutils literal notranslate"><span class="pre">find_min_height_for_distance</span></code></a>(→ float)</p></td>
 <td><p>Find the minimum height for a point to be <cite>distance</cite> away from other points.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#molecular_simulation_tools.geometry.icosahedron_unit_sphere" title="molecular_simulation_tools.geometry.icosahedron_unit_sphere"><code class="xref py py-obj docutils literal notranslate"><span class="pre">icosahedron_unit_sphere</span></code></a>(→ numpy.ndarray)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#molecular_simulation_tools.geometry.icosahedron_unit_sphere" title="molecular_simulation_tools.geometry.icosahedron_unit_sphere"><code class="xref py py-obj docutils literal notranslate"><span class="pre">icosahedron_unit_sphere</span></code></a>(→ numpy.ndarray)</p></td>
 <td><p>Get vertices of an icosahedron for even sampling of a unit sphere.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#molecular_simulation_tools.geometry.sample_new_point" title="molecular_simulation_tools.geometry.sample_new_point"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sample_new_point</span></code></a>(→ numpy.ndarray)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#molecular_simulation_tools.geometry.sample_new_point" title="molecular_simulation_tools.geometry.sample_new_point"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sample_new_point</span></code></a>(→ numpy.ndarray)</p></td>
 <td><p>Generate a new point in a random direction that is a certain distance from other points.</p></td>
 </tr>
 </tbody>
@@ -173,6 +177,40 @@ takes the same number of points along x and y.</p></li>
 <li><p><strong>Y</strong> (<em>numpy.ndarray</em>) – Grid of y coordinates</p></li>
 </ul>
 </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="molecular_simulation_tools.geometry.cut_out_atoms_within_radius">
+<span class="sig-prename descclassname"><span class="pre">molecular_simulation_tools.geometry.</span></span><span class="sig-name descname"><span class="pre">cut_out_atoms_within_radius</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">atoms</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://ase-lib.org/ase/atoms.html#ase.Atoms" title="(in ASE)"><span class="pre">ase.Atoms</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">center</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.4)"><span class="pre">numpy.ndarray</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><span class="pre">list</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">radius</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">keep_molecules_intact</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">allowed_molecules</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#set" title="(in Python v3.14)"><span class="pre">set</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://ase-lib.org/ase/atoms.html#ase.Atoms" title="(in ASE)"><span class="pre">ase.Atoms</span></a></span></span><a class="reference internal" href="../../../_modules/molecular_simulation_tools/geometry.html#cut_out_atoms_within_radius"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#molecular_simulation_tools.geometry.cut_out_atoms_within_radius" title="Link to this definition"></a></dt>
+<dd><p>Cut out atoms within a radius from some position.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>atoms</strong> (<em>Atoms</em>) – Atoms to be cut out</p></li>
+<li><p><strong>center</strong> (<a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.4)"><em>numpy.ndarray</em></a><em> | </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><em>list</em></a>) – Center of sphere to be cut</p></li>
+<li><p><strong>radius</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><em>float</em></a>) – Radius of sphere to be cut in Angstrom.</p></li>
+<li><p><strong>keep_molecules_intact</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><em>bool</em></a>) – Identify molecules using <code class="xref py py-func docutils literal notranslate"><span class="pre">identify_molecules()</span></code>, and keep each molecule
+intact (i.e. if any of the atoms are inside the sphere, keep the whole molecule).
+Requires networkx to be installed. Default = True.</p></li>
+<li><p><strong>allowed_molecules</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><em>list</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em>] </em><em>| </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#set" title="(in Python v3.14)"><em>set</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em>] </em><em>| </em><em>None</em>) – List of elementary compositions of allowed molecules.
+Required if <cite>keep_molecules_intact</cite> is True, and if it False, does nothing.
+Non-allowed molecules outside of <cite>radius</cite> are ignored. Default = None.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>cutout_atoms</strong> – Cut out atoms, with their <code class="docutils literal notranslate"><span class="pre">pbc</span></code> and <code class="docutils literal notranslate"><span class="pre">cell</span></code> attributes set to False and None.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Atoms</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.14)"><strong>ValueError</strong></a> – If <cite>radius</cite> is more than half the minimum cell length of <cite>atoms</cite>.</p></li>
+<li><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#RuntimeError" title="(in Python v3.14)"><strong>RuntimeError</strong></a> – If a no atoms are found within <cite>radius</cite> of <cite>center</cite>.</p></li>
+<li><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#RuntimeError" title="(in Python v3.14)"><strong>RuntimeError</strong></a> – If a non-allowed molecule is within <cite>radius</cite> of <cite>center</cite>.</p></li>
+</ul>
 </dd>
 </dl>
 </dd></dl>
@@ -326,7 +364,7 @@ Shape n*M if multiple points are being generated.</p>
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="../index.html" class="btn btn-neutral float-left" title="molecular_simulation_tools" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../connectivity/index.html" class="btn btn-neutral float-left" title="molecular_simulation_tools.connectivity" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
         <a href="../io/index.html" class="btn btn-neutral float-right" title="molecular_simulation_tools.io" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 

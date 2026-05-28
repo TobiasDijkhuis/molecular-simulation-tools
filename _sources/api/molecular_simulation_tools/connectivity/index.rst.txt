@@ -1,0 +1,36 @@
+molecular_simulation_tools.connectivity
+=======================================
+
+.. py:module:: molecular_simulation_tools.connectivity
+
+.. autoapi-nested-parse::
+
+   Tools to identify molecules. Taken from IPSuite.
+
+
+
+Functions
+---------
+
+.. autoapisummary::
+
+   molecular_simulation_tools.connectivity.identify_molecules
+
+
+Module Contents
+---------------
+
+.. py:function:: identify_molecules(atoms: ase.Atoms, cutoffs: dict[str, float] | None = None) -> list[numpy.ndarray]
+
+   Identify molecules in a structure based on the connected subgraphs.
+
+   :param atoms: Atoms instance to identify molecules in
+   :type atoms: Atoms
+   :param cutoffs: cutoffs of each element. Dictionary with keys for the symbols and values
+                   of the cutoff radii. If None, use the :data:`ase.data.covalent_radii`. Default: None
+   :type cutoffs: dict[str, float] | None
+
+   :returns: **c_list** -- Array of lists of connected atom indices
+   :rtype: list[numpy.ndarray]
+
+
