@@ -17,6 +17,8 @@ def _atoms_to_graph(
 ) -> "nx.Graph":
     """Convert ASE Atoms into a Graph based on their bond connectivity.
 
+    Requires networkx to be installed.
+
     Parameters
     ----------
     atoms : Atoms
@@ -30,18 +32,10 @@ def _atoms_to_graph(
     graph : nx.Graph
         Connectivity graph
 
-    Raises
-    ------
-    ImportError
-        If networkx could not be imported.
-
     """
-    # This can be optimized by reusing the NL!
-    if not _nx_available:
-        msg = "_atoms_to_graph requires networkx, but could not be imported."
-        raise ImportError(msg)
     if cutoffs is not None:
         cutoffs = natural_cutoffs(atoms, **cutoffs)
+    # This can be optimized by reusing the NL!
     nl = build_neighbor_list(atoms, self_interaction=False, cutoffs=cutoffs)
     cm = nl.get_connectivity_matrix(sparse=False)
     graph = nx.from_numpy_array(cm)
@@ -52,6 +46,8 @@ def identify_molecules(
     atoms: Atoms, cutoffs: dict[str, float] | None = None
 ) -> list[np.ndarray]:
     """Identify molecules in a structure based on the connected subgraphs.
+
+    Requires networkx to be installed.
 
     Parameters
     ----------
