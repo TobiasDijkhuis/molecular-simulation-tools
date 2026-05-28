@@ -221,4 +221,4 @@ __marimo__/
 *.patch
 
 # hatch-vcs generated version file
-apax/_version.py
+molecular_simulation_tools/_version.py
