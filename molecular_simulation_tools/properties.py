@@ -60,7 +60,7 @@ def calculate_radial_distribution_function(
 
     average_rdf = np.average(rdfs, axis=0)
     std_rdf = np.std(rdfs, axis=0)
-    return distances, average_rdf, std_rdf
+    return distances[0], average_rdf, std_rdf
 
 
 def get_dipole_moment(positions: np.ndarray, charges: np.ndarray) -> np.ndarray:
