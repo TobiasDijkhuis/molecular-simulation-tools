@@ -114,7 +114,14 @@
 <span class="sd">    images : list[Atoms]</span>
 <span class="sd">        List of images</span>
 
+<span class="sd">    Raises</span>
+<span class="sd">    ------</span>
+<span class="sd">    ValueError</span>
+<span class="sd">        If `n_images` is less than 3, because that would result in no intermediate images.</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">n_images</span> <span class="o">&lt;</span> <span class="mi">3</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span>
     <span class="n">images</span> <span class="o">=</span> <span class="p">[</span><span class="n">initial</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_images</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)]</span> <span class="o">+</span> <span class="p">[</span><span class="n">final</span><span class="o">.</span><span class="n">copy</span><span class="p">()]</span>
     <span class="k">return</span> <span class="n">images</span></div>
 

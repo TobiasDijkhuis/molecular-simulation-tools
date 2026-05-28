@@ -566,7 +566,7 @@
                 <span class="k">for</span> <span class="n">edge</span> <span class="ow">in</span> <span class="n">edges</span>
             <span class="p">]</span>
         <span class="p">)</span>
-    <span class="n">vertices</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">vertices_below</span><span class="p">,</span> <span class="n">new_points</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+    <span class="n">vertices</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">vertices_below</span><span class="p">,</span> <span class="n">new_points</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">vertices</span></div>
 
 </pre></div>
