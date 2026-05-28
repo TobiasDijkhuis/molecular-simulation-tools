@@ -112,3 +112,6 @@ include = ["tests/"]
 [tool.ty.overrides.rules]
 possibly-missing-submodule = "ignore"
 
+
+[tool.coverage.run]
+omit = ['molecular_simulation_tools/_version.py']
