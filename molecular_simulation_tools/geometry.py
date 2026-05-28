@@ -5,14 +5,125 @@ import sys
 
 import numpy as np
 from ase import Atoms
-from ase.geometry import find_mic
+from ase.geometry import conditional_find_mic, find_mic
 from scipy.spatial import ConvexHull
 
+from molecular_simulation_tools.connectivity import identify_molecules
 from molecular_simulation_tools.utils import (
     correct_distance_for_pbc,
     get_random_unit_vector,
     project_on_unit_sphere,
 )
+
+
+def cut_out_atoms_within_radius(
+    atoms: Atoms,
+    center: np.ndarray | list,
+    radius: float,
+    keep_molecules_intact: bool = True,
+    allowed_molecules: list[str] | set[str] | None = None,
+) -> Atoms:
+    """Cut out atoms within a radius from some position.
+
+    Parameters
+    ----------
+    atoms : Atoms
+        Atoms to be cut out
+    center : np.ndarray | list
+        Center of sphere to be cut
+    radius : float
+        Radius of sphere to be cut in Angstrom.
+    keep_molecules_intact : bool
+        Identify molecules using :func:`identify_molecules`, and keep each molecule
+        intact (i.e. if any of the atoms are inside the sphere, keep the whole molecule).
+        Requires networkx to be installed. Default = True.
+    allowed_molecules : list[str] | set[str] | None
+        List of elementary compositions of allowed molecules.
+        Required if `keep_molecules_intact` is True, and if it False, does nothing.
+        Non-allowed molecules outside of `radius` are ignored. Default = None.
+
+    Returns
+    -------
+    cutout_atoms : Atoms
+        Cut out atoms, with their ``pbc`` and ``cell`` attributes set to False and None.
+
+    Raises
+    ------
+    ValueError
+        If `radius` is more than half the minimum cell length of `atoms`.
+    RuntimeError
+        If a no atoms are found within `radius` of `center`.
+    RuntimeError
+        If a non-allowed molecule is within `radius` of `center`.
+
+    """
+    center = np.asarray(center)
+
+    if atoms.cell is not None and radius >= 0.5 * np.min(atoms.cell.lengths()):
+        msg = f"Radius of {radius} Angstrom is too big for cell. Would include same atoms multiple times."
+        raise ValueError(msg)
+
+    relative_positions, distance_from_center = conditional_find_mic(
+        atoms.positions - center, atoms.cell, atoms.pbc
+    )
+    distance_from_center = np.asarray(distance_from_center)
+    relative_positions = np.asarray(relative_positions)
+    indices_within_radius = np.where(distance_from_center <= radius)[0]
+
+    if indices_within_radius.size == 0:
+        msg = f"No atoms were found within radius {radius} Angstrom of center {center}"
+        raise RuntimeError(msg)
+
+    if keep_molecules_intact:
+        if allowed_molecules is None:
+            raise ValueError
+        allowed_molecules = set(allowed_molecules)
+
+        # Create a neighborlist of the original atoms, and then
+        # make sure that any indices of `indices_within_radius` are kept
+        # fully connected to their neighbors.
+        to_add: set[int] = set()
+        incorrect_atoms: set[str] = set()
+        molecules = identify_molecules(atoms)
+        for molecule in molecules:
+            formula = atoms.symbols[molecule].get_chemical_formula(mode="all")
+            formula = "".join(sorted(formula))
+            if formula not in allowed_molecules:
+                print(
+                    f"Not allowed molecule with symbols '{atoms.symbols[molecule]}' and formula '{formula}' detected."
+                )
+                incorrect_atoms.update(molecule)
+                continue
+
+            for index in indices_within_radius:
+                if index in molecule:
+                    to_add.update(molecule)
+
+        to_add.difference_update(indices_within_radius)
+        to_add_list = list(to_add)
+
+        where_to_insert = np.searchsorted(indices_within_radius, to_add_list)
+        indices_within_radius = np.insert(
+            indices_within_radius, where_to_insert, to_add_list
+        )
+
+        if len(incorrect_atoms) != 0:
+            if any(
+                index_within_radius in incorrect_atoms
+                for index_within_radius in indices_within_radius
+            ):
+                raise RuntimeError
+            print(
+                f"None of the molecules that are incorrect are within {radius} Angstrom of the center {center}. Continuing."
+            )
+
+    cutout_atoms = atoms[indices_within_radius]
+    cutout_atoms.positions = relative_positions[indices_within_radius, :]
+
+    cutout_atoms.pbc = False
+    cutout_atoms.cell = None
+
+    return cutout_atoms
 
 
 def construct_grid_in_cell(
@@ -383,8 +494,8 @@ def sample_new_point(
             + r_length**2
         )
 
-        # D = b**2 - 4.0 * c  # noqa: ERA001
-        # k = (-b + np.sqrt(D)) / (2.0) # noqa: ERA001
+        # D = b**2 - 4.0 * c
+        # k = (-b + np.sqrt(D)) / (2.0)
 
         roots = np.polynomial.polynomial.polyroots([c, b, 1.0])
         k = (roots[roots >= 0.0]).min()
