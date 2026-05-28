@@ -3,8 +3,64 @@
 import numpy as np
 from ase import Atoms
 from ase.calculators.tip4p import qH
+from ase.geometry.analysis import Analysis
 from scipy.fft import fft, fftfreq, next_fast_len
 from scipy.signal import correlate, get_window
+
+
+def calculate_radial_distribution_function(
+    images: list[Atoms],
+    elements: str | int | list | tuple | None = None,
+    rmax: float = 6,
+    nbins: int = 200,
+) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
+    """Calculate the radial distribution function (RDF).
+
+    Parameters
+    ----------
+    images : list[Atoms]
+        List of frames
+    elements : str | int | list | tuple | None
+        List of elements to calculate the RDF for. If None, calculate it for all
+        elements. Default = None.
+    rmax : float
+        Mamximum distance to calculate the RDF for in Angstrom. Default = 6.
+    nbins : int
+        number of bins to calculate between 0 and `rmax`. Default = 200.
+
+    Returns
+    -------
+    distances : np.ndarray
+        Array of distances
+    average_rdf : np.ndarray
+        Average RDF over all frames at each distance
+    std_rdf : np.ndarray
+        Standard deviation of the RDF over all frames at each distance
+
+    Raises
+    ------
+    RuntimeError
+        If something went wrong with the distances.
+
+    """
+    analysis = Analysis(images)
+    rdf_and_distances_for_each_image = analysis.get_rdf(
+        rmax, nbins, return_dists=True, elements=elements
+    )
+    analysis.clear_cache()
+
+    rdfs = np.asarray(
+        [rdf_and_distances[0] for rdf_and_distances in rdf_and_distances_for_each_image]
+    )
+    distances = np.asarray(
+        [rdf_and_distances[1] for rdf_and_distances in rdf_and_distances_for_each_image]
+    )
+    if not np.all(distances == distances[0]):
+        raise RuntimeError
+
+    average_rdf = np.average(rdfs, axis=0)
+    std_rdf = np.std(rdfs, axis=0)
+    return distances, average_rdf, std_rdf
 
 
 def get_dipole_moment(positions: np.ndarray, charges: np.ndarray) -> np.ndarray:
