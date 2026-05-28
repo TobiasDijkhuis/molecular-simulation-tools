@@ -85,8 +85,8 @@
 
 <span class="kn">from</span> <span class="nn">molecular_simulation_tools.utils</span> <span class="kn">import</span> <span class="p">(</span>
     <span class="n">correct_distance_for_pbc</span><span class="p">,</span>
+    <span class="n">get_random_unit_vector</span><span class="p">,</span>
     <span class="n">project_on_unit_sphere</span><span class="p">,</span>
-    <span class="n">random_on_unit_sphere</span><span class="p">,</span>
 <span class="p">)</span>
 
 
@@ -459,7 +459,7 @@
     <span class="k">if</span> <span class="n">minimum_distance</span> <span class="o">&lt;=</span> <span class="mf">0.0</span> <span class="ow">or</span> <span class="n">initial_spawn_distance</span> <span class="o">&lt;=</span> <span class="mf">0.0</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">()</span>
 
-    <span class="n">r_unit</span> <span class="o">=</span> <span class="n">random_on_unit_sphere</span><span class="p">()</span>
+    <span class="n">r_unit</span> <span class="o">=</span> <span class="n">get_random_unit_vector</span><span class="p">()</span>
     <span class="n">r_vec</span> <span class="o">=</span> <span class="n">r_unit</span> <span class="o">*</span> <span class="n">initial_spawn_distance</span>
 
     <span class="n">distances</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">points</span> <span class="o">-</span> <span class="n">r_vec</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>

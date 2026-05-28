@@ -17,8 +17,8 @@ Functions
    molecular_simulation_tools.utils.convert_cartesian_to_spherical
    molecular_simulation_tools.utils.convert_spherical_to_cartesian
    molecular_simulation_tools.utils.correct_distance_for_pbc
+   molecular_simulation_tools.utils.get_random_unit_vector
    molecular_simulation_tools.utils.project_on_unit_sphere
-   molecular_simulation_tools.utils.random_on_unit_sphere
    molecular_simulation_tools.utils.sample_random_rotation
    molecular_simulation_tools.utils.turn_grid_into_position_vectors
 
@@ -71,18 +71,7 @@ Module Contents
    :rtype: numpy.ndarray
 
 
-.. py:function:: project_on_unit_sphere(vector: numpy.ndarray) -> numpy.ndarray
-
-   Project a vector on the unit sphere, by dividing it by its length.
-
-   :param vector: N-dimensional vector
-   :type vector: numpy.ndarray
-
-   :returns: Vector projected on N-dimensional unit sphere
-   :rtype: numpy.ndarray
-
-
-.. py:function:: random_on_unit_sphere(n: int = 1) -> numpy.ndarray
+.. py:function:: get_random_unit_vector(n: int = 1) -> numpy.ndarray
 
    Get a random vector on the unit sphere.
 
@@ -93,6 +82,17 @@ Module Contents
 
    :returns: **vectors** -- Numpy matrix of shape Nx3, or just vector of shape (3,) if
              `n` is 1.
+   :rtype: numpy.ndarray
+
+
+.. py:function:: project_on_unit_sphere(vector: numpy.ndarray) -> numpy.ndarray
+
+   Project a vector on the unit sphere, by dividing it by its length.
+
+   :param vector: N-dimensional vector
+   :type vector: numpy.ndarray
+
+   :returns: Vector projected on N-dimensional unit sphere
    :rtype: numpy.ndarray
 
 

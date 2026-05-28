@@ -212,9 +212,9 @@
 
 
 
-<div class="viewcode-block" id="random_on_unit_sphere">
-<a class="viewcode-back" href="../../api/molecular_simulation_tools/utils/index.html#molecular_simulation_tools.utils.random_on_unit_sphere">[docs]</a>
-<span class="k">def</span> <span class="nf">random_on_unit_sphere</span><span class="p">(</span><span class="n">n</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+<div class="viewcode-block" id="get_random_unit_vector">
+<a class="viewcode-back" href="../../api/molecular_simulation_tools/utils/index.html#molecular_simulation_tools.utils.get_random_unit_vector">[docs]</a>
+<span class="k">def</span> <span class="nf">get_random_unit_vector</span><span class="p">(</span><span class="n">n</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Get a random vector on the unit sphere.</span>
 
 <span class="sd">    Uses method described in https://mathworld.wolfram.com/SpherePointPicking.html</span>
@@ -260,7 +260,7 @@
 <span class="sd">        Rotation angle in radians.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">rotation_axis</span> <span class="o">=</span> <span class="n">random_on_unit_sphere</span><span class="p">()</span>
+    <span class="n">rotation_axis</span> <span class="o">=</span> <span class="n">get_random_unit_vector</span><span class="p">()</span>
     <span class="n">rotation_angle</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="n">random</span><span class="p">()</span>
     <span class="k">return</span> <span class="n">rotation_axis</span><span class="p">,</span> <span class="n">rotation_angle</span></div>
 
