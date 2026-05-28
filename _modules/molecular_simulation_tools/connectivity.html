@@ -92,6 +92,8 @@
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;nx.Graph&quot;</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Convert ASE Atoms into a Graph based on their bond connectivity.</span>
 
+<span class="sd">    Requires networkx to be installed.</span>
+
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    atoms : Atoms</span>
@@ -105,18 +107,10 @@
 <span class="sd">    graph : nx.Graph</span>
 <span class="sd">        Connectivity graph</span>
 
-<span class="sd">    Raises</span>
-<span class="sd">    ------</span>
-<span class="sd">    ImportError</span>
-<span class="sd">        If networkx could not be imported.</span>
-
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="c1"># This can be optimized by reusing the NL!</span>
-    <span class="k">if</span> <span class="ow">not</span> <span class="n">_nx_available</span><span class="p">:</span>
-        <span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;_atoms_to_graph requires networkx, but could not be imported.&quot;</span>
-        <span class="k">raise</span> <span class="ne">ImportError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">cutoffs</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">cutoffs</span> <span class="o">=</span> <span class="n">natural_cutoffs</span><span class="p">(</span><span class="n">atoms</span><span class="p">,</span> <span class="o">**</span><span class="n">cutoffs</span><span class="p">)</span>
+    <span class="c1"># This can be optimized by reusing the NL!</span>
     <span class="n">nl</span> <span class="o">=</span> <span class="n">build_neighbor_list</span><span class="p">(</span><span class="n">atoms</span><span class="p">,</span> <span class="n">self_interaction</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">cutoffs</span><span class="o">=</span><span class="n">cutoffs</span><span class="p">)</span>
     <span class="n">cm</span> <span class="o">=</span> <span class="n">nl</span><span class="o">.</span><span class="n">get_connectivity_matrix</span><span class="p">(</span><span class="n">sparse</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
     <span class="n">graph</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">from_numpy_array</span><span class="p">(</span><span class="n">cm</span><span class="p">)</span>
@@ -129,6 +123,8 @@
     <span class="n">atoms</span><span class="p">:</span> <span class="n">Atoms</span><span class="p">,</span> <span class="n">cutoffs</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Identify molecules in a structure based on the connected subgraphs.</span>
+
+<span class="sd">    Requires networkx to be installed.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>

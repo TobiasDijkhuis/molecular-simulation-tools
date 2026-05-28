@@ -24,6 +24,8 @@ Module Contents
 
    Identify molecules in a structure based on the connected subgraphs.
 
+   Requires networkx to be installed.
+
    :param atoms: Atoms instance to identify molecules in
    :type atoms: Atoms
    :param cutoffs: cutoffs of each element. Dictionary with keys for the symbols and values
