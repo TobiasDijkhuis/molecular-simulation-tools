@@ -471,5 +471,5 @@ def icosahedron_unit_sphere(level: int = 0, subdivision: int = 2) -> np.ndarray:
                 for edge in edges
             ]
         )
-    vertices = np.append(vertices_below, new_points, axis=0)
+    vertices = np.unique(np.append(vertices_below, new_points, axis=0), axis=0)
     return vertices

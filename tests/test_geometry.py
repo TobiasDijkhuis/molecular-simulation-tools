@@ -7,6 +7,7 @@ from molecular_simulation_tools.geometry import (
     construct_grid_in_cell,
     discretize_cell_length,
     find_min_height_for_distance,
+    icosahedron_unit_sphere,
     sample_new_point,
 )
 
@@ -158,3 +159,48 @@ def test_find_min_height_for_distance(
         ),
         expected_height,
     )
+
+
+def test_find_min_height_for_distance_raises_if_none_close():
+    with pytest.raises(ValueError):
+        find_min_height_for_distance(0, 0, np.array([[1, 0, 0]]), 0.5)
+
+
+def test_icosahedron_unit_sphere():
+    vertices = icosahedron_unit_sphere(level=0)
+
+    assert np.allclose(np.linalg.norm(vertices, axis=1), 1)
+    assert np.shape(vertices) == (12, 3)
+    phi = 2 * np.cos(np.pi / 5)
+    expected = np.array(
+        [
+            [0, phi, 1],
+            [0, -phi, 1],
+            [0, phi, -1],
+            [0, -phi, -1],
+            [1, 0, phi],
+            [-1, 0, phi],
+            [1, 0, -phi],
+            [-1, 0, -phi],
+            [phi, 1, 0],
+            [-phi, 1, 0],
+            [phi, -1, 0],
+            [-phi, -1, 0],
+        ]
+    )
+    expected /= np.linalg.norm(expected, axis=1)[:, np.newaxis]
+    assert np.allclose(vertices, expected)
+
+
+icosahedron_data = [
+    (0, 12),
+    (1, 42),
+    (2, 162),
+]
+
+
+@pytest.mark.parametrize("level, expected_number_of_vertices", icosahedron_data)
+def test_icosahedron_unit_sphere_shapes(level, expected_number_of_vertices):
+    vertices = icosahedron_unit_sphere(level=level)
+    assert np.shape(np.unique(vertices, axis=0)) == np.shape(vertices)
+    assert np.shape(vertices)[0] == expected_number_of_vertices

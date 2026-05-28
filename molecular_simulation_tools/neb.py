@@ -37,7 +37,14 @@ def get_images_for_neb(
     images : list[Atoms]
         List of images
 
+    Raises
+    ------
+    ValueError
+        If `n_images` is less than 3, because that would result in no intermediate images.
+
     """
+    if n_images < 3:
+        raise ValueError
     images = [initial.copy() for _ in range(n_images - 1)] + [final.copy()]
     return images
 
