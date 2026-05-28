@@ -1,0 +1,339 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>molecular_simulation_tools.properties &mdash; molecular-simulation-tools  documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
+      <link rel="stylesheet" type="text/css" href="../../_static/graphviz.css?v=4ae1632d" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
+      <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
+      <script src="../../_static/copybutton.js?v=f281be69"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            molecular-simulation-tools
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../api/index.html">API Reference</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">molecular-simulation-tools</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">molecular_simulation_tools.properties</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for molecular_simulation_tools.properties</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;Collection of functions to calculate properties.&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">ase</span> <span class="kn">import</span> <span class="n">Atoms</span>
+<span class="kn">from</span> <span class="nn">ase.calculators.tip4p</span> <span class="kn">import</span> <span class="n">qH</span>
+<span class="kn">from</span> <span class="nn">scipy.fft</span> <span class="kn">import</span> <span class="n">fft</span><span class="p">,</span> <span class="n">fftfreq</span><span class="p">,</span> <span class="n">next_fast_len</span>
+<span class="kn">from</span> <span class="nn">scipy.signal</span> <span class="kn">import</span> <span class="n">correlate</span><span class="p">,</span> <span class="n">get_window</span>
+
+
+<div class="viewcode-block" id="get_dipole_moment">
+<a class="viewcode-back" href="../../api/molecular_simulation_tools/properties/index.html#molecular_simulation_tools.properties.get_dipole_moment">[docs]</a>
+<span class="k">def</span> <span class="nf">get_dipole_moment</span><span class="p">(</span><span class="n">positions</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">charges</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Get the dipole moment of a set of point charges.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    positions : np.ndarray</span>
+<span class="sd">        Positions of point charges. NxM array</span>
+<span class="sd">    charges : np.ndarray</span>
+<span class="sd">        Charges. Array of length N</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    np.ndarray</span>
+<span class="sd">        Dipole moment. Array of length M</span>
+
+<span class="sd">    Raises</span>
+<span class="sd">    ------</span>
+<span class="sd">    ValueError</span>
+<span class="sd">        If the shapes of `positions` and `charges` do not match.</span>
+<span class="sd">    ValueError</span>
+<span class="sd">        If the sum of all `charges` is not 0 (i.e. the structure is not neutral).</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">shape</span><span class="p">(</span><span class="n">positions</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span> <span class="o">!=</span> <span class="n">np</span><span class="o">.</span><span class="n">shape</span><span class="p">(</span><span class="n">charges</span><span class="p">)[</span><span class="mi">0</span><span class="p">]:</span>
+        <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Number of position vectors (</span><span class="si">{</span><span class="n">np</span><span class="o">.</span><span class="n">shape</span><span class="p">(</span><span class="n">positions</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2">) is not the same as the number of charges (</span><span class="si">{</span><span class="n">np</span><span class="o">.</span><span class="n">shape</span><span class="p">(</span><span class="n">charges</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2">)&quot;</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">charges</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Charges should be neutral, but sum of charges is </span><span class="si">{</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">charges</span><span class="p">)</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+
+    <span class="c1"># dipole_moment = np.zeros(3)</span>
+    <span class="c1"># for particle_idx in range(np.shape(positions)[0]):</span>
+    <span class="c1">#     dipole_moment[:] += positions[particle_idx, :] * charges[particle_idx]</span>
+    <span class="c1"># return dipole_moment</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">positions</span> <span class="o">*</span> <span class="n">charges</span><span class="p">[:,</span> <span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="get_autocorrelation_function">
+<a class="viewcode-back" href="../../api/molecular_simulation_tools/properties/index.html#molecular_simulation_tools.properties.get_autocorrelation_function">[docs]</a>
+<span class="k">def</span> <span class="nf">get_autocorrelation_function</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Get the autocorrelation function of x.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    x : np.ndarray</span>
+<span class="sd">        Array of length N</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    np.ndarray</span>
+<span class="sd">        Array of length N</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">correlate</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">x</span><span class="p">)[:</span> <span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span></div>
+
+
+
+<div class="viewcode-block" id="get_moving_average">
+<a class="viewcode-back" href="../../api/molecular_simulation_tools/properties/index.html#molecular_simulation_tools.properties.get_moving_average">[docs]</a>
+<span class="k">def</span> <span class="nf">get_moving_average</span><span class="p">(</span><span class="n">array</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">window_size</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Get the moving average of an array with a certain window size.</span>
+
+<span class="sd">    Taken from https://stackoverflow.com/a/14314054.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    array : np.ndarray</span>
+<span class="sd">        array to be smoothed of length ``N``</span>
+<span class="sd">    window_size : int</span>
+<span class="sd">        window size</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    np.ndarray</span>
+<span class="sd">        Array of length ``N - window_size + 1``</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">array</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">cumsum</span><span class="p">(</span><span class="n">array</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+    <span class="n">array</span><span class="p">[</span><span class="n">window_size</span><span class="p">:]</span> <span class="o">-=</span> <span class="n">array</span><span class="p">[:</span><span class="o">-</span><span class="n">window_size</span><span class="p">]</span>
+    <span class="k">return</span> <span class="n">array</span><span class="p">[</span><span class="n">window_size</span> <span class="o">-</span> <span class="mi">1</span> <span class="p">:]</span> <span class="o">/</span> <span class="n">window_size</span></div>
+
+
+
+<div class="viewcode-block" id="get_ir_spectrum">
+<a class="viewcode-back" href="../../api/molecular_simulation_tools/properties/index.html#molecular_simulation_tools.properties.get_ir_spectrum">[docs]</a>
+<span class="k">def</span> <span class="nf">get_ir_spectrum</span><span class="p">(</span>
+    <span class="n">frames</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">Atoms</span><span class="p">],</span>
+    <span class="n">charges</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+    <span class="n">timestep</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+    <span class="n">step</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
+    <span class="n">pad</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+    <span class="n">window_type</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Calculate the infrared spectrum of an MD trajectory.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    frames : list[Atoms]</span>
+<span class="sd">        frames of molecular dynamics simulations</span>
+<span class="sd">    charges : np.ndarray</span>
+<span class="sd">        charge of each atom in the Atoms</span>
+<span class="sd">    timestep : float</span>
+<span class="sd">        timestep between frames in seconds</span>
+<span class="sd">    step : int</span>
+<span class="sd">        Number of steps to take between frames. Default: 1</span>
+<span class="sd">    pad : bool</span>
+<span class="sd">        Whether to pad the DACF with zeros to have the FFT be faster.</span>
+<span class="sd">        See https://docs.scipy.org/doc/scipy/reference/generated/scipy.fft.next_fast_len.html.</span>
+<span class="sd">        Default: True</span>
+<span class="sd">    window_type : str | None</span>
+<span class="sd">        Window type to apply to get rid of finite</span>
+<span class="sd">        sampling effects. See https://docs.scipy.org/doc/scipy/reference/generated/scipy.signal.windows.get_window.html#scipy.signal.windows.get_window</span>
+<span class="sd">        for options. Default: None</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    xf : np.ndarray</span>
+<span class="sd">        frequencies in Hz</span>
+<span class="sd">    spectrum : np.ndarray</span>
+<span class="sd">        intensity at each frequency. Arbitrary units</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># nsteps = len(frames) // step</span>
+    <span class="n">dt</span> <span class="o">=</span> <span class="n">step</span> <span class="o">*</span> <span class="n">timestep</span>
+
+    <span class="c1"># dipole_moments = np.zeros(shape=(nsteps, 3))</span>
+
+    <span class="n">positions</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">([</span><span class="n">frame</span><span class="o">.</span><span class="n">positions</span> <span class="k">for</span> <span class="n">frame</span> <span class="ow">in</span> <span class="n">frames</span><span class="p">[::</span><span class="n">step</span><span class="p">]])</span>
+    <span class="n">velocities</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">gradient</span><span class="p">(</span><span class="n">positions</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span> <span class="o">*</span> <span class="mf">1e-10</span> <span class="o">/</span> <span class="n">dt</span>
+    <span class="n">charge_weighted_velocities</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">velocities</span> <span class="o">*</span> <span class="n">charges</span><span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="p">:,</span> <span class="kc">None</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+    <span class="c1"># for i, frame in enumerate(frames[::step]):</span>
+    <span class="c1">#     dipole_moments[i] = get_dipole_moment(frame.positions, charges)</span>
+
+    <span class="c1"># dipole_derivatives = np.gradient(dipole_moments, axis=0) / dt</span>
+
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">):</span>
+        <span class="n">autocorr</span> <span class="o">=</span> <span class="n">get_autocorrelation_function</span><span class="p">(</span><span class="n">charge_weighted_velocities</span><span class="p">[:,</span> <span class="n">i</span><span class="p">])</span>
+
+        <span class="k">if</span> <span class="n">i</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">window_type</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">window</span> <span class="o">=</span> <span class="n">get_window</span><span class="p">(</span><span class="n">window_type</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">autocorr</span><span class="p">))</span>
+                <span class="n">autocorr</span> <span class="o">*=</span> <span class="n">window</span>
+
+            <span class="k">if</span> <span class="n">pad</span><span class="p">:</span>
+                <span class="n">padded_length</span> <span class="o">=</span> <span class="n">next_fast_len</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">autocorr</span><span class="p">))</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">padded_length</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">autocorr</span><span class="p">)</span>
+
+            <span class="n">spectrum</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">fft</span><span class="p">(</span><span class="n">autocorr</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="n">padded_length</span><span class="p">))</span> <span class="o">**</span> <span class="mi">2</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">spectrum</span> <span class="o">+=</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">fft</span><span class="p">(</span><span class="n">autocorr</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="n">padded_length</span><span class="p">))</span> <span class="o">**</span> <span class="mi">2</span>
+    <span class="n">xf</span> <span class="o">=</span> <span class="n">fftfreq</span><span class="p">(</span><span class="n">padded_length</span><span class="p">,</span> <span class="n">dt</span><span class="p">)</span>
+
+    <span class="c1"># autocorr_function = np.sum(</span>
+    <span class="c1">#     [get_autocorrelation_function(dipole_derivatives[:, i]) for i in range(3)],</span>
+    <span class="c1">#     axis=0,</span>
+    <span class="c1"># )</span>
+
+    <span class="c1"># if window_type is not None:</span>
+    <span class="c1">#     window = get_window(window_type, len(autocorr_function))</span>
+    <span class="c1">#     autocorr_function *= window</span>
+
+    <span class="c1"># if pad:</span>
+    <span class="c1">#     padded_length = next_fast_len(len(autocorr_function))</span>
+    <span class="c1"># else:</span>
+    <span class="c1">#     padded_length = len(autocorr_function)</span>
+
+    <span class="c1"># spectrum = np.abs(fft(autocorr_function, n=padded_length))</span>
+    <span class="c1"># xf = fftfreq(padded_length, dt)</span>
+
+    <span class="k">return</span> <span class="n">xf</span><span class="p">[:</span> <span class="n">padded_length</span> <span class="o">//</span> <span class="mi">2</span><span class="p">],</span> <span class="n">spectrum</span><span class="p">[:</span> <span class="n">padded_length</span> <span class="o">//</span> <span class="mi">2</span><span class="p">]</span></div>
+
+
+
+<div class="viewcode-block" id="get_h2o_charges">
+<a class="viewcode-back" href="../../api/molecular_simulation_tools/properties/index.html#molecular_simulation_tools.properties.get_h2o_charges">[docs]</a>
+<span class="k">def</span> <span class="nf">get_h2o_charges</span><span class="p">(</span><span class="n">symbols</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Assign charges of H2O.</span>
+
+<span class="sd">    Uses charges from :data:`ase.calculators.tip4p.qH`.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    symbols : list[str]</span>
+<span class="sd">        List of symbols (i.e. &quot;H&quot; or &quot;O&quot;)</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    charges : np.ndarray</span>
+<span class="sd">        List of charges corresponding to the atoms in `symbols`.</span>
+
+<span class="sd">    Raises</span>
+<span class="sd">    ------</span>
+<span class="sd">    ValueError</span>
+<span class="sd">        If the length of `symbols` is not divisible by 3, or does not have the correct</span>
+<span class="sd">        composition to be water.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">natoms</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">symbols</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">natoms</span> <span class="o">%</span> <span class="mi">3</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Expected number of atoms to be a multiple of 3, but got </span><span class="si">{</span><span class="n">natoms</span><span class="si">}</span><span class="s2"> atoms&quot;</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+    <span class="k">if</span> <span class="p">(</span>
+        <span class="n">symbols</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="s2">&quot;H&quot;</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">float</span><span class="p">(</span><span class="n">natoms</span><span class="p">)</span> <span class="o">/</span> <span class="mi">3</span> <span class="o">*</span> <span class="mi">2</span>
+        <span class="ow">or</span> <span class="n">symbols</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="s2">&quot;O&quot;</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">float</span><span class="p">(</span><span class="n">natoms</span><span class="p">)</span> <span class="o">/</span> <span class="mi">3</span>
+    <span class="p">):</span>
+        <span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;Composition is incorrect for water.&quot;</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+
+    <span class="n">charges</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="n">natoms</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">symbol</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">symbols</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">symbol</span> <span class="o">==</span> <span class="s2">&quot;H&quot;</span><span class="p">:</span>
+            <span class="n">charges</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">qH</span>
+        <span class="k">elif</span> <span class="n">symbol</span> <span class="o">==</span> <span class="s2">&quot;O&quot;</span><span class="p">:</span>
+            <span class="n">charges</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="mf">2.0</span> <span class="o">*</span> <span class="n">qH</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Unknown symbol </span><span class="si">{</span><span class="n">symbol</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">charges</span></div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2026, Tobias Dijkhuis.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

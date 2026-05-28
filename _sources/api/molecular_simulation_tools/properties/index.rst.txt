@@ -1,0 +1,109 @@
+molecular_simulation_tools.properties
+=====================================
+
+.. py:module:: molecular_simulation_tools.properties
+
+.. autoapi-nested-parse::
+
+   Collection of functions to calculate properties.
+
+
+
+Functions
+---------
+
+.. autoapisummary::
+
+   molecular_simulation_tools.properties.get_autocorrelation_function
+   molecular_simulation_tools.properties.get_dipole_moment
+   molecular_simulation_tools.properties.get_h2o_charges
+   molecular_simulation_tools.properties.get_ir_spectrum
+   molecular_simulation_tools.properties.get_moving_average
+
+
+Module Contents
+---------------
+
+.. py:function:: get_autocorrelation_function(x: numpy.ndarray) -> numpy.ndarray
+
+   Get the autocorrelation function of x.
+
+   :param x: Array of length N
+   :type x: numpy.ndarray
+
+   :returns: Array of length N
+   :rtype: numpy.ndarray
+
+
+.. py:function:: get_dipole_moment(positions: numpy.ndarray, charges: numpy.ndarray) -> numpy.ndarray
+
+   Get the dipole moment of a set of point charges.
+
+   :param positions: Positions of point charges. NxM array
+   :type positions: numpy.ndarray
+   :param charges: Charges. Array of length N
+   :type charges: numpy.ndarray
+
+   :returns: Dipole moment. Array of length M
+   :rtype: numpy.ndarray
+
+   :raises ValueError: If the shapes of `positions` and `charges` do not match.
+   :raises ValueError: If the sum of all `charges` is not 0 (i.e. the structure is not neutral).
+
+
+.. py:function:: get_h2o_charges(symbols: list[str]) -> numpy.ndarray
+
+   Assign charges of H2O.
+
+   Uses charges from :data:`ase.calculators.tip4p.qH`.
+
+   :param symbols: List of symbols (i.e. "H" or "O")
+   :type symbols: list[str]
+
+   :returns: **charges** -- List of charges corresponding to the atoms in `symbols`.
+   :rtype: numpy.ndarray
+
+   :raises ValueError: If the length of `symbols` is not divisible by 3, or does not have the correct
+       composition to be water.
+
+
+.. py:function:: get_ir_spectrum(frames: list[ase.Atoms], charges: numpy.ndarray, timestep: float, step: int = 1, pad: bool = True, window_type: str | None = None) -> tuple[numpy.ndarray, numpy.ndarray]
+
+   Calculate the infrared spectrum of an MD trajectory.
+
+   :param frames: frames of molecular dynamics simulations
+   :type frames: list[Atoms]
+   :param charges: charge of each atom in the Atoms
+   :type charges: numpy.ndarray
+   :param timestep: timestep between frames in seconds
+   :type timestep: float
+   :param step: Number of steps to take between frames. Default: 1
+   :type step: int
+   :param pad: Whether to pad the DACF with zeros to have the FFT be faster.
+               See https://docs.scipy.org/doc/scipy/reference/generated/scipy.fft.next_fast_len.html.
+               Default: True
+   :type pad: bool
+   :param window_type: Window type to apply to get rid of finite
+                       sampling effects. See https://docs.scipy.org/doc/scipy/reference/generated/scipy.signal.windows.get_window.html#scipy.signal.windows.get_window
+                       for options. Default: None
+   :type window_type: str | None
+
+   :returns: * **xf** (*numpy.ndarray*) -- frequencies in Hz
+             * **spectrum** (*numpy.ndarray*) -- intensity at each frequency. Arbitrary units
+
+
+.. py:function:: get_moving_average(array: numpy.ndarray, window_size: int) -> numpy.ndarray
+
+   Get the moving average of an array with a certain window size.
+
+   Taken from https://stackoverflow.com/a/14314054.
+
+   :param array: array to be smoothed of length ``N``
+   :type array: numpy.ndarray
+   :param window_size: window size
+   :type window_size: int
+
+   :returns: Array of length ``N - window_size + 1``
+   :rtype: numpy.ndarray
+
+

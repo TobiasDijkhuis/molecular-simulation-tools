@@ -19,6 +19,7 @@ Submodules
    /api/molecular_simulation_tools/io/index
    /api/molecular_simulation_tools/neb/index
    /api/molecular_simulation_tools/orca/index
+   /api/molecular_simulation_tools/properties/index
    /api/molecular_simulation_tools/utils/index
 
 
