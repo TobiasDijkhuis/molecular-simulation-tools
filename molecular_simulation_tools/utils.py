@@ -122,7 +122,7 @@ def project_on_unit_sphere(vector: np.ndarray) -> np.ndarray:
     return vector / np.linalg.norm(vector)
 
 
-def random_on_unit_sphere(n: int = 1) -> np.ndarray:
+def get_random_unit_vector(n: int = 1) -> np.ndarray:
     """Get a random vector on the unit sphere.
 
     Uses method described in https://mathworld.wolfram.com/SpherePointPicking.html
@@ -165,6 +165,6 @@ def sample_random_rotation() -> tuple[np.ndarray, float]:
         Rotation angle in radians.
 
     """
-    rotation_axis = random_on_unit_sphere()
+    rotation_axis = get_random_unit_vector()
     rotation_angle = 2 * np.pi * random()
     return rotation_axis, rotation_angle

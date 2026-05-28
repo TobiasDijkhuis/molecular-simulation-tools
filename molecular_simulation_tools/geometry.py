@@ -10,8 +10,8 @@ from scipy.spatial import ConvexHull
 
 from molecular_simulation_tools.utils import (
     correct_distance_for_pbc,
+    get_random_unit_vector,
     project_on_unit_sphere,
-    random_on_unit_sphere,
 )
 
 
@@ -367,7 +367,7 @@ def sample_new_point(
     if minimum_distance <= 0.0 or initial_spawn_distance <= 0.0:
         raise ValueError()
 
-    r_unit = random_on_unit_sphere()
+    r_unit = get_random_unit_vector()
     r_vec = r_unit * initial_spawn_distance
 
     distances = np.linalg.norm(points - r_vec, axis=1)
