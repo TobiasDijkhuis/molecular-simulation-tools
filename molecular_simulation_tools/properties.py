@@ -80,7 +80,7 @@ def get_moving_average(array: np.ndarray, window_size: int) -> np.ndarray:
 
     """
     array = np.cumsum(array, dtype=float)
-    array[window_size:] -= array[:-window_size]
+    array[window_size:] = array[window_size:] - array[:-window_size]  # noqa: PLR6104
     return array[window_size - 1 :] / window_size
 
 
