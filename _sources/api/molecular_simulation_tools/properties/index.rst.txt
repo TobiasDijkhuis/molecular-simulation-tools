@@ -14,6 +14,7 @@ Functions
 
 .. autoapisummary::
 
+   molecular_simulation_tools.properties.calculate_radial_distribution_function
    molecular_simulation_tools.properties.get_autocorrelation_function
    molecular_simulation_tools.properties.get_dipole_moment
    molecular_simulation_tools.properties.get_h2o_charges
@@ -23,6 +24,27 @@ Functions
 
 Module Contents
 ---------------
+
+.. py:function:: calculate_radial_distribution_function(images: list[ase.Atoms], elements: str | int | list | tuple | None = None, rmax: float = 6, nbins: int = 200) -> tuple[numpy.ndarray, numpy.ndarray, numpy.ndarray]
+
+   Calculate the radial distribution function (RDF).
+
+   :param images: List of frames
+   :type images: list[Atoms]
+   :param elements: List of elements to calculate the RDF for. If None, calculate it for all
+                    elements. Default = None.
+   :type elements: str | int | list | tuple | None
+   :param rmax: Mamximum distance to calculate the RDF for in Angstrom. Default = 6.
+   :type rmax: float
+   :param nbins: number of bins to calculate between 0 and `rmax`. Default = 200.
+   :type nbins: int
+
+   :returns: * **distances** (*numpy.ndarray*) -- Array of distances
+             * **average_rdf** (*numpy.ndarray*) -- Average RDF over all frames at each distance
+             * **std_rdf** (*numpy.ndarray*) -- Standard deviation of the RDF over all frames at each distance
+
+   :raises RuntimeError: If something went wrong with the distances.
+
 
 .. py:function:: get_autocorrelation_function(x: numpy.ndarray) -> numpy.ndarray
 

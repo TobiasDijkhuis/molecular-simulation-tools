@@ -78,8 +78,67 @@
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">from</span> <span class="nn">ase</span> <span class="kn">import</span> <span class="n">Atoms</span>
 <span class="kn">from</span> <span class="nn">ase.calculators.tip4p</span> <span class="kn">import</span> <span class="n">qH</span>
+<span class="kn">from</span> <span class="nn">ase.geometry.analysis</span> <span class="kn">import</span> <span class="n">Analysis</span>
 <span class="kn">from</span> <span class="nn">scipy.fft</span> <span class="kn">import</span> <span class="n">fft</span><span class="p">,</span> <span class="n">fftfreq</span><span class="p">,</span> <span class="n">next_fast_len</span>
 <span class="kn">from</span> <span class="nn">scipy.signal</span> <span class="kn">import</span> <span class="n">correlate</span><span class="p">,</span> <span class="n">get_window</span>
+
+
+<div class="viewcode-block" id="calculate_radial_distribution_function">
+<a class="viewcode-back" href="../../api/molecular_simulation_tools/properties/index.html#molecular_simulation_tools.properties.calculate_radial_distribution_function">[docs]</a>
+<span class="k">def</span> <span class="nf">calculate_radial_distribution_function</span><span class="p">(</span>
+    <span class="n">images</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">Atoms</span><span class="p">],</span>
+    <span class="n">elements</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="nb">int</span> <span class="o">|</span> <span class="nb">list</span> <span class="o">|</span> <span class="nb">tuple</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">rmax</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">6</span><span class="p">,</span>
+    <span class="n">nbins</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">200</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Calculate the radial distribution function (RDF).</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    images : list[Atoms]</span>
+<span class="sd">        List of frames</span>
+<span class="sd">    elements : str | int | list | tuple | None</span>
+<span class="sd">        List of elements to calculate the RDF for. If None, calculate it for all</span>
+<span class="sd">        elements. Default = None.</span>
+<span class="sd">    rmax : float</span>
+<span class="sd">        Mamximum distance to calculate the RDF for in Angstrom. Default = 6.</span>
+<span class="sd">    nbins : int</span>
+<span class="sd">        number of bins to calculate between 0 and `rmax`. Default = 200.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    distances : np.ndarray</span>
+<span class="sd">        Array of distances</span>
+<span class="sd">    average_rdf : np.ndarray</span>
+<span class="sd">        Average RDF over all frames at each distance</span>
+<span class="sd">    std_rdf : np.ndarray</span>
+<span class="sd">        Standard deviation of the RDF over all frames at each distance</span>
+
+<span class="sd">    Raises</span>
+<span class="sd">    ------</span>
+<span class="sd">    RuntimeError</span>
+<span class="sd">        If something went wrong with the distances.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">analysis</span> <span class="o">=</span> <span class="n">Analysis</span><span class="p">(</span><span class="n">images</span><span class="p">)</span>
+    <span class="n">rdf_and_distances_for_each_image</span> <span class="o">=</span> <span class="n">analysis</span><span class="o">.</span><span class="n">get_rdf</span><span class="p">(</span>
+        <span class="n">rmax</span><span class="p">,</span> <span class="n">nbins</span><span class="p">,</span> <span class="n">return_dists</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">elements</span><span class="o">=</span><span class="n">elements</span>
+    <span class="p">)</span>
+    <span class="n">analysis</span><span class="o">.</span><span class="n">clear_cache</span><span class="p">()</span>
+
+    <span class="n">rdfs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span>
+        <span class="p">[</span><span class="n">rdf_and_distances</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">rdf_and_distances</span> <span class="ow">in</span> <span class="n">rdf_and_distances_for_each_image</span><span class="p">]</span>
+    <span class="p">)</span>
+    <span class="n">distances</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span>
+        <span class="p">[</span><span class="n">rdf_and_distances</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="k">for</span> <span class="n">rdf_and_distances</span> <span class="ow">in</span> <span class="n">rdf_and_distances_for_each_image</span><span class="p">]</span>
+    <span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">distances</span> <span class="o">==</span> <span class="n">distances</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
+        <span class="k">raise</span> <span class="ne">RuntimeError</span>
+
+    <span class="n">average_rdf</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">average</span><span class="p">(</span><span class="n">rdfs</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+    <span class="n">std_rdf</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">std</span><span class="p">(</span><span class="n">rdfs</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">distances</span><span class="p">,</span> <span class="n">average_rdf</span><span class="p">,</span> <span class="n">std_rdf</span></div>
+
 
 
 <div class="viewcode-block" id="get_dipole_moment">

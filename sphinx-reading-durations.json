@@ -1,11 +1,11 @@
 {
-    "api/index": 0.013,
+    "api/index": 0.012,
     "api/molecular_simulation_tools/geometry/index": 0.051,
     "api/molecular_simulation_tools/index": 0.002,
     "api/molecular_simulation_tools/io/index": 0.008,
-    "api/molecular_simulation_tools/neb/index": 0.032,
-    "api/molecular_simulation_tools/orca/index": 0.13,
-    "api/molecular_simulation_tools/properties/index": 0.025,
-    "api/molecular_simulation_tools/utils/index": 0.026,
+    "api/molecular_simulation_tools/neb/index": 0.112,
+    "api/molecular_simulation_tools/orca/index": 0.012,
+    "api/molecular_simulation_tools/properties/index": 0.032,
+    "api/molecular_simulation_tools/utils/index": 0.024,
     "index": 0.002
 }
