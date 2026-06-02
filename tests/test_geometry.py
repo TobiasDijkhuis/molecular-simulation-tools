@@ -5,6 +5,7 @@ from ase import Atoms
 from molecular_simulation_tools.geometry import (
     calculate_rmsd,
     construct_grid_in_cell,
+    cut_out_atoms_within_radius,
     discretize_cell_length,
     find_min_height_for_distance,
     icosahedron_unit_sphere,
@@ -204,3 +205,37 @@ def test_icosahedron_unit_sphere_shapes(level, expected_number_of_vertices):
     vertices = icosahedron_unit_sphere(level=level)
     assert np.shape(np.unique(vertices, axis=0)) == np.shape(vertices)
     assert np.shape(vertices)[0] == expected_number_of_vertices
+
+
+cutout_data = [
+    (
+        Atoms("H2O", positions=[[0, 0, 0], [0, 0, 1], [0, 0, 2]]),
+        np.array([0, 0, 0]),
+        0.5,
+        np.array([[0, 0, 0]]),
+    ),
+    (
+        Atoms("H2O", positions=[[0, 0, 0], [0, 0, 1], [0, 0, 2]]),
+        np.array([0, 0, 0]),
+        1,
+        np.array([[0, 0, 0], [0, 0, 1]]),
+    ),
+    (
+        Atoms(
+            "H2O", positions=[[0, 0, 0], [0, 0, 1], [0, 0, 2]], cell=[3, 3, 3], pbc=True
+        ),
+        np.array([0, 0, 0]),
+        1,
+        np.array([[0, 0, 0], [0, 0, 1], [0, 0, -1]]),
+    ),
+]
+
+
+@pytest.mark.parametrize("atoms, center, radius, expected_positions", cutout_data)
+def test_cut_out_atoms_within_radius(atoms, center, radius, expected_positions):
+    cutout_atoms = cut_out_atoms_within_radius(
+        atoms, center, radius, keep_molecules_intact=False
+    )
+    assert np.all(np.linalg.norm(cutout_atoms.positions - center, axis=1) <= radius)
+    assert np.shape(expected_positions)[0] == np.shape(cutout_atoms.positions)[0]
+    assert np.allclose(expected_positions, cutout_atoms.positions)

@@ -59,7 +59,11 @@ def cut_out_atoms_within_radius(
     """
     center = np.asarray(center)
 
-    if atoms.cell is not None and radius >= 0.5 * np.min(atoms.cell.lengths()):
+    if (
+        atoms.cell is not None
+        and not np.all(atoms.cell == 0)
+        and radius >= 0.5 * np.min(atoms.cell.lengths())
+    ):
         msg = f"Radius of {radius} Angstrom is too big for cell. Would include same atoms multiple times."
         raise ValueError(msg)
 
