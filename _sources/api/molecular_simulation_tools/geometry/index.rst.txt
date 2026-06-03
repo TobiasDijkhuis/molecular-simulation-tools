@@ -20,6 +20,7 @@ Functions
    molecular_simulation_tools.geometry.discretize_cell_length
    molecular_simulation_tools.geometry.find_min_height_for_adsorbate_on_surface
    molecular_simulation_tools.geometry.find_min_height_for_distance
+   molecular_simulation_tools.geometry.get_constraint_outside_radius
    molecular_simulation_tools.geometry.icosahedron_unit_sphere
    molecular_simulation_tools.geometry.sample_new_point
 
@@ -67,14 +68,14 @@ Module Contents
              * **Y** (*numpy.ndarray*) -- Grid of y coordinates
 
 
-.. py:function:: cut_out_atoms_within_radius(atoms: ase.Atoms, center: numpy.ndarray | list, radius: float, keep_molecules_intact: bool = True, allowed_molecules: list[str] | set[str] | None = None) -> ase.Atoms
+.. py:function:: cut_out_atoms_within_radius(atoms: ase.Atoms, center: numpy.ndarray, radius: float, keep_molecules_intact: bool = True, allowed_molecules: list[str] | set[str] | None = None) -> ase.Atoms
 
    Cut out atoms within a radius from some position.
 
    :param atoms: Atoms to be cut out
    :type atoms: Atoms
    :param center: Center of sphere to be cut
-   :type center: numpy.ndarray | list
+   :type center: numpy.ndarray
    :param radius: Radius of sphere to be cut in Angstrom.
    :type radius: float
    :param keep_molecules_intact: Identify molecules using :func:`identify_molecules`, and keep each molecule
@@ -161,6 +162,21 @@ Module Contents
 
    :raises ValueError: If no points within radius `distance` from ``(x, y)``
        are found in `point_coordinates` (in a 2D projection).
+
+
+.. py:function:: get_constraint_outside_radius(atoms: ase.Atoms, center: numpy.ndarray, radius: float) -> ase.constraints.fix_atoms.FixAtoms
+
+   Get a constraint that fixes atoms outside a certain radius.
+
+   :param atoms: Atoms to keep (un)constrained
+   :type atoms: Atoms
+   :param center: Center of sphere
+   :type center: numpy.ndarray
+   :param radius: Radius to keep unconstrained
+   :type radius: float
+
+   :returns: Constraint that fixes atoms outside radius `radius` from center `center`.
+   :rtype: FixAtoms
 
 
 .. py:function:: icosahedron_unit_sphere(level: int = 0, subdivision: int = 2) -> numpy.ndarray

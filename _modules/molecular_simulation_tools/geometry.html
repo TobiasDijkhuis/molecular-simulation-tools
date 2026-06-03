@@ -80,6 +80,7 @@
 
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">from</span> <span class="nn">ase</span> <span class="kn">import</span> <span class="n">Atoms</span>
+<span class="kn">from</span> <span class="nn">ase.constraints.fix_atoms</span> <span class="kn">import</span> <span class="n">FixAtoms</span>
 <span class="kn">from</span> <span class="nn">ase.geometry</span> <span class="kn">import</span> <span class="n">conditional_find_mic</span><span class="p">,</span> <span class="n">find_mic</span>
 <span class="kn">from</span> <span class="nn">scipy.spatial</span> <span class="kn">import</span> <span class="n">ConvexHull</span>
 
@@ -91,11 +92,38 @@
 <span class="p">)</span>
 
 
+<div class="viewcode-block" id="get_constraint_outside_radius">
+<a class="viewcode-back" href="../../api/molecular_simulation_tools/geometry/index.html#molecular_simulation_tools.geometry.get_constraint_outside_radius">[docs]</a>
+<span class="k">def</span> <span class="nf">get_constraint_outside_radius</span><span class="p">(</span>
+    <span class="n">atoms</span><span class="p">:</span> <span class="n">Atoms</span><span class="p">,</span> <span class="n">center</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">radius</span><span class="p">:</span> <span class="nb">float</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">FixAtoms</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Get a constraint that fixes atoms outside a certain radius.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    atoms : Atoms</span>
+<span class="sd">        Atoms to keep (un)constrained</span>
+<span class="sd">    center : np.ndarray</span>
+<span class="sd">        Center of sphere</span>
+<span class="sd">    radius : float</span>
+<span class="sd">        Radius to keep unconstrained</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    FixAtoms</span>
+<span class="sd">        Constraint that fixes atoms outside radius `radius` from center `center`.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">_</span><span class="p">,</span> <span class="n">vlen</span> <span class="o">=</span> <span class="n">find_mic</span><span class="p">(</span><span class="n">atoms</span><span class="o">.</span><span class="n">positions</span> <span class="o">-</span> <span class="n">center</span><span class="p">,</span> <span class="n">cell</span><span class="o">=</span><span class="n">atoms</span><span class="o">.</span><span class="n">cell</span><span class="p">,</span> <span class="n">pbc</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">FixAtoms</span><span class="p">(</span><span class="n">mask</span><span class="o">=</span><span class="n">vlen</span> <span class="o">&gt;</span> <span class="n">radius</span><span class="p">)</span></div>
+
+
+
 <div class="viewcode-block" id="cut_out_atoms_within_radius">
 <a class="viewcode-back" href="../../api/molecular_simulation_tools/geometry/index.html#molecular_simulation_tools.geometry.cut_out_atoms_within_radius">[docs]</a>
 <span class="k">def</span> <span class="nf">cut_out_atoms_within_radius</span><span class="p">(</span>
     <span class="n">atoms</span><span class="p">:</span> <span class="n">Atoms</span><span class="p">,</span>
-    <span class="n">center</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span> <span class="o">|</span> <span class="nb">list</span><span class="p">,</span>
+    <span class="n">center</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
     <span class="n">radius</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
     <span class="n">keep_molecules_intact</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
     <span class="n">allowed_molecules</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="nb">set</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -106,7 +134,7 @@
 <span class="sd">    ----------</span>
 <span class="sd">    atoms : Atoms</span>
 <span class="sd">        Atoms to be cut out</span>
-<span class="sd">    center : np.ndarray | list</span>
+<span class="sd">    center : np.ndarray</span>
 <span class="sd">        Center of sphere to be cut</span>
 <span class="sd">    radius : float</span>
 <span class="sd">        Radius of sphere to be cut in Angstrom.</span>
@@ -134,8 +162,6 @@
 <span class="sd">        If a non-allowed molecule is within `radius` of `center`.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">center</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">center</span><span class="p">)</span>
-
     <span class="k">if</span> <span class="p">(</span>
         <span class="n">atoms</span><span class="o">.</span><span class="n">cell</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
         <span class="ow">and</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">atoms</span><span class="o">.</span><span class="n">cell</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span>
