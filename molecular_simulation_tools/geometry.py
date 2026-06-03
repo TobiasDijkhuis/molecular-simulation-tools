@@ -5,6 +5,7 @@ import sys
 
 import numpy as np
 from ase import Atoms
+from ase.constraints.fix_atoms import FixAtoms
 from ase.geometry import conditional_find_mic, find_mic
 from scipy.spatial import ConvexHull
 
@@ -16,9 +17,33 @@ from molecular_simulation_tools.utils import (
 )
 
 
+def get_constraint_outside_radius(
+    atoms: Atoms, center: np.ndarray, radius: float
+) -> FixAtoms:
+    """Get a constraint that fixes atoms outside a certain radius.
+
+    Parameters
+    ----------
+    atoms : Atoms
+        Atoms to keep (un)constrained
+    center : np.ndarray
+        Center of sphere
+    radius : float
+        Radius to keep unconstrained
+
+    Returns
+    -------
+    FixAtoms
+        Constraint that fixes atoms outside radius `radius` from center `center`.
+
+    """
+    _, vlen = find_mic(atoms.positions - center, cell=atoms.cell, pbc=True)
+    return FixAtoms(mask=vlen > radius)
+
+
 def cut_out_atoms_within_radius(
     atoms: Atoms,
-    center: np.ndarray | list,
+    center: np.ndarray,
     radius: float,
     keep_molecules_intact: bool = True,
     allowed_molecules: list[str] | set[str] | None = None,
@@ -29,7 +54,7 @@ def cut_out_atoms_within_radius(
     ----------
     atoms : Atoms
         Atoms to be cut out
-    center : np.ndarray | list
+    center : np.ndarray
         Center of sphere to be cut
     radius : float
         Radius of sphere to be cut in Angstrom.
@@ -57,8 +82,6 @@ def cut_out_atoms_within_radius(
         If a non-allowed molecule is within `radius` of `center`.
 
     """
-    center = np.asarray(center)
-
     if (
         atoms.cell is not None
         and not np.all(atoms.cell == 0)

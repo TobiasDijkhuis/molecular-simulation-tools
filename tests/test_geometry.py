@@ -1,6 +1,7 @@
 import numpy as np
 import pytest
 from ase import Atoms
+from ase.constraints.fix_atoms import FixAtoms
 
 from molecular_simulation_tools.geometry import (
     calculate_rmsd,
@@ -8,6 +9,7 @@ from molecular_simulation_tools.geometry import (
     cut_out_atoms_within_radius,
     discretize_cell_length,
     find_min_height_for_distance,
+    get_constraint_outside_radius,
     icosahedron_unit_sphere,
     sample_new_point,
 )
@@ -239,3 +241,35 @@ def test_cut_out_atoms_within_radius(atoms, center, radius, expected_positions):
     assert np.all(np.linalg.norm(cutout_atoms.positions - center, axis=1) <= radius)
     assert np.shape(expected_positions)[0] == np.shape(cutout_atoms.positions)[0]
     assert np.allclose(expected_positions, cutout_atoms.positions)
+
+
+constraint_data = [
+    (
+        Atoms("H2O", positions=[[0, 0, 0], [0, 0, 1], [0, 0, 2]]),
+        np.array([0, 0, 0]),
+        0.5,
+        FixAtoms(indices=[1, 2]),
+    ),
+    (
+        Atoms("H2O", positions=[[0, 0, 0], [0, 0, 1], [0, 0, 2]]),
+        np.array([0, 0, 0]),
+        1,
+        FixAtoms(indices=[2]),
+    ),
+    (
+        Atoms(
+            "H2O", positions=[[0, 0, 0], [0, 0, 1], [0, 0, 2]], cell=[3, 3, 3], pbc=True
+        ),
+        np.array([0, 0, 0]),
+        1,
+        FixAtoms(indices=[]),
+    ),
+]
+
+
+@pytest.mark.parametrize("atoms, center, radius, expected_constraint", constraint_data)
+def test_get_constraint_outside_radius(atoms, center, radius, expected_constraint):
+    assert all(
+        get_constraint_outside_radius(atoms, center, radius).get_indices()
+        == expected_constraint.get_indices()
+    )

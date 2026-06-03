@@ -56,6 +56,7 @@ def run_energy_weighted_neb(
     optimizer: type[Optimizer] = LBFGS,
     interpolate: Literal["linear", "idpp"] | None = None,
     neb_kwargs: dict[str, Any] | None = None,
+    optimizer_kwargs: dict[str, Any] | None = None,
 ) -> NEB:
     """Do an energy-weighted climbing image nudged elastic band (EW-CI-NEB) calculation.
 
@@ -75,7 +76,10 @@ def run_energy_weighted_neb(
         Method to interpolate see :meth:`ase.mep.neb.NEB.interpolate`.
         If None, do not interpolate images. Default = None.
     neb_kwargs : dict[str, Any] | None
-        Keyword arguments passed to :class:`ase.mep.neb.NEB`. Default = None.
+        Keyword arguments passed to :class:`ase.mep.neb.NEB` upon instantiation.
+        Default = None.
+    optimizer_kwargs : dict[str, Any] | None
+        Keyword arguments passed to `optimizer` upon instantiation. Default = None.
 
     Returns
     -------
@@ -85,20 +89,84 @@ def run_energy_weighted_neb(
     """
     if neb_kwargs is None:
         neb_kwargs = {}
+    if optimizer_kwargs is None:
+        optimizer_kwargs = {}
     neb = NEB(
         images,
         **neb_kwargs,
     )
     if interpolate is not None:
-        neb.images = neb.interpolate(method=interpolate, mic=images[0].pbc)
+        neb.interpolate(method=interpolate, mic=all(images[0].pbc))
 
     for image in neb.images:
         image.calc = calc
 
-    with optimizer(neb, logfile=None) as opt:  # ty: ignore[invalid-argument-type]
+    with optimizer(neb, **optimizer_kwargs) as opt:  # ty: ignore[invalid-argument-type]
         opt.run(fmax=fmax)
-        print("EW NEB:", opt.nsteps)
     return neb
+
+
+def run_zoom_neb(
+    images: list[Atoms],
+    calc: Calculator,
+    fmax: float = 0.1,
+    fmax_zoom: float = 0.05,
+    energy_weighted_neb_kwargs: dict[str, Any] | None = None,
+) -> tuple[NEB, NEB]:
+    """Run a ZOOM-NEB calculation.
+
+    A ZOOM-NEB calculation consists of first doing a regular NEB calculation,
+    and then a NEB calculation taking the images (in this case) one before and one
+    after the TS guess to be the new endpoints.
+    See https://www.faccts.de/docs/orca/6.1/manual/contents/structurereactivity/neb.html
+
+    Parameters
+    ----------
+    images : list[Atoms]
+        List of images to find the minimum energy path for.
+    calc : Calculator
+        Calculator that can calculate the potential energy and forces of the images.
+    fmax : float
+        Maximum force component criterion on the transition state in eV/Angstrom
+        to start the ZOOM. Default = 0.1.
+    fmax_zoom : float
+        Maximum force component criterion on the transition state in eV/Angstrom.
+        Default = 0.1.
+    energy_weighted_neb_kwargs : dict[str, Any] | None
+        Keyword arguments to pass to :func:`run_energy_weighted_neb`. Default = None.
+
+    Returns
+    -------
+    neb : NEB
+        Calculated minimum energy path
+    zoom_neb : NEB
+        Calculated zoomed in minimum energy path
+
+    """
+    if energy_weighted_neb_kwargs is None:
+        energy_weighted_neb_kwargs = {}
+    first_neb = run_energy_weighted_neb(
+        images,
+        calc,
+        fmax=fmax,
+        **energy_weighted_neb_kwargs,
+    )
+    indices = range(first_neb.imax - 1, first_neb.imax + 1)
+    first_neb_images = list(first_neb.iterimages())
+
+    zoom_neb_initial_images = get_images_for_neb(
+        first_neb_images[indices[0]], first_neb_images[indices[-1]], len(images)
+    )
+    zoom_neb_initial_images[len(images) // 2] = first_neb_images[first_neb.imax].copy()
+
+    zoom_neb = run_energy_weighted_neb(
+        zoom_neb_initial_images,
+        calc,
+        fmax=fmax_zoom,
+        **energy_weighted_neb_kwargs,
+    )
+
+    return first_neb, zoom_neb
 
 
 def run_neb_ts(
@@ -151,7 +219,7 @@ def run_neb_ts(
     """
     if energy_weighted_neb_kwargs is None:
         energy_weighted_neb_kwargs = {}
-    neb: NEB = run_energy_weighted_neb(images, calc, **energy_weighted_neb_kwargs)
+    neb = run_energy_weighted_neb(images, calc, **energy_weighted_neb_kwargs)
     if neb.energies is None:
         msg = (
             "NEB instance returned by 'run_energy_weighted_neb' does not have energies"
@@ -179,20 +247,20 @@ def run_neb_ts(
     displacement_vector = dr * max_displacement / np.max(lengths)
 
     # Set up the dimer
+    mask = [False] * (len(images[0]) - 4) + [True] * 4
     with DimerControl(
         initial_eigenmode_method="displacement",
         displacement_method="vector",
         logfile=None,
-        mask=[True for _ in range(len(ts_guess))],
+        mask=mask,
     ) as d_control:
         d_atoms = MinModeAtoms(ts_guess, d_control)
 
         d_atoms.displace(displacement_vector=displacement_vector)
 
         # Converge to a saddle point
-        with MinModeTranslate(d_atoms, logfile=None) as dim_rlx:
+        with MinModeTranslate(d_atoms, trajectory="ts_opt.traj") as dim_rlx:
             dim_rlx.run(fmax=fmax_ts)
-            print(dim_rlx.nsteps)
         transition_state = d_atoms.get_atoms()
 
     if replace_ts_guess:
