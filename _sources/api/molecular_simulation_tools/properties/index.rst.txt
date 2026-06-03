@@ -15,11 +15,9 @@ Functions
 .. autoapisummary::
 
    molecular_simulation_tools.properties.calculate_radial_distribution_function
-   molecular_simulation_tools.properties.get_autocorrelation_function
    molecular_simulation_tools.properties.get_dipole_moment
    molecular_simulation_tools.properties.get_h2o_charges
    molecular_simulation_tools.properties.get_ir_spectrum
-   molecular_simulation_tools.properties.get_moving_average
 
 
 Module Contents
@@ -44,17 +42,6 @@ Module Contents
              * **std_rdf** (*numpy.ndarray*) -- Standard deviation of the RDF over all frames at each distance
 
    :raises RuntimeError: If something went wrong with the distances.
-
-
-.. py:function:: get_autocorrelation_function(x: numpy.ndarray) -> numpy.ndarray
-
-   Get the autocorrelation function of x.
-
-   :param x: Array of length N
-   :type x: numpy.ndarray
-
-   :returns: Array of length N
-   :rtype: numpy.ndarray
 
 
 .. py:function:: get_dipole_moment(positions: numpy.ndarray, charges: numpy.ndarray) -> numpy.ndarray
@@ -112,20 +99,5 @@ Module Contents
 
    :returns: * **xf** (*numpy.ndarray*) -- frequencies in Hz
              * **spectrum** (*numpy.ndarray*) -- intensity at each frequency. Arbitrary units
-
-
-.. py:function:: get_moving_average(array: numpy.ndarray, window_size: int) -> numpy.ndarray
-
-   Get the moving average of an array with a certain window size.
-
-   Taken from https://stackoverflow.com/a/14314054.
-
-   :param array: array to be smoothed of length ``N``
-   :type array: numpy.ndarray
-   :param window_size: window size
-   :type window_size: int
-
-   :returns: Array of length ``N - window_size + 1``
-   :rtype: numpy.ndarray
 
 

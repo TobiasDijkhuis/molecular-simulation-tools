@@ -101,20 +101,14 @@
 <tr class="row-odd"><td><p><a class="reference internal" href="#molecular_simulation_tools.properties.calculate_radial_distribution_function" title="molecular_simulation_tools.properties.calculate_radial_distribution_function"><code class="xref py py-obj docutils literal notranslate"><span class="pre">calculate_radial_distribution_function</span></code></a>(...)</p></td>
 <td><p>Calculate the radial distribution function (RDF).</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#molecular_simulation_tools.properties.get_autocorrelation_function" title="molecular_simulation_tools.properties.get_autocorrelation_function"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_autocorrelation_function</span></code></a>(→ numpy.ndarray)</p></td>
-<td><p>Get the autocorrelation function of x.</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#molecular_simulation_tools.properties.get_dipole_moment" title="molecular_simulation_tools.properties.get_dipole_moment"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_dipole_moment</span></code></a>(→ numpy.ndarray)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#molecular_simulation_tools.properties.get_dipole_moment" title="molecular_simulation_tools.properties.get_dipole_moment"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_dipole_moment</span></code></a>(→ numpy.ndarray)</p></td>
 <td><p>Get the dipole moment of a set of point charges.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#molecular_simulation_tools.properties.get_h2o_charges" title="molecular_simulation_tools.properties.get_h2o_charges"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_h2o_charges</span></code></a>(→ numpy.ndarray)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#molecular_simulation_tools.properties.get_h2o_charges" title="molecular_simulation_tools.properties.get_h2o_charges"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_h2o_charges</span></code></a>(→ numpy.ndarray)</p></td>
 <td><p>Assign charges of H2O.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#molecular_simulation_tools.properties.get_ir_spectrum" title="molecular_simulation_tools.properties.get_ir_spectrum"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_ir_spectrum</span></code></a>(→ tuple[numpy.ndarray, numpy.ndarray])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#molecular_simulation_tools.properties.get_ir_spectrum" title="molecular_simulation_tools.properties.get_ir_spectrum"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_ir_spectrum</span></code></a>(→ tuple[numpy.ndarray, numpy.ndarray])</p></td>
 <td><p>Calculate the infrared spectrum of an MD trajectory.</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#molecular_simulation_tools.properties.get_moving_average" title="molecular_simulation_tools.properties.get_moving_average"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_moving_average</span></code></a>(→ numpy.ndarray)</p></td>
-<td><p>Get the moving average of an array with a certain window size.</p></td>
 </tr>
 </tbody>
 </table>
@@ -145,23 +139,6 @@ elements. Default = None.</p></li>
 </dd>
 <dt class="field-odd">Raises<span class="colon">:</span></dt>
 <dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#RuntimeError" title="(in Python v3.14)"><strong>RuntimeError</strong></a> – If something went wrong with the distances.</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="molecular_simulation_tools.properties.get_autocorrelation_function">
-<span class="sig-prename descclassname"><span class="pre">molecular_simulation_tools.properties.</span></span><span class="sig-name descname"><span class="pre">get_autocorrelation_function</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.4)"><span class="pre">numpy.ndarray</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.4)"><span class="pre">numpy.ndarray</span></a></span></span><a class="reference internal" href="../../../_modules/molecular_simulation_tools/properties.html#get_autocorrelation_function"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#molecular_simulation_tools.properties.get_autocorrelation_function" title="Link to this definition"></a></dt>
-<dd><p>Get the autocorrelation function of x.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>x</strong> (<a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.4)"><em>numpy.ndarray</em></a>) – Array of length N</p>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>Array of length N</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.4)">numpy.ndarray</a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -239,27 +216,6 @@ for options. Default: None</p></li>
 <li><p><strong>spectrum</strong> (<em>numpy.ndarray</em>) – intensity at each frequency. Arbitrary units</p></li>
 </ul>
 </p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="molecular_simulation_tools.properties.get_moving_average">
-<span class="sig-prename descclassname"><span class="pre">molecular_simulation_tools.properties.</span></span><span class="sig-name descname"><span class="pre">get_moving_average</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">array</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.4)"><span class="pre">numpy.ndarray</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">window_size</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.4)"><span class="pre">numpy.ndarray</span></a></span></span><a class="reference internal" href="../../../_modules/molecular_simulation_tools/properties.html#get_moving_average"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#molecular_simulation_tools.properties.get_moving_average" title="Link to this definition"></a></dt>
-<dd><p>Get the moving average of an array with a certain window size.</p>
-<p>Taken from <a class="reference external" href="https://stackoverflow.com/a/14314054">https://stackoverflow.com/a/14314054</a>.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>array</strong> (<a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.4)"><em>numpy.ndarray</em></a>) – array to be smoothed of length <code class="docutils literal notranslate"><span class="pre">N</span></code></p></li>
-<li><p><strong>window_size</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a>) – window size</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>Array of length <code class="docutils literal notranslate"><span class="pre">N</span> <span class="pre">-</span> <span class="pre">window_size</span> <span class="pre">+</span> <span class="pre">1</span></code></p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.4)">numpy.ndarray</a></p>
 </dd>
 </dl>
 </dd></dl>

@@ -17,6 +17,8 @@ Functions
    molecular_simulation_tools.utils.convert_cartesian_to_spherical
    molecular_simulation_tools.utils.convert_spherical_to_cartesian
    molecular_simulation_tools.utils.correct_distance_for_pbc
+   molecular_simulation_tools.utils.get_autocorrelation_function
+   molecular_simulation_tools.utils.get_moving_average
    molecular_simulation_tools.utils.get_random_unit_vector
    molecular_simulation_tools.utils.project_on_unit_sphere
    molecular_simulation_tools.utils.sample_random_rotation
@@ -68,6 +70,32 @@ Module Contents
    :type box_length: float
 
    :returns: **distance** -- Corrected distance
+   :rtype: numpy.ndarray
+
+
+.. py:function:: get_autocorrelation_function(x: numpy.ndarray) -> numpy.ndarray
+
+   Get the autocorrelation function of x.
+
+   :param x: Array of length N
+   :type x: numpy.ndarray
+
+   :returns: Array of length N
+   :rtype: numpy.ndarray
+
+
+.. py:function:: get_moving_average(array: numpy.ndarray, window_size: int) -> numpy.ndarray
+
+   Get the moving average of an array with a certain window size.
+
+   Taken from https://stackoverflow.com/a/14314054.
+
+   :param array: array to be smoothed of length ``N``
+   :type array: numpy.ndarray
+   :param window_size: window size
+   :type window_size: int
+
+   :returns: Array of length ``N - window_size + 1``
    :rtype: numpy.ndarray
 
 
