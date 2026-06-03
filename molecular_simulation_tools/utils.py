@@ -3,6 +3,47 @@
 from random import random
 
 import numpy as np
+from scipy.signal import correlate
+
+
+def get_autocorrelation_function(x: np.ndarray) -> np.ndarray:
+    """Get the autocorrelation function of x.
+
+    Parameters
+    ----------
+    x : np.ndarray
+        Array of length N
+
+    Returns
+    -------
+    np.ndarray
+        Array of length N
+
+    """
+    return correlate(x, x)[: len(x) + 1]
+
+
+def get_moving_average(array: np.ndarray, window_size: int) -> np.ndarray:
+    """Get the moving average of an array with a certain window size.
+
+    Taken from https://stackoverflow.com/a/14314054.
+
+    Parameters
+    ----------
+    array : np.ndarray
+        array to be smoothed of length ``N``
+    window_size : int
+        window size
+
+    Returns
+    -------
+    np.ndarray
+        Array of length ``N - window_size + 1``
+
+    """
+    array = np.cumsum(array, dtype=float)
+    array[window_size:] = array[window_size:] - array[:-window_size]  # noqa: PLR6104
+    return array[window_size - 1 :] / window_size
 
 
 def turn_grid_into_position_vectors(
