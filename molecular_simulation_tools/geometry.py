@@ -47,6 +47,7 @@ def cut_out_atoms_within_radius(
     radius: float,
     keep_molecules_intact: bool = True,
     allowed_molecules: list[str] | set[str] | None = None,
+    cutoffs: dict[str, float] | None = None,
 ) -> Atoms:
     """Cut out atoms within a radius from some position.
 
@@ -66,6 +67,9 @@ def cut_out_atoms_within_radius(
         List of elementary compositions of allowed molecules.
         Required if `keep_molecules_intact` is True, and if it False, does nothing.
         Non-allowed molecules outside of `radius` are ignored. Default = None.
+    cutoffs : dict[str, float] | None
+        cutoffs of each element. Dictionary with keys for the symbols and values
+        of the cutoff radii. If None, use the :data:`ase.data.covalent_radii`. Default: None
 
     Returns
     -------
@@ -111,7 +115,7 @@ def cut_out_atoms_within_radius(
         # fully connected to their neighbors.
         to_add: set[int] = set()
         incorrect_atoms: set[str] = set()
-        molecules = identify_molecules(atoms)
+        molecules = identify_molecules(atoms, cutoffs=cutoffs)
         for molecule in molecules:
             formula = atoms.symbols[molecule].get_chemical_formula(mode="all")
             formula = "".join(sorted(formula))
@@ -139,7 +143,8 @@ def cut_out_atoms_within_radius(
                 index_within_radius in incorrect_atoms
                 for index_within_radius in indices_within_radius
             ):
-                raise RuntimeError
+                msg = f"Incorrect atoms {incorrect_atoms} found within radius."
+                raise RuntimeError(msg)
             print(
                 f"None of the molecules that are incorrect are within {radius} Angstrom of the center {center}. Continuing."
             )
@@ -520,9 +525,6 @@ def sample_new_point(
             - minimum_distance**2
             + r_length**2
         )
-
-        # D = b**2 - 4.0 * c
-        # k = (-b + np.sqrt(D)) / (2.0)
 
         roots = np.polynomial.polynomial.polyroots([c, b, 1.0])
         k = (roots[roots >= 0.0]).min()

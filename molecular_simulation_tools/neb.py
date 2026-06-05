@@ -57,6 +57,7 @@ def run_energy_weighted_neb(
     interpolate: Literal["linear", "idpp"] | None = None,
     neb_kwargs: dict[str, Any] | None = None,
     optimizer_kwargs: dict[str, Any] | None = None,
+    climb: bool = False,
 ) -> NEB:
     """Do an energy-weighted climbing image nudged elastic band (EW-CI-NEB) calculation.
 
@@ -80,29 +81,61 @@ def run_energy_weighted_neb(
         Default = None.
     optimizer_kwargs : dict[str, Any] | None
         Keyword arguments passed to `optimizer` upon instantiation. Default = None.
+    climb : bool
+        Whether to do climbing-image (CI) NEB. This will do a two-step NEB, first just a
+        regular NEB (converged to 2*fmax), and then turn on the CI-NEB to converge to `fmax`.
+        Default = False.
 
     Returns
     -------
     neb : NEB
         Calculated minimum energy path
 
+    Raises
+    ------
+    ValueError
+        If a key ``"climb"`` is found in `neb_kwargs`.
+
     """
     if neb_kwargs is None:
         neb_kwargs = {}
     if optimizer_kwargs is None:
         optimizer_kwargs = {}
+
+    if "climb" in neb_kwargs:
+        msg = "climb should be specified directly to 'run_energy_weighted_neb', not in 'neb_kwargs'."
+        raise ValueError(msg)
+
     neb = NEB(
         images,
         **neb_kwargs,
     )
+
     if interpolate is not None:
-        neb.interpolate(method=interpolate, mic=all(images[0].pbc))
+        neb.interpolate(
+            method=interpolate, mic=all(images[0].pbc), apply_constraint=True
+        )
 
     for image in neb.images:
         image.calc = calc
 
+    first_neb_fmax = 2 * fmax if climb else fmax
     with optimizer(neb, **optimizer_kwargs) as opt:  # ty: ignore[invalid-argument-type]
-        opt.run(fmax=fmax)
+        opt.run(fmax=first_neb_fmax)
+
+    if not climb:
+        return neb
+
+    images = [image.copy() for image in neb.iterimages()]
+    for image in images:
+        image.calc = calc
+
+    if climb:
+        neb = NEB(images, climb=True, **neb_kwargs)
+
+        with optimizer(neb, **optimizer_kwargs) as opt:  # ty: ignore[invalid-argument-type]
+            opt.run(fmax=fmax)
+
     return neb
 
 
@@ -151,7 +184,7 @@ def run_zoom_neb(
         fmax=fmax,
         **energy_weighted_neb_kwargs,
     )
-    indices = range(first_neb.imax - 1, first_neb.imax + 1)
+    indices = range(first_neb.imax - 2, first_neb.imax + 2)
     first_neb_images = list(first_neb.iterimages())
 
     zoom_neb_initial_images = get_images_for_neb(

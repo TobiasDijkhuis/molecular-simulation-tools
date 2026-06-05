@@ -87,6 +87,7 @@ def test_sample_multiple_new_point(_initial_points, minimum_distance, atol, rtol
         points = sample_new_point(
             initial_point, minimum_distance, 0.2, rtol=rtol, atol=atol, n=npoints
         )
+        assert np.shape(points) == (10, 3)
         for point_idx in range(npoints):
             assert np.all(
                 np.linalg.norm(points[point_idx, :] - points, axis=1)

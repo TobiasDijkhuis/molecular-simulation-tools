@@ -6,6 +6,23 @@ import numpy as np
 from scipy.signal import correlate
 
 
+def get_nyquist_frequency(dt: float) -> float:
+    """Get the nyquist frequency.
+
+    Parameters
+    ----------
+    dt : float
+        Time between samples in s
+
+    Returns
+    -------
+    nyquist_frequency : float
+        Nyquist frequency in Hz
+
+    """
+    return 1.0 / (2.0 * dt)
+
+
 def get_autocorrelation_function(x: np.ndarray) -> np.ndarray:
     """Get the autocorrelation function of x.
 

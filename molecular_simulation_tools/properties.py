@@ -95,17 +95,13 @@ def get_dipole_moment(positions: np.ndarray, charges: np.ndarray) -> np.ndarray:
         msg = f"Charges should be neutral, but sum of charges is {np.sum(charges):.2f}"
         raise ValueError(msg)
 
-    # dipole_moment = np.zeros(3)
-    # for particle_idx in range(np.shape(positions)[0]):
-    #     dipole_moment[:] += positions[particle_idx, :] * charges[particle_idx]
-    # return dipole_moment
     return np.sum(positions * charges[:, np.newaxis], axis=0)
 
 
 def get_ir_spectrum(
     frames: list[Atoms],
-    charges: np.ndarray,
     timestep: float,
+    charges: np.ndarray | None = None,
     step: int = 1,
     pad: bool = True,
     window_type: str | None = None,
@@ -116,10 +112,11 @@ def get_ir_spectrum(
     ----------
     frames : list[Atoms]
         frames of molecular dynamics simulations
-    charges : np.ndarray
-        charge of each atom in the Atoms
     timestep : float
         timestep between frames in seconds
+    charges : np.ndarray | None
+        charge of each atom in the Atoms. If None, calculate the power spectrum
+        from the VACF instead. Default = None.
     step : int
         Number of steps to take between frames. Default: 1
     pad : bool
@@ -139,54 +136,33 @@ def get_ir_spectrum(
         intensity at each frequency. Arbitrary units
 
     """
-    # nsteps = len(frames) // step
-    dt = step * timestep
+    dt = float(step) * timestep
 
-    # dipole_moments = np.zeros(shape=(nsteps, 3))
-
+    # Positions in Angstrom
     positions = np.asarray([frame.positions for frame in frames[::step]])
+    # Velocities in m/s
     velocities = np.gradient(positions, axis=0) * 1e-10 / dt
-    charge_weighted_velocities = np.sum(velocities * charges[None, :, None], axis=1)
-
-    # for i, frame in enumerate(frames[::step]):
-    #     dipole_moments[i] = get_dipole_moment(frame.positions, charges)
-
-    # dipole_derivatives = np.gradient(dipole_moments, axis=0) / dt
+    if charges is not None:
+        charge_weighted_velocities = np.sum(velocities * charges[None, :, None], axis=1)
+    else:
+        charge_weighted_velocities = np.sum(velocities, axis=1)
 
     for i in range(3):
-        autocorr = get_autocorrelation_function(charge_weighted_velocities[:, i])
-
         if i == 0:
-            if window_type is not None:
-                window = get_window(window_type, len(autocorr))
-                autocorr *= window
-
-            if pad:
-                padded_length = next_fast_len(len(autocorr))
-            else:
-                padded_length = len(autocorr)
-
-            spectrum = np.abs(fft(autocorr, n=padded_length)) ** 2
+            autocorr = get_autocorrelation_function(charge_weighted_velocities[:, i])
         else:
-            spectrum += np.abs(fft(autocorr, n=padded_length)) ** 2
+            autocorr += get_autocorrelation_function(charge_weighted_velocities[:, i])
+
+    if pad:
+        padded_length = next_fast_len(len(autocorr))
+    else:
+        padded_length = len(autocorr)
+    if window_type is not None:
+        window = get_window(window_type, len(autocorr))
+        autocorr *= window
+
+    spectrum = np.abs(fft(autocorr, n=padded_length))
     xf = fftfreq(padded_length, dt)
-
-    # autocorr_function = np.sum(
-    #     [get_autocorrelation_function(dipole_derivatives[:, i]) for i in range(3)],
-    #     axis=0,
-    # )
-
-    # if window_type is not None:
-    #     window = get_window(window_type, len(autocorr_function))
-    #     autocorr_function *= window
-
-    # if pad:
-    #     padded_length = next_fast_len(len(autocorr_function))
-    # else:
-    #     padded_length = len(autocorr_function)
-
-    # spectrum = np.abs(fft(autocorr_function, n=padded_length))
-    # xf = fftfreq(padded_length, dt)
 
     return xf[: padded_length // 2], spectrum[: padded_length // 2]
 
