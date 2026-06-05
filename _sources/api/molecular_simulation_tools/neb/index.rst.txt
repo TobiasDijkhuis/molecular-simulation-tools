@@ -59,7 +59,7 @@ Module Contents
    :rtype: matplotlib.pyplot.Axes
 
 
-.. py:function:: run_energy_weighted_neb(images: list[ase.Atoms], calc: ase.calculators.calculator.Calculator, fmax: float = 0.05, optimizer: type[ase.optimize.optimize.Optimizer] = LBFGS, interpolate: Literal['linear', 'idpp'] | None = None, neb_kwargs: dict[str, Any] | None = None, optimizer_kwargs: dict[str, Any] | None = None) -> ase.mep.neb.NEB
+.. py:function:: run_energy_weighted_neb(images: list[ase.Atoms], calc: ase.calculators.calculator.Calculator, fmax: float = 0.05, optimizer: type[ase.optimize.optimize.Optimizer] = LBFGS, interpolate: Literal['linear', 'idpp'] | None = None, neb_kwargs: dict[str, Any] | None = None, optimizer_kwargs: dict[str, Any] | None = None, climb: bool = False) -> ase.mep.neb.NEB
 
    Do an energy-weighted climbing image nudged elastic band (EW-CI-NEB) calculation.
 
@@ -81,9 +81,15 @@ Module Contents
    :type neb_kwargs: dict[str, Any] | None
    :param optimizer_kwargs: Keyword arguments passed to `optimizer` upon instantiation. Default = None.
    :type optimizer_kwargs: dict[str, Any] | None
+   :param climb: Whether to do climbing-image (CI) NEB. This will do a two-step NEB, first just a
+                 regular NEB (converged to 2*fmax), and then turn on the CI-NEB to converge to `fmax`.
+                 Default = False.
+   :type climb: bool
 
    :returns: **neb** -- Calculated minimum energy path
    :rtype: NEB
+
+   :raises ValueError: If a key ``"climb"`` is found in `neb_kwargs`.
 
 
 .. py:function:: run_neb_ts(images: list[ase.Atoms], calc: ase.calculators.calculator.Calculator, max_displacement: float = 0.01, fmax_ts: float = 0.05, replace_ts_guess: bool = True, energy_weighted_neb_kwargs: dict[str, Any] | None = None) -> tuple[list[ase.Atoms], ase.Atoms]

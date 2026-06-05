@@ -68,7 +68,7 @@ Module Contents
              * **Y** (*numpy.ndarray*) -- Grid of y coordinates
 
 
-.. py:function:: cut_out_atoms_within_radius(atoms: ase.Atoms, center: numpy.ndarray, radius: float, keep_molecules_intact: bool = True, allowed_molecules: list[str] | set[str] | None = None) -> ase.Atoms
+.. py:function:: cut_out_atoms_within_radius(atoms: ase.Atoms, center: numpy.ndarray, radius: float, keep_molecules_intact: bool = True, allowed_molecules: list[str] | set[str] | None = None, cutoffs: dict[str, float] | None = None) -> ase.Atoms
 
    Cut out atoms within a radius from some position.
 
@@ -86,6 +86,9 @@ Module Contents
                              Required if `keep_molecules_intact` is True, and if it False, does nothing.
                              Non-allowed molecules outside of `radius` are ignored. Default = None.
    :type allowed_molecules: list[str] | set[str] | None
+   :param cutoffs: cutoffs of each element. Dictionary with keys for the symbols and values
+                   of the cutoff radii. If None, use the :data:`ase.data.covalent_radii`. Default: None
+   :type cutoffs: dict[str, float] | None
 
    :returns: **cutout_atoms** -- Cut out atoms, with their ``pbc`` and ``cell`` attributes set to False and None.
    :rtype: Atoms

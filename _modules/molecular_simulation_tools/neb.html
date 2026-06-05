@@ -137,6 +137,7 @@
     <span class="n">interpolate</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;linear&quot;</span><span class="p">,</span> <span class="s2">&quot;idpp&quot;</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">neb_kwargs</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">optimizer_kwargs</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">climb</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">NEB</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Do an energy-weighted climbing image nudged elastic band (EW-CI-NEB) calculation.</span>
 
@@ -160,29 +161,61 @@
 <span class="sd">        Default = None.</span>
 <span class="sd">    optimizer_kwargs : dict[str, Any] | None</span>
 <span class="sd">        Keyword arguments passed to `optimizer` upon instantiation. Default = None.</span>
+<span class="sd">    climb : bool</span>
+<span class="sd">        Whether to do climbing-image (CI) NEB. This will do a two-step NEB, first just a</span>
+<span class="sd">        regular NEB (converged to 2*fmax), and then turn on the CI-NEB to converge to `fmax`.</span>
+<span class="sd">        Default = False.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    neb : NEB</span>
 <span class="sd">        Calculated minimum energy path</span>
 
+<span class="sd">    Raises</span>
+<span class="sd">    ------</span>
+<span class="sd">    ValueError</span>
+<span class="sd">        If a key ``&quot;climb&quot;`` is found in `neb_kwargs`.</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">neb_kwargs</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">neb_kwargs</span> <span class="o">=</span> <span class="p">{}</span>
     <span class="k">if</span> <span class="n">optimizer_kwargs</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">optimizer_kwargs</span> <span class="o">=</span> <span class="p">{}</span>
+
+    <span class="k">if</span> <span class="s2">&quot;climb&quot;</span> <span class="ow">in</span> <span class="n">neb_kwargs</span><span class="p">:</span>
+        <span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;climb should be specified directly to &#39;run_energy_weighted_neb&#39;, not in &#39;neb_kwargs&#39;.&quot;</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+
     <span class="n">neb</span> <span class="o">=</span> <span class="n">NEB</span><span class="p">(</span>
         <span class="n">images</span><span class="p">,</span>
         <span class="o">**</span><span class="n">neb_kwargs</span><span class="p">,</span>
     <span class="p">)</span>
+
     <span class="k">if</span> <span class="n">interpolate</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">neb</span><span class="o">.</span><span class="n">interpolate</span><span class="p">(</span><span class="n">method</span><span class="o">=</span><span class="n">interpolate</span><span class="p">,</span> <span class="n">mic</span><span class="o">=</span><span class="nb">all</span><span class="p">(</span><span class="n">images</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">pbc</span><span class="p">))</span>
+        <span class="n">neb</span><span class="o">.</span><span class="n">interpolate</span><span class="p">(</span>
+            <span class="n">method</span><span class="o">=</span><span class="n">interpolate</span><span class="p">,</span> <span class="n">mic</span><span class="o">=</span><span class="nb">all</span><span class="p">(</span><span class="n">images</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">pbc</span><span class="p">),</span> <span class="n">apply_constraint</span><span class="o">=</span><span class="kc">True</span>
+        <span class="p">)</span>
 
     <span class="k">for</span> <span class="n">image</span> <span class="ow">in</span> <span class="n">neb</span><span class="o">.</span><span class="n">images</span><span class="p">:</span>
         <span class="n">image</span><span class="o">.</span><span class="n">calc</span> <span class="o">=</span> <span class="n">calc</span>
 
+    <span class="n">first_neb_fmax</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">fmax</span> <span class="k">if</span> <span class="n">climb</span> <span class="k">else</span> <span class="n">fmax</span>
     <span class="k">with</span> <span class="n">optimizer</span><span class="p">(</span><span class="n">neb</span><span class="p">,</span> <span class="o">**</span><span class="n">optimizer_kwargs</span><span class="p">)</span> <span class="k">as</span> <span class="n">opt</span><span class="p">:</span>  <span class="c1"># ty: ignore[invalid-argument-type]</span>
-        <span class="n">opt</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">fmax</span><span class="o">=</span><span class="n">fmax</span><span class="p">)</span>
+        <span class="n">opt</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">fmax</span><span class="o">=</span><span class="n">first_neb_fmax</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">climb</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">neb</span>
+
+    <span class="n">images</span> <span class="o">=</span> <span class="p">[</span><span class="n">image</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span> <span class="k">for</span> <span class="n">image</span> <span class="ow">in</span> <span class="n">neb</span><span class="o">.</span><span class="n">iterimages</span><span class="p">()]</span>
+    <span class="k">for</span> <span class="n">image</span> <span class="ow">in</span> <span class="n">images</span><span class="p">:</span>
+        <span class="n">image</span><span class="o">.</span><span class="n">calc</span> <span class="o">=</span> <span class="n">calc</span>
+
+    <span class="k">if</span> <span class="n">climb</span><span class="p">:</span>
+        <span class="n">neb</span> <span class="o">=</span> <span class="n">NEB</span><span class="p">(</span><span class="n">images</span><span class="p">,</span> <span class="n">climb</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="o">**</span><span class="n">neb_kwargs</span><span class="p">)</span>
+
+        <span class="k">with</span> <span class="n">optimizer</span><span class="p">(</span><span class="n">neb</span><span class="p">,</span> <span class="o">**</span><span class="n">optimizer_kwargs</span><span class="p">)</span> <span class="k">as</span> <span class="n">opt</span><span class="p">:</span>  <span class="c1"># ty: ignore[invalid-argument-type]</span>
+            <span class="n">opt</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">fmax</span><span class="o">=</span><span class="n">fmax</span><span class="p">)</span>
+
     <span class="k">return</span> <span class="n">neb</span></div>
 
 
@@ -234,7 +267,7 @@
         <span class="n">fmax</span><span class="o">=</span><span class="n">fmax</span><span class="p">,</span>
         <span class="o">**</span><span class="n">energy_weighted_neb_kwargs</span><span class="p">,</span>
     <span class="p">)</span>
-    <span class="n">indices</span> <span class="o">=</span> <span class="nb">range</span><span class="p">(</span><span class="n">first_neb</span><span class="o">.</span><span class="n">imax</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="n">first_neb</span><span class="o">.</span><span class="n">imax</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="n">indices</span> <span class="o">=</span> <span class="nb">range</span><span class="p">(</span><span class="n">first_neb</span><span class="o">.</span><span class="n">imax</span> <span class="o">-</span> <span class="mi">2</span><span class="p">,</span> <span class="n">first_neb</span><span class="o">.</span><span class="n">imax</span> <span class="o">+</span> <span class="mi">2</span><span class="p">)</span>
     <span class="n">first_neb_images</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">first_neb</span><span class="o">.</span><span class="n">iterimages</span><span class="p">())</span>
 
     <span class="n">zoom_neb_initial_images</span> <span class="o">=</span> <span class="n">get_images_for_neb</span><span class="p">(</span>

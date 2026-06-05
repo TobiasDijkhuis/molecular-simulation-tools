@@ -76,16 +76,17 @@ Module Contents
        composition to be water.
 
 
-.. py:function:: get_ir_spectrum(frames: list[ase.Atoms], charges: numpy.ndarray, timestep: float, step: int = 1, pad: bool = True, window_type: str | None = None) -> tuple[numpy.ndarray, numpy.ndarray]
+.. py:function:: get_ir_spectrum(frames: list[ase.Atoms], timestep: float, charges: numpy.ndarray | None = None, step: int = 1, pad: bool = True, window_type: str | None = None) -> tuple[numpy.ndarray, numpy.ndarray]
 
    Calculate the infrared spectrum of an MD trajectory.
 
    :param frames: frames of molecular dynamics simulations
    :type frames: list[Atoms]
-   :param charges: charge of each atom in the Atoms
-   :type charges: numpy.ndarray
    :param timestep: timestep between frames in seconds
    :type timestep: float
+   :param charges: charge of each atom in the Atoms. If None, calculate the power spectrum
+                   from the VACF instead. Default = None.
+   :type charges: numpy.ndarray | None
    :param step: Number of steps to take between frames. Default: 1
    :type step: int
    :param pad: Whether to pad the DACF with zeros to have the FFT be faster.

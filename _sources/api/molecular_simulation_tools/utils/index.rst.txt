@@ -19,6 +19,7 @@ Functions
    molecular_simulation_tools.utils.correct_distance_for_pbc
    molecular_simulation_tools.utils.get_autocorrelation_function
    molecular_simulation_tools.utils.get_moving_average
+   molecular_simulation_tools.utils.get_nyquist_frequency
    molecular_simulation_tools.utils.get_random_unit_vector
    molecular_simulation_tools.utils.project_on_unit_sphere
    molecular_simulation_tools.utils.sample_random_rotation
@@ -97,6 +98,17 @@ Module Contents
 
    :returns: Array of length ``N - window_size + 1``
    :rtype: numpy.ndarray
+
+
+.. py:function:: get_nyquist_frequency(dt: float) -> float
+
+   Get the nyquist frequency.
+
+   :param dt: Time between samples in s
+   :type dt: float
+
+   :returns: **nyquist_frequency** -- Nyquist frequency in Hz
+   :rtype: float
 
 
 .. py:function:: get_random_unit_vector(n: int = 1) -> numpy.ndarray
