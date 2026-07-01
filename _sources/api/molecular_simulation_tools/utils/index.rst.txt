@@ -14,6 +14,7 @@ Functions
 
 .. autoapisummary::
 
+   molecular_simulation_tools.utils.check_same_number_of_atoms
    molecular_simulation_tools.utils.convert_cartesian_to_spherical
    molecular_simulation_tools.utils.convert_spherical_to_cartesian
    molecular_simulation_tools.utils.correct_distance_for_pbc
@@ -28,6 +29,16 @@ Functions
 
 Module Contents
 ---------------
+
+.. py:function:: check_same_number_of_atoms(frames: list[ase.Atoms]) -> None
+
+   Check that all frames have the same number of atoms.
+
+   :param frames: Frames of the trajectory or calculations
+   :type frames: list[Atoms]
+
+   :raises ValueError: If not all frames have the same number of atoms as the first frame.
+
 
 .. py:function:: convert_cartesian_to_spherical(position: numpy.ndarray) -> tuple[float, float, float]
 

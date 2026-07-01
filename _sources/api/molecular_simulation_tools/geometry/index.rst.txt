@@ -15,11 +15,15 @@ Functions
 .. autoapisummary::
 
    molecular_simulation_tools.geometry.calculate_rmsd
+   molecular_simulation_tools.geometry.check_only_allowed_molecules
+   molecular_simulation_tools.geometry.complete_intact_molecules
    molecular_simulation_tools.geometry.construct_grid_in_cell
    molecular_simulation_tools.geometry.cut_out_atoms_within_radius
+   molecular_simulation_tools.geometry.cut_out_trajectory_within_radius
    molecular_simulation_tools.geometry.discretize_cell_length
    molecular_simulation_tools.geometry.find_min_height_for_adsorbate_on_surface
    molecular_simulation_tools.geometry.find_min_height_for_distance
+   molecular_simulation_tools.geometry.get_atoms_indices_within_radius
    molecular_simulation_tools.geometry.get_constraint_outside_radius
    molecular_simulation_tools.geometry.icosahedron_unit_sphere
    molecular_simulation_tools.geometry.sample_new_point
@@ -54,6 +58,44 @@ Module Contents
        `atoms` and `target`.
 
 
+.. py:function:: check_only_allowed_molecules(atoms: ase.Atoms, molecules: list[numpy.ndarray], allowed_molecules: list[str] | set[str]) -> list[list[int]] | None
+
+   Check that the indices of molecules in `molecules` are only allowed molecules.
+
+   :param atoms: Atoms to check
+   :type atoms: Atoms
+   :param molecules: List of arrays of indices corresponding to different molecules
+   :type molecules: list[numpy.ndarray]
+   :param allowed_molecules: List of elementary compositions of allowed molecules.
+   :type allowed_molecules: list[str] | set[str]
+
+   :returns: **incorrect_atoms** -- Indices of atoms that are incorrect, or None if none were found.
+   :rtype: list[list[int]] | None
+
+
+.. py:function:: complete_intact_molecules(atoms: ase.Atoms, indices: list[int] | numpy.ndarray, allowed_molecules: list[str] | set[str] | None = None, cutoffs: dict[str, float] | None = None) -> numpy.ndarray
+
+   Get the indices of atoms to keep `indices` fully connected.
+
+   Create a neighborlist of the original atoms, and then make sure that any index
+   in `indices` is kept fully connected to its neighbors.
+
+   :param atoms: Atoms to keep some parts fully connected in
+   :type atoms: Atoms
+   :param indices: Indices of atoms to keep connected.
+   :type indices: list[int] | numpy.ndarray
+   :param allowed_molecules: List of elementary compositions of allowed molecules. If not None, check
+                             that only allowed molecules are present using :func:`check_only_allowed_molecules`.
+                             Default = None.
+   :type allowed_molecules: list[str] | set[str] | None
+   :param cutoffs: cutoffs of each element. Dictionary with keys for the symbols and values
+                   of the cutoff radii. If None, use the :data:`ase.data.covalent_radii`. Default: None
+   :type cutoffs: dict[str, float] | None
+
+   :returns: **indices** -- Indices required to keep all molecules fully intact.
+   :rtype: numpy.ndarray
+
+
 .. py:function:: construct_grid_in_cell(cell: numpy.ndarray, ngrid: int | tuple[int, int]) -> tuple[numpy.ndarray, numpy.ndarray]
 
    Create a grid of points sampled equally in the cell.
@@ -82,11 +124,11 @@ Module Contents
                                  intact (i.e. if any of the atoms are inside the sphere, keep the whole molecule).
                                  Requires networkx to be installed. Default = True.
    :type keep_molecules_intact: bool
-   :param allowed_molecules: List of elementary compositions of allowed molecules.
-                             Required if `keep_molecules_intact` is True, and if it False, does nothing.
-                             Non-allowed molecules outside of `radius` are ignored. Default = None.
+   :param allowed_molecules: List of elementary compositions of allowed molecules. If not None, check
+                             that only allowed molecules are present using :func:`check_only_allowed_molecules`.
+                             Default = None.
    :type allowed_molecules: list[str] | set[str] | None
-   :param cutoffs: cutoffs of each element. Dictionary with keys for the symbols and values
+   :param cutoffs: Cutoffs for each element. Dictionary with keys for the symbols and values
                    of the cutoff radii. If None, use the :data:`ase.data.covalent_radii`. Default: None
    :type cutoffs: dict[str, float] | None
 
@@ -96,6 +138,35 @@ Module Contents
    :raises ValueError: If `radius` is more than half the minimum cell length of `atoms`.
    :raises RuntimeError: If a no atoms are found within `radius` of `center`.
    :raises RuntimeError: If a non-allowed molecule is within `radius` of `center`.
+
+
+.. py:function:: cut_out_trajectory_within_radius(frames: list[ase.Atoms], centers: list[numpy.ndarray] | numpy.ndarray, radius: float, keep_molecules_intact: bool = True, allowed_molecules: list[str] | set[str] | None = None, cutoffs: dict[str, float] | None = None) -> list[ase.Atoms]
+
+   Cut out atoms from a trajectory, keeping the same atoms in all frames.
+
+   :param frames: Trajectory to cut out.
+   :type frames: list[Atoms]
+   :param centers: Center of sphere to be cut. If a list of arrays, the center changes between
+                   frames.
+   :type centers: list[numpy.ndarray] | numpy.ndarray
+   :param radius: Radius of sphere to be cut in Angstrom.
+   :type radius: float
+   :param keep_molecules_intact: Identify molecules using :func:`identify_molecules`, and keep each molecule
+                                 intact (i.e. if any of the atoms are inside the sphere, keep the whole molecule).
+                                 Requires networkx to be installed. Default = True.
+   :type keep_molecules_intact: bool
+   :param allowed_molecules: List of elementary compositions of allowed molecules. If not None, check
+                             that only allowed molecules are present using :func:`check_only_allowed_molecules`.
+                             Default = None.
+   :type allowed_molecules: list[str] | set[str] | None
+   :param cutoffs: Cutoffs for each element. Dictionary with keys for the symbols and values
+                   of the cutoff radii. If None, use the :data:`ase.data.covalent_radii`. Default: None
+   :type cutoffs: dict[str, float] | None
+
+   :returns: **cutout_atoms** -- Cut out atoms, with their ``pbc`` and ``cell`` attributes set to False and None.
+   :rtype: list[Atoms]
+
+   :raises ValueError: If the shape of `centers` is not correct.
 
 
 .. py:function:: discretize_cell_length(length: int | float, ngrid: int) -> numpy.ndarray
@@ -165,6 +236,21 @@ Module Contents
 
    :raises ValueError: If no points within radius `distance` from ``(x, y)``
        are found in `point_coordinates` (in a 2D projection).
+
+
+.. py:function:: get_atoms_indices_within_radius(atoms: ase.Atoms, center: numpy.ndarray, radius: float) -> tuple[numpy.ndarray, numpy.ndarray]
+
+   Get the indices of all atoms within `radius` of `center`.
+
+   :param atoms: Atoms to analyze
+   :type atoms: Atoms
+   :param center: Center of sphere
+   :type center: numpy.ndarray
+   :param radius: Radius
+   :type radius: float
+
+   :returns: * **indices_within_radius** (*numpy.ndarray*) -- Array of indices within `radius` of `center`.
+             * **relative_positions** (*numpy.ndarray*) -- Relative positions of all atoms wrt `center`
 
 
 .. py:function:: get_constraint_outside_radius(atoms: ase.Atoms, center: numpy.ndarray, radius: float) -> ase.constraints.fix_atoms.FixAtoms
