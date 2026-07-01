@@ -73,7 +73,7 @@
            <div itemprop="articleBody">
              
   <h1>Source code for molecular_simulation_tools.connectivity</h1><div class="highlight"><pre>
-<span></span><span class="sd">&quot;&quot;&quot;Tools to identify molecules. Taken from IPSuite.&quot;&quot;&quot;</span>
+<span></span><span class="sd">&quot;&quot;&quot;Tools to identify molecules.&quot;&quot;&quot;</span>
 
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">from</span> <span class="nn">ase</span> <span class="kn">import</span> <span class="n">Atoms</span>
@@ -92,7 +92,7 @@
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;nx.Graph&quot;</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Convert ASE Atoms into a Graph based on their bond connectivity.</span>
 
-<span class="sd">    Requires networkx to be installed.</span>
+<span class="sd">    Requires networkx to be installed. Taken from IPSuite.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -124,7 +124,7 @@
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Identify molecules in a structure based on the connected subgraphs.</span>
 
-<span class="sd">    Requires networkx to be installed.</span>
+<span class="sd">    Requires networkx to be installed. Taken from IPSuite.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -144,6 +144,97 @@
     <span class="n">components</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">connected_components</span><span class="p">(</span><span class="n">graph</span><span class="p">)</span>
     <span class="n">c_list</span> <span class="o">=</span> <span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">c</span><span class="p">))</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">components</span><span class="p">]</span>
     <span class="k">return</span> <span class="n">c_list</span></div>
+
+
+
+<div class="viewcode-block" id="check_only_allowed_molecules">
+<a class="viewcode-back" href="../../api/molecular_simulation_tools/connectivity/index.html#molecular_simulation_tools.connectivity.check_only_allowed_molecules">[docs]</a>
+<span class="k">def</span> <span class="nf">check_only_allowed_molecules</span><span class="p">(</span>
+    <span class="n">atoms</span><span class="p">:</span> <span class="n">Atoms</span><span class="p">,</span> <span class="n">molecules</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">],</span> <span class="n">allowed_molecules</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="nb">set</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">int</span><span class="p">]]</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Check that the indices of molecules in `molecules` are only allowed molecules.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    atoms : Atoms</span>
+<span class="sd">        Atoms to check</span>
+<span class="sd">    molecules : list[np.ndarray]</span>
+<span class="sd">        List of arrays of indices corresponding to different molecules</span>
+<span class="sd">    allowed_molecules : list[str] | set[str]</span>
+<span class="sd">        List of elementary compositions of allowed molecules.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    incorrect_atoms : list[list[int]] | None</span>
+<span class="sd">        Indices of atoms that are incorrect, or None if none were found.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">incorrect_atoms</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">int</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">molecule</span> <span class="ow">in</span> <span class="n">molecules</span><span class="p">:</span>
+        <span class="n">formula</span> <span class="o">=</span> <span class="n">atoms</span><span class="o">.</span><span class="n">symbols</span><span class="p">[</span><span class="n">molecule</span><span class="p">]</span><span class="o">.</span><span class="n">get_chemical_formula</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s2">&quot;all&quot;</span><span class="p">)</span>
+        <span class="n">formula</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">sorted</span><span class="p">(</span><span class="n">formula</span><span class="p">))</span>
+        <span class="k">if</span> <span class="n">formula</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">allowed_molecules</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;Not allowed molecule with symbols &#39;</span><span class="si">{</span><span class="n">atoms</span><span class="o">.</span><span class="n">symbols</span><span class="p">[</span><span class="n">molecule</span><span class="p">]</span><span class="si">}</span><span class="s2">&#39; and formula &#39;</span><span class="si">{</span><span class="n">formula</span><span class="si">}</span><span class="s2">&#39; detected.&quot;</span>
+            <span class="p">)</span>
+            <span class="n">incorrect_atoms</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">molecule</span><span class="p">))</span>
+            <span class="k">continue</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">incorrect_atoms</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">None</span>
+    <span class="k">return</span> <span class="n">incorrect_atoms</span></div>
+
+
+
+<div class="viewcode-block" id="complete_intact_molecules">
+<a class="viewcode-back" href="../../api/molecular_simulation_tools/connectivity/index.html#molecular_simulation_tools.connectivity.complete_intact_molecules">[docs]</a>
+<span class="k">def</span> <span class="nf">complete_intact_molecules</span><span class="p">(</span>
+    <span class="n">atoms</span><span class="p">:</span> <span class="n">Atoms</span><span class="p">,</span>
+    <span class="n">indices</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">|</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+    <span class="n">allowed_molecules</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="nb">set</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">cutoffs</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Get the indices of atoms to keep `indices` fully connected.</span>
+
+<span class="sd">    Create a neighborlist of the original atoms, and then make sure that any index</span>
+<span class="sd">    in `indices` is kept fully connected to its neighbors.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    atoms : Atoms</span>
+<span class="sd">        Atoms to keep some parts fully connected in</span>
+<span class="sd">    indices : list[int] | np.ndarray</span>
+<span class="sd">        Indices of atoms to keep connected.</span>
+<span class="sd">    allowed_molecules : list[str] | set[str] | None</span>
+<span class="sd">        List of elementary compositions of allowed molecules. If not None, check</span>
+<span class="sd">        that only allowed molecules are present using :func:`check_only_allowed_molecules`.</span>
+<span class="sd">        Default = None.</span>
+<span class="sd">    cutoffs : dict[str, float] | None</span>
+<span class="sd">        cutoffs of each element. Dictionary with keys for the symbols and values</span>
+<span class="sd">        of the cutoff radii. If None, use the :data:`ase.data.covalent_radii`. Default: None</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    indices : np.ndarray</span>
+<span class="sd">        Indices required to keep all molecules fully intact.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">to_add</span><span class="p">:</span> <span class="nb">set</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+    <span class="n">molecules</span> <span class="o">=</span> <span class="n">identify_molecules</span><span class="p">(</span><span class="n">atoms</span><span class="p">,</span> <span class="n">cutoffs</span><span class="o">=</span><span class="n">cutoffs</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">allowed_molecules</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">check_only_allowed_molecules</span><span class="p">(</span><span class="n">atoms</span><span class="p">,</span> <span class="n">molecules</span><span class="p">,</span> <span class="n">allowed_molecules</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">molecule</span> <span class="ow">in</span> <span class="n">molecules</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">index</span> <span class="ow">in</span> <span class="n">indices</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">index</span> <span class="ow">in</span> <span class="n">molecule</span><span class="p">:</span>
+                <span class="n">to_add</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">molecule</span><span class="p">)</span>
+
+    <span class="n">to_add</span><span class="o">.</span><span class="n">difference_update</span><span class="p">(</span><span class="n">indices</span><span class="p">)</span>
+    <span class="n">to_add_list</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">to_add</span><span class="p">)</span>
+
+    <span class="n">where_to_insert</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">searchsorted</span><span class="p">(</span><span class="n">indices</span><span class="p">,</span> <span class="n">to_add_list</span><span class="p">)</span>
+    <span class="n">indices</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">indices</span><span class="p">,</span> <span class="n">where_to_insert</span><span class="p">,</span> <span class="n">to_add_list</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">indices</span></div>
 
 </pre></div>
 

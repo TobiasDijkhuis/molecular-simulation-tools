@@ -5,7 +5,7 @@ molecular_simulation_tools.connectivity
 
 .. autoapi-nested-parse::
 
-   Tools to identify molecules. Taken from IPSuite.
+   Tools to identify molecules.
 
 
 
@@ -14,17 +14,57 @@ Functions
 
 .. autoapisummary::
 
+   molecular_simulation_tools.connectivity.check_only_allowed_molecules
+   molecular_simulation_tools.connectivity.complete_intact_molecules
    molecular_simulation_tools.connectivity.identify_molecules
 
 
 Module Contents
 ---------------
 
+.. py:function:: check_only_allowed_molecules(atoms: ase.Atoms, molecules: list[numpy.ndarray], allowed_molecules: list[str] | set[str]) -> list[list[int]] | None
+
+   Check that the indices of molecules in `molecules` are only allowed molecules.
+
+   :param atoms: Atoms to check
+   :type atoms: Atoms
+   :param molecules: List of arrays of indices corresponding to different molecules
+   :type molecules: list[numpy.ndarray]
+   :param allowed_molecules: List of elementary compositions of allowed molecules.
+   :type allowed_molecules: list[str] | set[str]
+
+   :returns: **incorrect_atoms** -- Indices of atoms that are incorrect, or None if none were found.
+   :rtype: list[list[int]] | None
+
+
+.. py:function:: complete_intact_molecules(atoms: ase.Atoms, indices: list[int] | numpy.ndarray, allowed_molecules: list[str] | set[str] | None = None, cutoffs: dict[str, float] | None = None) -> numpy.ndarray
+
+   Get the indices of atoms to keep `indices` fully connected.
+
+   Create a neighborlist of the original atoms, and then make sure that any index
+   in `indices` is kept fully connected to its neighbors.
+
+   :param atoms: Atoms to keep some parts fully connected in
+   :type atoms: Atoms
+   :param indices: Indices of atoms to keep connected.
+   :type indices: list[int] | numpy.ndarray
+   :param allowed_molecules: List of elementary compositions of allowed molecules. If not None, check
+                             that only allowed molecules are present using :func:`check_only_allowed_molecules`.
+                             Default = None.
+   :type allowed_molecules: list[str] | set[str] | None
+   :param cutoffs: cutoffs of each element. Dictionary with keys for the symbols and values
+                   of the cutoff radii. If None, use the :data:`ase.data.covalent_radii`. Default: None
+   :type cutoffs: dict[str, float] | None
+
+   :returns: **indices** -- Indices required to keep all molecules fully intact.
+   :rtype: numpy.ndarray
+
+
 .. py:function:: identify_molecules(atoms: ase.Atoms, cutoffs: dict[str, float] | None = None) -> list[numpy.ndarray]
 
    Identify molecules in a structure based on the connected subgraphs.
 
-   Requires networkx to be installed.
+   Requires networkx to be installed. Taken from IPSuite.
 
    :param atoms: Atoms instance to identify molecules in
    :type atoms: Atoms
