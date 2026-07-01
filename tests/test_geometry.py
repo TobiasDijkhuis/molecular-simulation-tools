@@ -7,6 +7,7 @@ from molecular_simulation_tools.geometry import (
     calculate_rmsd,
     construct_grid_in_cell,
     cut_out_atoms_within_radius,
+    cut_out_trajectory_within_radius,
     discretize_cell_length,
     find_min_height_for_distance,
     get_constraint_outside_radius,
@@ -244,9 +245,39 @@ def test_cut_out_atoms_within_radius(atoms, center, radius, expected_positions):
     assert np.allclose(expected_positions, cutout_atoms.positions)
 
 
-@pytest.mark.parametrize("frames, center, radius, expected_frames", cutout_data)
-def test_cut_out_trajectory_within_radius(frames, center, radius, expected_frames):
-    raise NotImplementedError
+cutout_from_trajectory_data = [
+    (
+        [Atoms("H2O", positions=[[0, 0, 0], [0, 0, 1], [0, 0, 2]])] * 2,
+        [np.array([0, 0, 0]), np.array([0, 0, 1])],
+        0.5,
+        [np.array([[0, 0, 0], [0, 0, 1]]), np.array([[0, 0, -1], [0, 0, 0]])],
+    ),
+    (
+        [Atoms("H2O", positions=[[0, 0, 0], [0, 0, 1], [0, 0, 2]])] * 3,
+        [np.array([0, 0, 0]), np.array([0, 0, 0.5]), np.array([0, 0, 1])],
+        0.25,
+        [
+            np.array([[0, 0, 0], [0, 0, 1]]),
+            np.array([[0, 0, -0.5], [0, 0, 0.5]]),
+            np.array([[0, 0, -1], [0, 0, 0]]),
+        ],
+    ),
+]
+
+
+@pytest.mark.parametrize(
+    "frames, centers, radius, expected_positions", cutout_from_trajectory_data
+)
+def test_cut_out_trajectory_within_radius(frames, centers, radius, expected_positions):
+    trajectory_within_radius = cut_out_trajectory_within_radius(
+        frames, centers, radius, keep_molecules_intact=False
+    )
+
+    for frame_idx in range(len(frames)):
+        assert np.all(
+            expected_positions[frame_idx]
+            == trajectory_within_radius[frame_idx].positions
+        )
 
 
 constraint_data = [
