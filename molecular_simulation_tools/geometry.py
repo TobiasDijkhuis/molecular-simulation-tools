@@ -6,11 +6,12 @@ import sys
 import numpy as np
 from ase import Atoms
 from ase.constraints.fix_atoms import FixAtoms
-from ase.geometry import conditional_find_mic, find_mic
+from ase.geometry import find_mic
 from scipy.spatial import ConvexHull
 
 from molecular_simulation_tools.connectivity import identify_molecules
 from molecular_simulation_tools.utils import (
+    check_same_number_of_atoms,
     correct_distance_for_pbc,
     get_random_unit_vector,
     project_on_unit_sphere,
@@ -41,6 +42,120 @@ def get_constraint_outside_radius(
     return FixAtoms(mask=vlen > radius)
 
 
+def get_atoms_indices_within_radius(
+    atoms: Atoms, center: np.ndarray, radius: float
+) -> tuple[np.ndarray, np.ndarray]:
+    """Get the indices of all atoms within `radius` of `center`.
+
+    Parameters
+    ----------
+    atoms : Atoms
+        Atoms to analyze
+    center : np.ndarray
+        Center of sphere
+    radius : float
+        Radius
+
+    Returns
+    -------
+    indices_within_radius : np.ndarray
+        Array of indices within `radius` of `center`.
+    relative_positions : np.ndarray
+        Relative positions of all atoms wrt `center`
+
+    """
+    relative_positions, vlen = find_mic(
+        atoms.positions - center, cell=atoms.cell, pbc=True
+    )
+    indices_within_radius = np.flatnonzero(vlen <= radius)
+    return indices_within_radius, relative_positions
+
+
+def check_only_allowed_molecules(
+    atoms: Atoms, molecules: list[np.ndarray], allowed_molecules: list[str] | set[str]
+) -> list[list[int]] | None:
+    """Check that the indices of molecules in `molecules` are only allowed molecules.
+
+    Parameters
+    ----------
+    atoms : Atoms
+        Atoms to check
+    molecules : list[np.ndarray]
+        List of arrays of indices corresponding to different molecules
+    allowed_molecules : list[str] | set[str]
+        List of elementary compositions of allowed molecules.
+
+    Returns
+    -------
+    incorrect_atoms : list[list[int]] | None
+        Indices of atoms that are incorrect, or None if none were found.
+
+    """
+    incorrect_atoms: list[list[int]] = []
+    for molecule in molecules:
+        formula = atoms.symbols[molecule].get_chemical_formula(mode="all")
+        formula = "".join(sorted(formula))
+        if formula not in allowed_molecules:
+            print(
+                f"Not allowed molecule with symbols '{atoms.symbols[molecule]}' and formula '{formula}' detected."
+            )
+            incorrect_atoms.append(list(molecule))
+            continue
+    if not incorrect_atoms:
+        return None
+    return incorrect_atoms
+
+
+def complete_intact_molecules(
+    atoms: Atoms,
+    indices: list[int] | np.ndarray,
+    allowed_molecules: list[str] | set[str] | None = None,
+    cutoffs: dict[str, float] | None = None,
+) -> np.ndarray:
+    """Get the indices of atoms to keep `indices` fully connected.
+
+    Create a neighborlist of the original atoms, and then make sure that any index
+    in `indices` is kept fully connected to its neighbors.
+
+    Parameters
+    ----------
+    atoms : Atoms
+        Atoms to keep some parts fully connected in
+    indices : list[int] | np.ndarray
+        Indices of atoms to keep connected.
+    allowed_molecules : list[str] | set[str] | None
+        List of elementary compositions of allowed molecules. If not None, check
+        that only allowed molecules are present using :func:`check_only_allowed_molecules`.
+        Default = None.
+    cutoffs : dict[str, float] | None
+        cutoffs of each element. Dictionary with keys for the symbols and values
+        of the cutoff radii. If None, use the :data:`ase.data.covalent_radii`. Default: None
+
+    Returns
+    -------
+    indices : np.ndarray
+        Indices required to keep all molecules fully intact.
+
+    """
+    to_add: set[int] = set()
+    molecules = identify_molecules(atoms, cutoffs=cutoffs)
+    if allowed_molecules is not None:
+        check_only_allowed_molecules(atoms, molecules, allowed_molecules)
+
+    for molecule in molecules:
+        for index in indices:
+            if index in molecule:
+                to_add.update(molecule)
+
+    to_add.difference_update(indices)
+    to_add_list = list(to_add)
+
+    where_to_insert = np.searchsorted(indices, to_add_list)
+    indices = np.insert(indices, where_to_insert, to_add_list)
+
+    return indices
+
+
 def cut_out_atoms_within_radius(
     atoms: Atoms,
     center: np.ndarray,
@@ -64,11 +179,11 @@ def cut_out_atoms_within_radius(
         intact (i.e. if any of the atoms are inside the sphere, keep the whole molecule).
         Requires networkx to be installed. Default = True.
     allowed_molecules : list[str] | set[str] | None
-        List of elementary compositions of allowed molecules.
-        Required if `keep_molecules_intact` is True, and if it False, does nothing.
-        Non-allowed molecules outside of `radius` are ignored. Default = None.
+        List of elementary compositions of allowed molecules. If not None, check
+        that only allowed molecules are present using :func:`check_only_allowed_molecules`.
+        Default = None.
     cutoffs : dict[str, float] | None
-        cutoffs of each element. Dictionary with keys for the symbols and values
+        Cutoffs for each element. Dictionary with keys for the symbols and values
         of the cutoff radii. If None, use the :data:`ase.data.covalent_radii`. Default: None
 
     Returns
@@ -94,66 +209,106 @@ def cut_out_atoms_within_radius(
         msg = f"Radius of {radius} Angstrom is too big for cell. Would include same atoms multiple times."
         raise ValueError(msg)
 
-    relative_positions, distance_from_center = conditional_find_mic(
-        atoms.positions - center, atoms.cell, atoms.pbc
+    indices_within_radius, relative_positions = get_atoms_indices_within_radius(
+        atoms, center, radius
     )
-    distance_from_center = np.asarray(distance_from_center)
-    relative_positions = np.asarray(relative_positions)
-    indices_within_radius = np.where(distance_from_center <= radius)[0]
 
     if indices_within_radius.size == 0:
         msg = f"No atoms were found within radius {radius} Angstrom of center {center}"
         raise RuntimeError(msg)
 
     if keep_molecules_intact:
-        if allowed_molecules is None:
-            raise ValueError
-        allowed_molecules = set(allowed_molecules)
-
-        # Create a neighborlist of the original atoms, and then
-        # make sure that any indices of `indices_within_radius` are kept
-        # fully connected to their neighbors.
-        to_add: set[int] = set()
-        incorrect_atoms: set[str] = set()
-        molecules = identify_molecules(atoms, cutoffs=cutoffs)
-        for molecule in molecules:
-            formula = atoms.symbols[molecule].get_chemical_formula(mode="all")
-            formula = "".join(sorted(formula))
-            if formula not in allowed_molecules:
-                print(
-                    f"Not allowed molecule with symbols '{atoms.symbols[molecule]}' and formula '{formula}' detected."
-                )
-                incorrect_atoms.update(molecule)
-                continue
-
-            for index in indices_within_radius:
-                if index in molecule:
-                    to_add.update(molecule)
-
-        to_add.difference_update(indices_within_radius)
-        to_add_list = list(to_add)
-
-        where_to_insert = np.searchsorted(indices_within_radius, to_add_list)
-        indices_within_radius = np.insert(
-            indices_within_radius, where_to_insert, to_add_list
+        indices_within_radius = complete_intact_molecules(
+            atoms,
+            indices_within_radius,
+            allowed_molecules=allowed_molecules,
+            cutoffs=cutoffs,
         )
-
-        if len(incorrect_atoms) != 0:
-            if any(
-                index_within_radius in incorrect_atoms
-                for index_within_radius in indices_within_radius
-            ):
-                msg = f"Incorrect atoms {incorrect_atoms} found within radius."
-                raise RuntimeError(msg)
-            print(
-                f"None of the molecules that are incorrect are within {radius} Angstrom of the center {center}. Continuing."
-            )
 
     cutout_atoms = atoms[indices_within_radius]
     cutout_atoms.positions = relative_positions[indices_within_radius, :]
 
     cutout_atoms.pbc = False
     cutout_atoms.cell = None
+
+    return cutout_atoms
+
+
+def cut_out_trajectory_within_radius(
+    frames: list[Atoms],
+    centers: list[np.ndarray] | np.ndarray,
+    radius: float,
+    keep_molecules_intact: bool = True,
+    allowed_molecules: list[str] | set[str] | None = None,
+    cutoffs: dict[str, float] | None = None,
+) -> list[Atoms]:
+    """Cut out atoms from a trajectory, keeping the same atoms in all frames.
+
+    Parameters
+    ----------
+    frames : list[Atoms]
+        Trajectory to cut out.
+    centers : list[np.ndarray] | np.ndarray
+        Center of sphere to be cut. If a list of arrays, the center changes between
+        frames.
+    radius : float
+        Radius of sphere to be cut in Angstrom.
+    keep_molecules_intact : bool
+        Identify molecules using :func:`identify_molecules`, and keep each molecule
+        intact (i.e. if any of the atoms are inside the sphere, keep the whole molecule).
+        Requires networkx to be installed. Default = True.
+    allowed_molecules : list[str] | set[str] | None
+        List of elementary compositions of allowed molecules. If not None, check
+        that only allowed molecules are present using :func:`check_only_allowed_molecules`.
+        Default = None.
+    cutoffs : dict[str, float] | None
+        Cutoffs for each element. Dictionary with keys for the symbols and values
+        of the cutoff radii. If None, use the :data:`ase.data.covalent_radii`. Default: None
+
+    Returns
+    -------
+    cutout_atoms : list[Atoms]
+        Cut out atoms, with their ``pbc`` and ``cell`` attributes set to False and None.
+
+    Raises
+    ------
+    ValueError
+        If the shape of `centers` is not correct.
+
+    """
+    check_same_number_of_atoms(frames)
+
+    if isinstance(centers, np.ndarray):
+        if centers.ndim == 1:
+            # Single array, i.e. `center` is fixed.
+            centers = [centers] * len(frames)
+        elif centers.ndim == 2:
+            # Center varies per frame
+            if centers.shape[0] != len(frames):
+                raise ValueError
+            centers = list(centers)
+
+    all_indices: set[int] = set()
+    for frame, center in zip(frames, centers, strict=True):
+        indices, _relative_positions = get_atoms_indices_within_radius(
+            frame, center, radius
+        )
+
+        if keep_molecules_intact:
+            indices = complete_intact_molecules(
+                frame, indices, allowed_molecules=allowed_molecules, cutoffs=cutoffs
+            )
+        all_indices.update(indices)
+    all_indices: list[int] = sorted(all_indices)  # type: ignore[no-redef]
+
+    cutout_atoms = [frame[all_indices] for frame in frames]
+    for frame, center in zip(cutout_atoms, centers, strict=True):
+        _, relative_positions = get_atoms_indices_within_radius(frame, center, radius)
+        frame.positions = relative_positions
+        frame.pbc = False
+        frame.cell = None
+
+    check_same_number_of_atoms(cutout_atoms)
 
     return cutout_atoms
 

@@ -244,6 +244,11 @@ def test_cut_out_atoms_within_radius(atoms, center, radius, expected_positions):
     assert np.allclose(expected_positions, cutout_atoms.positions)
 
 
+@pytest.mark.parametrize("frames, center, radius, expected_frames", cutout_data)
+def test_cut_out_trajectory_within_radius(frames, center, radius, expected_frames):
+    raise NotImplementedError
+
+
 constraint_data = [
     (
         Atoms("H2O", positions=[[0, 0, 0], [0, 0, 1], [0, 0, 2]]),

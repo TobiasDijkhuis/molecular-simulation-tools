@@ -3,6 +3,7 @@
 from random import random
 
 import numpy as np
+from ase import Atoms
 from scipy.signal import correlate
 
 
@@ -226,3 +227,22 @@ def sample_random_rotation() -> tuple[np.ndarray, float]:
     rotation_axis = get_random_unit_vector()
     rotation_angle = 2 * np.pi * random()
     return rotation_axis, rotation_angle
+
+
+def check_same_number_of_atoms(frames: list[Atoms]) -> None:
+    """Check that all frames have the same number of atoms.
+
+    Parameters
+    ----------
+    frames : list[Atoms]
+        Frames of the trajectory or calculations
+
+    Raises
+    ------
+    ValueError
+        If not all frames have the same number of atoms as the first frame.
+
+    """
+    n_atoms = len(frames[0])
+    if not all(len(frame) == n_atoms for frame in frames[1:]):
+        raise ValueError

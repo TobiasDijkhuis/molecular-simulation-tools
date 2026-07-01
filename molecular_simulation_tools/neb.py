@@ -13,6 +13,8 @@ from ase.optimize.lbfgs import LBFGS
 from ase.optimize.optimize import Optimizer
 from ase.utils.forcecurve import ForceFit, fit_images
 
+from molecular_simulation_tools.utils import check_same_number_of_atoms
+
 
 def get_images_for_neb(
     initial: Atoms,
@@ -43,6 +45,7 @@ def get_images_for_neb(
         If `n_images` is less than 3, because that would result in no intermediate images.
 
     """
+    check_same_number_of_atoms([initial, final])
     if n_images < 3:
         raise ValueError
     images = [initial.copy() for _ in range(n_images - 1)] + [final.copy()]
