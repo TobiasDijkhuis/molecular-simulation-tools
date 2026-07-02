@@ -1,12 +1,12 @@
 {
-    "api/index": 0.013,
+    "api/index": 0.014,
     "api/molecular_simulation_tools/connectivity/index": 0.027,
-    "api/molecular_simulation_tools/geometry/index": 0.182,
+    "api/molecular_simulation_tools/geometry/index": 0.202,
     "api/molecular_simulation_tools/index": 0.003,
-    "api/molecular_simulation_tools/io/index": 0.013,
-    "api/molecular_simulation_tools/neb/index": 0.06,
-    "api/molecular_simulation_tools/orca/index": 0.013,
-    "api/molecular_simulation_tools/properties/index": 0.029,
-    "api/molecular_simulation_tools/utils/index": 0.04,
-    "index": 0.002
+    "api/molecular_simulation_tools/io/index": 0.009,
+    "api/molecular_simulation_tools/neb/index": 0.048,
+    "api/molecular_simulation_tools/orca/index": 0.014,
+    "api/molecular_simulation_tools/properties/index": 0.03,
+    "api/molecular_simulation_tools/utils/index": 0.057,
+    "index": 0.003
 }
