@@ -89,7 +89,8 @@ Module Contents
    :returns: **neb** -- Calculated minimum energy path
    :rtype: NEB
 
-   :raises ValueError: If a key ``"climb"`` is found in `neb_kwargs`.
+   :raises ValueError: If a key ``"climb"`` is found in `neb_kwargs`. This should be specified directly
+       as a keyword argument to this function.
 
 
 .. py:function:: run_neb_ts(images: list[ase.Atoms], calc: ase.calculators.calculator.Calculator, max_displacement: float = 0.01, fmax_ts: float = 0.05, replace_ts_guess: bool = True, energy_weighted_neb_kwargs: dict[str, Any] | None = None) -> tuple[list[ase.Atoms], ase.Atoms]

@@ -195,8 +195,9 @@
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Get the indices of atoms to keep `indices` fully connected.</span>
 
-<span class="sd">    Create a neighborlist of the original atoms, and then make sure that any index</span>
-<span class="sd">    in `indices` is kept fully connected to its neighbors.</span>
+<span class="sd">    Create a neighborlist of the original atoms using :func:`identiy_molecules`,</span>
+<span class="sd">    and then make sure that any index in `indices` is kept fully connected</span>
+<span class="sd">    to its neighbors.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
