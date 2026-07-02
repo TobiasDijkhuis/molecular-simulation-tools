@@ -112,7 +112,7 @@ def complete_intact_molecules(
 ) -> np.ndarray:
     """Get the indices of atoms to keep `indices` fully connected.
 
-    Create a neighborlist of the original atoms using :func:`identiy_molecules`,
+    Create a neighborlist of the original atoms using :func:`identify_molecules`,
     and then make sure that any index in `indices` is kept fully connected
     to its neighbors.
 
