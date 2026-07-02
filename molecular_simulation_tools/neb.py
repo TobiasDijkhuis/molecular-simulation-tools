@@ -97,7 +97,8 @@ def run_energy_weighted_neb(
     Raises
     ------
     ValueError
-        If a key ``"climb"`` is found in `neb_kwargs`.
+        If a key ``"climb"`` is found in `neb_kwargs`. This should be specified directly
+        as a keyword argument to this function.
 
     """
     if neb_kwargs is None:

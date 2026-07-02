@@ -1,3 +1,3 @@
 """Collection of useful tools to run molecular simulations."""
 
-from . import geometry, io, neb, utils
+from . import connectivity, geometry, io, neb, orca, properties, utils
