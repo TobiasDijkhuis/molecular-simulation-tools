@@ -1,5 +1,6 @@
 """Collection of tools to run NEB calculations."""
 
+from copy import deepcopy
 from typing import Any, Literal
 
 import matplotlib.pyplot as plt
@@ -8,7 +9,7 @@ from ase import Atoms
 from ase.calculators.calculator import Calculator
 from ase.geometry import conditional_find_mic
 from ase.mep.dimer import DimerControl, MinModeAtoms, MinModeTranslate
-from ase.mep.neb import NEB, BaseNEB
+from ase.mep.neb import NEB, BaseNEB, idpp_interpolate, interpolate
 from ase.optimize.lbfgs import LBFGS
 from ase.optimize.optimize import Optimizer
 from ase.utils.forcecurve import ForceFit, fit_images
@@ -50,6 +51,68 @@ def get_images_for_neb(
         raise ValueError
     images = [initial.copy() for _ in range(n_images - 1)] + [final.copy()]
     return images
+
+
+def idpp_interpolate_subset(
+    images: list[Atoms],
+    indices_to_idpp_interp: list[int] | np.ndarray,
+    kwargs: dict[str, Any] | None = None,
+) -> list[Atoms]:
+    """Perform idpp interpolation for a subset, and linear interpolation for the rest.
+
+    Parameters
+    ----------
+    images : list[Atoms]
+        List of images to interpolate between the first and last.
+    indices_to_idpp_interp : list[int] | np.ndarray
+        Indices to use idpp interpolation for. The rest are interpolated linearly.
+    kwargs : dict[str, Any] | None
+        Keyword arguments passed to :func:`ase.neb.idpp_interpolate`.
+        Default = None.
+
+    Returns
+    -------
+    interpolated_images : list[Atoms]
+        Interpolated images.
+
+    Raises
+    ------
+    ValueError
+        If a key ``"mic"`` is present in `kwargs`. This is inferred from the ``pbc``
+        attribute of the images.
+
+    """
+    if kwargs is None:
+        kwargs = {}
+    if "mic" in kwargs:
+        raise ValueError
+
+    n_atoms = len(images[0])
+    all_indices = np.arange(n_atoms)
+    indices_to_linear_interp = all_indices[
+        ~np.isin(all_indices, indices_to_idpp_interp)
+    ]
+
+    linear_images = [image[indices_to_linear_interp] for image in images]
+    interpolate(linear_images)
+
+    idpp_images = [image[indices_to_idpp_interp] for image in images]
+    idpp_interpolate(
+        idpp_images,
+        mic=all(images[0].pbc),
+        **kwargs,
+    )
+
+    interpolated_images = deepcopy(images)
+    for image_idx in range(len(images)):
+        interpolated_images[image_idx].positions[indices_to_idpp_interp, :] = (
+            idpp_images[image_idx].positions
+        )
+        interpolated_images[image_idx].positions[indices_to_linear_interp, :] = (
+            linear_images[image_idx].positions
+        )
+
+    return interpolated_images
 
 
 def run_energy_weighted_neb(
@@ -116,9 +179,12 @@ def run_energy_weighted_neb(
     )
 
     if interpolate is not None:
+        print("Interpolating")
+        print("Using mic:", all(images[0].pbc))
         neb.interpolate(
             method=interpolate, mic=all(images[0].pbc), apply_constraint=True
         )
+        print("Interpolation done")
 
     for image in neb.images:
         image.calc = calc
@@ -134,11 +200,10 @@ def run_energy_weighted_neb(
     for image in images:
         image.calc = calc
 
-    if climb:
-        neb = NEB(images, climb=True, **neb_kwargs)
+    neb = NEB(images, climb=True, **neb_kwargs)
 
-        with optimizer(neb, **optimizer_kwargs) as opt:  # ty: ignore[invalid-argument-type]
-            opt.run(fmax=fmax)
+    with optimizer(neb, **optimizer_kwargs) as opt:  # ty: ignore[invalid-argument-type]
+        opt.run(fmax=fmax)
 
     return neb
 
