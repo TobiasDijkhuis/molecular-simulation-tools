@@ -75,6 +75,7 @@
   <h1>Source code for molecular_simulation_tools.neb</h1><div class="highlight"><pre>
 <span></span><span class="sd">&quot;&quot;&quot;Collection of tools to run NEB calculations.&quot;&quot;&quot;</span>
 
+<span class="kn">from</span> <span class="nn">copy</span> <span class="kn">import</span> <span class="n">deepcopy</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Literal</span>
 
 <span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
@@ -83,7 +84,7 @@
 <span class="kn">from</span> <span class="nn">ase.calculators.calculator</span> <span class="kn">import</span> <span class="n">Calculator</span>
 <span class="kn">from</span> <span class="nn">ase.geometry</span> <span class="kn">import</span> <span class="n">conditional_find_mic</span>
 <span class="kn">from</span> <span class="nn">ase.mep.dimer</span> <span class="kn">import</span> <span class="n">DimerControl</span><span class="p">,</span> <span class="n">MinModeAtoms</span><span class="p">,</span> <span class="n">MinModeTranslate</span>
-<span class="kn">from</span> <span class="nn">ase.mep.neb</span> <span class="kn">import</span> <span class="n">NEB</span><span class="p">,</span> <span class="n">BaseNEB</span>
+<span class="kn">from</span> <span class="nn">ase.mep.neb</span> <span class="kn">import</span> <span class="n">NEB</span><span class="p">,</span> <span class="n">BaseNEB</span><span class="p">,</span> <span class="n">idpp_interpolate</span><span class="p">,</span> <span class="n">interpolate</span>
 <span class="kn">from</span> <span class="nn">ase.optimize.lbfgs</span> <span class="kn">import</span> <span class="n">LBFGS</span>
 <span class="kn">from</span> <span class="nn">ase.optimize.optimize</span> <span class="kn">import</span> <span class="n">Optimizer</span>
 <span class="kn">from</span> <span class="nn">ase.utils.forcecurve</span> <span class="kn">import</span> <span class="n">ForceFit</span><span class="p">,</span> <span class="n">fit_images</span>
@@ -127,6 +128,71 @@
         <span class="k">raise</span> <span class="ne">ValueError</span>
     <span class="n">images</span> <span class="o">=</span> <span class="p">[</span><span class="n">initial</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_images</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)]</span> <span class="o">+</span> <span class="p">[</span><span class="n">final</span><span class="o">.</span><span class="n">copy</span><span class="p">()]</span>
     <span class="k">return</span> <span class="n">images</span></div>
+
+
+
+<div class="viewcode-block" id="idpp_interpolate_subset">
+<a class="viewcode-back" href="../../api/molecular_simulation_tools/neb/index.html#molecular_simulation_tools.neb.idpp_interpolate_subset">[docs]</a>
+<span class="k">def</span> <span class="nf">idpp_interpolate_subset</span><span class="p">(</span>
+    <span class="n">images</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">Atoms</span><span class="p">],</span>
+    <span class="n">indices_to_idpp_interp</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">|</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+    <span class="n">kwargs</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">Atoms</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Perform idpp interpolation for a subset, and linear interpolation for the rest.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    images : list[Atoms]</span>
+<span class="sd">        List of images to interpolate between the first and last.</span>
+<span class="sd">    indices_to_idpp_interp : list[int] | np.ndarray</span>
+<span class="sd">        Indices to use idpp interpolation for. The rest are interpolated linearly.</span>
+<span class="sd">    kwargs : dict[str, Any] | None</span>
+<span class="sd">        Keyword arguments passed to :func:`ase.neb.idpp_interpolate`.</span>
+<span class="sd">        Default = None.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    interpolated_images : list[Atoms]</span>
+<span class="sd">        Interpolated images.</span>
+
+<span class="sd">    Raises</span>
+<span class="sd">    ------</span>
+<span class="sd">    ValueError</span>
+<span class="sd">        If a key ``&quot;mic&quot;`` is present in `kwargs`. This is inferred from the ``pbc``</span>
+<span class="sd">        attribute of the images.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">kwargs</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">kwargs</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">if</span> <span class="s2">&quot;mic&quot;</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span>
+
+    <span class="n">n_atoms</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">images</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+    <span class="n">all_indices</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">n_atoms</span><span class="p">)</span>
+    <span class="n">indices_to_linear_interp</span> <span class="o">=</span> <span class="n">all_indices</span><span class="p">[</span>
+        <span class="o">~</span><span class="n">np</span><span class="o">.</span><span class="n">isin</span><span class="p">(</span><span class="n">all_indices</span><span class="p">,</span> <span class="n">indices_to_idpp_interp</span><span class="p">)</span>
+    <span class="p">]</span>
+
+    <span class="n">linear_images</span> <span class="o">=</span> <span class="p">[</span><span class="n">image</span><span class="p">[</span><span class="n">indices_to_linear_interp</span><span class="p">]</span> <span class="k">for</span> <span class="n">image</span> <span class="ow">in</span> <span class="n">images</span><span class="p">]</span>
+    <span class="n">interpolate</span><span class="p">(</span><span class="n">linear_images</span><span class="p">)</span>
+
+    <span class="n">idpp_images</span> <span class="o">=</span> <span class="p">[</span><span class="n">image</span><span class="p">[</span><span class="n">indices_to_idpp_interp</span><span class="p">]</span> <span class="k">for</span> <span class="n">image</span> <span class="ow">in</span> <span class="n">images</span><span class="p">]</span>
+    <span class="n">idpp_interpolate</span><span class="p">(</span>
+        <span class="n">idpp_images</span><span class="p">,</span>
+        <span class="n">mic</span><span class="o">=</span><span class="nb">all</span><span class="p">(</span><span class="n">images</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">pbc</span><span class="p">),</span>
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="n">interpolated_images</span> <span class="o">=</span> <span class="n">deepcopy</span><span class="p">(</span><span class="n">images</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">image_idx</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">images</span><span class="p">)):</span>
+        <span class="n">interpolated_images</span><span class="p">[</span><span class="n">image_idx</span><span class="p">]</span><span class="o">.</span><span class="n">positions</span><span class="p">[</span><span class="n">indices_to_idpp_interp</span><span class="p">,</span> <span class="p">:]</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">idpp_images</span><span class="p">[</span><span class="n">image_idx</span><span class="p">]</span><span class="o">.</span><span class="n">positions</span>
+        <span class="p">)</span>
+        <span class="n">interpolated_images</span><span class="p">[</span><span class="n">image_idx</span><span class="p">]</span><span class="o">.</span><span class="n">positions</span><span class="p">[</span><span class="n">indices_to_linear_interp</span><span class="p">,</span> <span class="p">:]</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">linear_images</span><span class="p">[</span><span class="n">image_idx</span><span class="p">]</span><span class="o">.</span><span class="n">positions</span>
+        <span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">interpolated_images</span></div>
 
 
 
@@ -196,9 +262,12 @@
     <span class="p">)</span>
 
     <span class="k">if</span> <span class="n">interpolate</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Interpolating&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Using mic:&quot;</span><span class="p">,</span> <span class="nb">all</span><span class="p">(</span><span class="n">images</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">pbc</span><span class="p">))</span>
         <span class="n">neb</span><span class="o">.</span><span class="n">interpolate</span><span class="p">(</span>
             <span class="n">method</span><span class="o">=</span><span class="n">interpolate</span><span class="p">,</span> <span class="n">mic</span><span class="o">=</span><span class="nb">all</span><span class="p">(</span><span class="n">images</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">pbc</span><span class="p">),</span> <span class="n">apply_constraint</span><span class="o">=</span><span class="kc">True</span>
         <span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Interpolation done&quot;</span><span class="p">)</span>
 
     <span class="k">for</span> <span class="n">image</span> <span class="ow">in</span> <span class="n">neb</span><span class="o">.</span><span class="n">images</span><span class="p">:</span>
         <span class="n">image</span><span class="o">.</span><span class="n">calc</span> <span class="o">=</span> <span class="n">calc</span>
@@ -214,11 +283,10 @@
     <span class="k">for</span> <span class="n">image</span> <span class="ow">in</span> <span class="n">images</span><span class="p">:</span>
         <span class="n">image</span><span class="o">.</span><span class="n">calc</span> <span class="o">=</span> <span class="n">calc</span>
 
-    <span class="k">if</span> <span class="n">climb</span><span class="p">:</span>
-        <span class="n">neb</span> <span class="o">=</span> <span class="n">NEB</span><span class="p">(</span><span class="n">images</span><span class="p">,</span> <span class="n">climb</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="o">**</span><span class="n">neb_kwargs</span><span class="p">)</span>
+    <span class="n">neb</span> <span class="o">=</span> <span class="n">NEB</span><span class="p">(</span><span class="n">images</span><span class="p">,</span> <span class="n">climb</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="o">**</span><span class="n">neb_kwargs</span><span class="p">)</span>
 
-        <span class="k">with</span> <span class="n">optimizer</span><span class="p">(</span><span class="n">neb</span><span class="p">,</span> <span class="o">**</span><span class="n">optimizer_kwargs</span><span class="p">)</span> <span class="k">as</span> <span class="n">opt</span><span class="p">:</span>  <span class="c1"># ty: ignore[invalid-argument-type]</span>
-            <span class="n">opt</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">fmax</span><span class="o">=</span><span class="n">fmax</span><span class="p">)</span>
+    <span class="k">with</span> <span class="n">optimizer</span><span class="p">(</span><span class="n">neb</span><span class="p">,</span> <span class="o">**</span><span class="n">optimizer_kwargs</span><span class="p">)</span> <span class="k">as</span> <span class="n">opt</span><span class="p">:</span>  <span class="c1"># ty: ignore[invalid-argument-type]</span>
+        <span class="n">opt</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">fmax</span><span class="o">=</span><span class="n">fmax</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">neb</span></div>
 

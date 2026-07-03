@@ -101,16 +101,19 @@
 <tr class="row-odd"><td><p><a class="reference internal" href="#molecular_simulation_tools.neb.get_images_for_neb" title="molecular_simulation_tools.neb.get_images_for_neb"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_images_for_neb</span></code></a>(→ list[ase.Atoms])</p></td>
 <td><p>Get images to use for NEB calculations using <code class="xref py py-class docutils literal notranslate"><span class="pre">ase.mep.neb.NEB</span></code>.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#molecular_simulation_tools.neb.plot_neb" title="molecular_simulation_tools.neb.plot_neb"><code class="xref py py-obj docutils literal notranslate"><span class="pre">plot_neb</span></code></a>(→ matplotlib.pyplot.Axes)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#molecular_simulation_tools.neb.idpp_interpolate_subset" title="molecular_simulation_tools.neb.idpp_interpolate_subset"><code class="xref py py-obj docutils literal notranslate"><span class="pre">idpp_interpolate_subset</span></code></a>(→ list[ase.Atoms])</p></td>
+<td><p>Perform idpp interpolation for a subset, and linear interpolation for the rest.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#molecular_simulation_tools.neb.plot_neb" title="molecular_simulation_tools.neb.plot_neb"><code class="xref py py-obj docutils literal notranslate"><span class="pre">plot_neb</span></code></a>(→ matplotlib.pyplot.Axes)</p></td>
 <td><p>Plot a NEB calculation.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#molecular_simulation_tools.neb.run_energy_weighted_neb" title="molecular_simulation_tools.neb.run_energy_weighted_neb"><code class="xref py py-obj docutils literal notranslate"><span class="pre">run_energy_weighted_neb</span></code></a>(→ ase.mep.neb.NEB)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#molecular_simulation_tools.neb.run_energy_weighted_neb" title="molecular_simulation_tools.neb.run_energy_weighted_neb"><code class="xref py py-obj docutils literal notranslate"><span class="pre">run_energy_weighted_neb</span></code></a>(→ ase.mep.neb.NEB)</p></td>
 <td><p>Do an energy-weighted climbing image nudged elastic band (EW-CI-NEB) calculation.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#molecular_simulation_tools.neb.run_neb_ts" title="molecular_simulation_tools.neb.run_neb_ts"><code class="xref py py-obj docutils literal notranslate"><span class="pre">run_neb_ts</span></code></a>(→ tuple[list[ase.Atoms], ase.Atoms])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#molecular_simulation_tools.neb.run_neb_ts" title="molecular_simulation_tools.neb.run_neb_ts"><code class="xref py py-obj docutils literal notranslate"><span class="pre">run_neb_ts</span></code></a>(→ tuple[list[ase.Atoms], ase.Atoms])</p></td>
 <td><p>Do a NEB-TS calculation.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#molecular_simulation_tools.neb.run_zoom_neb" title="molecular_simulation_tools.neb.run_zoom_neb"><code class="xref py py-obj docutils literal notranslate"><span class="pre">run_zoom_neb</span></code></a>(→ tuple[ase.mep.neb.NEB, ase.mep.neb.NEB])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#molecular_simulation_tools.neb.run_zoom_neb" title="molecular_simulation_tools.neb.run_zoom_neb"><code class="xref py py-obj docutils literal notranslate"><span class="pre">run_zoom_neb</span></code></a>(→ tuple[ase.mep.neb.NEB, ase.mep.neb.NEB])</p></td>
 <td><p>Run a ZOOM-NEB calculation.</p></td>
 </tr>
 </tbody>
@@ -139,6 +142,32 @@
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.14)"><strong>ValueError</strong></a> – If <cite>n_images</cite> is less than 3, because that would result in no intermediate images.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="molecular_simulation_tools.neb.idpp_interpolate_subset">
+<span class="sig-prename descclassname"><span class="pre">molecular_simulation_tools.neb.</span></span><span class="sig-name descname"><span class="pre">idpp_interpolate_subset</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">images</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><span class="pre">ase.Atoms</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">indices_to_idpp_interp</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.5)"><span class="pre">numpy.ndarray</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)"><span class="pre">dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><span class="pre">ase.Atoms</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../../_modules/molecular_simulation_tools/neb.html#idpp_interpolate_subset"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#molecular_simulation_tools.neb.idpp_interpolate_subset" title="Link to this definition"></a></dt>
+<dd><p>Perform idpp interpolation for a subset, and linear interpolation for the rest.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>images</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><em>list</em></a><em>[</em><em>Atoms</em><em>]</em>) – List of images to interpolate between the first and last.</p></li>
+<li><p><strong>indices_to_idpp_interp</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><em>list</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a><em>] </em><em>| </em><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.5)"><em>numpy.ndarray</em></a>) – Indices to use idpp interpolation for. The rest are interpolated linearly.</p></li>
+<li><p><strong>kwargs</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)"><em>dict</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em>, </em><em>Any</em><em>] </em><em>| </em><em>None</em>) – Keyword arguments passed to <code class="xref py py-func docutils literal notranslate"><span class="pre">ase.neb.idpp_interpolate()</span></code>.
+Default = None.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>interpolated_images</strong> – Interpolated images.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)">list</a>[Atoms]</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.14)"><strong>ValueError</strong></a> – If a key <code class="docutils literal notranslate"><span class="pre">&quot;mic&quot;</span></code> is present in <cite>kwargs</cite>. This is inferred from the <code class="docutils literal notranslate"><span class="pre">pbc</span></code>
+attribute of the images.</p>
 </dd>
 </dl>
 </dd></dl>
