@@ -46,7 +46,17 @@ Module Contents
 
 .. py:function:: idpp_interpolate_subset(images: list[ase.Atoms], indices_to_idpp_interp: list[int] | numpy.ndarray, kwargs: dict[str, Any] | None = None) -> list[ase.Atoms]
 
-   Perform idpp interpolation for a subset, and linear interpolation for the rest.
+   Perform IDPP interpolation for a subset of atoms in the system.
+
+   Image dependent pair potential (IDPP, see https://pubs.aip.org/aip/jcp/article/140/21/214106/566679/Improved-initial-guess-for-minimum-energy-path)
+   can generate a better initial guess for NEBs than just linear interpolation of
+   the positions, but can be too expensive for large systems. This function allows you to
+   only perform IDPP interpolation on the interesting region for the NEB, and just
+   simple linear interpolation for the rest.
+
+   Performs linear interpolation of all atoms first, and then takes a subset
+   to perform the IDPP interpolation. The combination of the two is then
+   returned.
 
    :param images: List of images to interpolate between the first and last.
    :type images: list[Atoms]
@@ -79,7 +89,7 @@ Module Contents
    :rtype: matplotlib.pyplot.Axes
 
 
-.. py:function:: run_energy_weighted_neb(images: list[ase.Atoms], calc: ase.calculators.calculator.Calculator, fmax: float = 0.05, optimizer: type[ase.optimize.optimize.Optimizer] = LBFGS, interpolate: Literal['linear', 'idpp'] | None = None, neb_kwargs: dict[str, Any] | None = None, optimizer_kwargs: dict[str, Any] | None = None, climb: bool = False) -> ase.mep.neb.NEB
+.. py:function:: run_energy_weighted_neb(images: list[ase.Atoms], calc: ase.calculators.calculator.Calculator, fmax: float = 0.05, optimizer: type[ase.optimize.optimize.Optimizer] = LBFGS, interpolate: Literal['linear', 'idpp'] | None = None, neb_kwargs: dict[str, Any] | None = None, optimizer_kwargs: dict[str, Any] | None = None, climb: bool = False, idpp_subset_indices: list[int] | numpy.ndarray | None = None) -> ase.mep.neb.NEB
 
    Do an energy-weighted climbing image nudged elastic band (EW-CI-NEB) calculation.
 
@@ -105,12 +115,17 @@ Module Contents
                  regular NEB (converged to 2*fmax), and then turn on the CI-NEB to converge to `fmax`.
                  Default = False.
    :type climb: bool
+   :param idpp_subset_indices: List of indices to do idpp interpolation for with :func:`idpp_interpolate_subset`.
+                               If None, and `interpolate` is ``"idpp"``, do interpolation on all atoms in the system.
+                               Default = None.
+   :type idpp_subset_indices: list[int] | numpy.ndarray | None
 
    :returns: **neb** -- Calculated minimum energy path
    :rtype: NEB
 
    :raises ValueError: If a key ``"climb"`` is found in `neb_kwargs`. This should be specified directly
        as a keyword argument to this function.
+   :raises ValueError: If `interpolate` is not ``"idpp"``, but `idpp_subset_indices` is passed.
 
 
 .. py:function:: run_neb_ts(images: list[ase.Atoms], calc: ase.calculators.calculator.Calculator, max_displacement: float = 0.01, fmax_ts: float = 0.05, replace_ts_guess: bool = True, energy_weighted_neb_kwargs: dict[str, Any] | None = None) -> tuple[list[ase.Atoms], ase.Atoms]
