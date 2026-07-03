@@ -1,8 +1,8 @@
+import numpy as np
 import pytest
 from ase import Atoms
-import numpy as np
-
 from ase.mep.neb import interpolate
+
 from molecular_simulation_tools.neb import get_images_for_neb, idpp_interpolate_subset
 
 

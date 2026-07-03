@@ -58,7 +58,17 @@ def idpp_interpolate_subset(
     indices_to_idpp_interp: list[int] | np.ndarray,
     kwargs: dict[str, Any] | None = None,
 ) -> list[Atoms]:
-    """Perform idpp interpolation for a subset, and linear interpolation for the rest.
+    """Perform IDPP interpolation for a subset of atoms in the system.
+
+    Image dependent pair potential (IDPP, see https://pubs.aip.org/aip/jcp/article/140/21/214106/566679/Improved-initial-guess-for-minimum-energy-path)
+    can generate a better initial guess for NEBs than just linear interpolation of
+    the positions, but can be too expensive for large systems. This function allows you to
+    only perform IDPP interpolation on the interesting region for the NEB, and just
+    simple linear interpolation for the rest.
+
+    Performs linear interpolation of all atoms first, and then takes a subset
+    to perform the IDPP interpolation. The combination of the two is then
+    returned.
 
     Parameters
     ----------
@@ -93,10 +103,10 @@ def idpp_interpolate_subset(
         ~np.isin(all_indices, indices_to_idpp_interp)
     ]
 
-    linear_images = [image[indices_to_linear_interp] for image in images]
-    interpolate(linear_images)
+    linear_images = [image.copy() for image in images]
+    interpolate(linear_images, mic=all(images[0].pbc))
 
-    idpp_images = [image[indices_to_idpp_interp] for image in images]
+    idpp_images = [image[indices_to_idpp_interp] for image in linear_images]
     idpp_interpolate(
         idpp_images,
         mic=all(images[0].pbc),
@@ -109,7 +119,7 @@ def idpp_interpolate_subset(
             idpp_images[image_idx].positions
         )
         interpolated_images[image_idx].positions[indices_to_linear_interp, :] = (
-            linear_images[image_idx].positions
+            linear_images[image_idx].positions[indices_to_linear_interp, :]
         )
 
     return interpolated_images
@@ -124,6 +134,7 @@ def run_energy_weighted_neb(
     neb_kwargs: dict[str, Any] | None = None,
     optimizer_kwargs: dict[str, Any] | None = None,
     climb: bool = False,
+    idpp_subset_indices: list[int] | np.ndarray | None = None,
 ) -> NEB:
     """Do an energy-weighted climbing image nudged elastic band (EW-CI-NEB) calculation.
 
@@ -151,6 +162,10 @@ def run_energy_weighted_neb(
         Whether to do climbing-image (CI) NEB. This will do a two-step NEB, first just a
         regular NEB (converged to 2*fmax), and then turn on the CI-NEB to converge to `fmax`.
         Default = False.
+    idpp_subset_indices : list[int] | np.ndarray | None
+        List of indices to do idpp interpolation for with :func:`idpp_interpolate_subset`.
+        If None, and `interpolate` is ``"idpp"``, do interpolation on all atoms in the system.
+        Default = None.
 
     Returns
     -------
@@ -162,6 +177,8 @@ def run_energy_weighted_neb(
     ValueError
         If a key ``"climb"`` is found in `neb_kwargs`. This should be specified directly
         as a keyword argument to this function.
+    ValueError
+        If `interpolate` is not ``"idpp"``, but `idpp_subset_indices` is passed.
 
     """
     if neb_kwargs is None:
@@ -178,13 +195,16 @@ def run_energy_weighted_neb(
         **neb_kwargs,
     )
 
+    if interpolate != "idpp" and idpp_subset_indices is not None:
+        raise ValueError
+
     if interpolate is not None:
-        print("Interpolating")
-        print("Using mic:", all(images[0].pbc))
-        neb.interpolate(
-            method=interpolate, mic=all(images[0].pbc), apply_constraint=True
-        )
-        print("Interpolation done")
+        if interpolate != "idpp" or idpp_subset_indices is None:
+            neb.interpolate(
+                method=interpolate, mic=all(images[0].pbc), apply_constraint=True
+            )
+        else:
+            neb.images = idpp_interpolate_subset(neb.images, idpp_subset_indices)
 
     for image in neb.images:
         image.calc = calc
