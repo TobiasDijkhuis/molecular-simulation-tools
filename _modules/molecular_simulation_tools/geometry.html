@@ -92,6 +92,7 @@
     <span class="n">correct_distance_for_pbc</span><span class="p">,</span>
     <span class="n">get_random_unit_vector</span><span class="p">,</span>
     <span class="n">project_on_unit_sphere</span><span class="p">,</span>
+    <span class="n">get_permutations_exchange_identical_atoms</span><span class="p">,</span>
 <span class="p">)</span>
 
 
@@ -579,19 +580,12 @@
     <span class="n">target_positions</span> <span class="o">=</span> <span class="n">target</span><span class="o">.</span><span class="n">get_positions</span><span class="p">()</span>
 
     <span class="k">if</span> <span class="n">permute</span><span class="p">:</span>
-        <span class="n">permutations</span><span class="p">:</span> <span class="n">itertools</span><span class="o">.</span><span class="n">permutations</span> <span class="o">|</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">int</span><span class="p">]]</span> <span class="o">=</span> <span class="p">(</span>
-            <span class="n">itertools</span><span class="o">.</span><span class="n">permutations</span><span class="p">(</span><span class="n">indices</span><span class="p">)</span>
-        <span class="p">)</span>
+        <span class="n">permutations</span> <span class="o">=</span> <span class="n">get_permutations_exchange_identical_atoms</span><span class="p">(</span><span class="n">atoms</span><span class="p">,</span> <span class="n">indices</span><span class="o">=</span><span class="n">indices</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">permutations</span> <span class="o">=</span> <span class="p">(</span><span class="n">indices</span><span class="o">.</span><span class="n">copy</span><span class="p">(),)</span>
 
     <span class="n">min_rmsd</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">float_info</span><span class="o">.</span><span class="n">max</span>
     <span class="k">for</span> <span class="n">permutation</span> <span class="ow">in</span> <span class="n">permutations</span><span class="p">:</span>
-        <span class="n">permutation</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">permutation</span><span class="p">)</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">atoms</span><span class="o">.</span><span class="n">numbers</span><span class="p">[</span><span class="n">indices</span><span class="p">]</span> <span class="o">==</span> <span class="n">target</span><span class="o">.</span><span class="n">numbers</span><span class="p">[</span><span class="n">permutation</span><span class="p">]):</span>
-            <span class="c1"># Only exchange identical atoms</span>
-            <span class="k">continue</span>
-
         <span class="n">_</span><span class="p">,</span> <span class="n">distances</span> <span class="o">=</span> <span class="n">find_mic</span><span class="p">(</span>
             <span class="n">original_positions</span><span class="p">[</span><span class="n">indices</span><span class="p">,</span> <span class="p">:]</span> <span class="o">-</span> <span class="n">target_positions</span><span class="p">[</span><span class="n">permutation</span><span class="p">,</span> <span class="p">:],</span>
             <span class="n">atoms</span><span class="o">.</span><span class="n">cell</span><span class="p">,</span>

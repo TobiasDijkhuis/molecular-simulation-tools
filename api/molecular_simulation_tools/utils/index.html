@@ -118,16 +118,19 @@
 <tr class="row-odd"><td><p><a class="reference internal" href="#molecular_simulation_tools.utils.get_nyquist_frequency" title="molecular_simulation_tools.utils.get_nyquist_frequency"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_nyquist_frequency</span></code></a>(→ float)</p></td>
 <td><p>Get the nyquist frequency.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#molecular_simulation_tools.utils.get_random_unit_vector" title="molecular_simulation_tools.utils.get_random_unit_vector"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_random_unit_vector</span></code></a>(→ numpy.ndarray)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#molecular_simulation_tools.utils.get_permutations_exchange_identical_atoms" title="molecular_simulation_tools.utils.get_permutations_exchange_identical_atoms"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_permutations_exchange_identical_atoms</span></code></a>(...)</p></td>
+<td><p>Get all possible permutations of <cite>indices</cite> that result in the same ordering of atomic numbers.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#molecular_simulation_tools.utils.get_random_unit_vector" title="molecular_simulation_tools.utils.get_random_unit_vector"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_random_unit_vector</span></code></a>(→ numpy.ndarray)</p></td>
 <td><p>Get a random vector on the unit sphere.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#molecular_simulation_tools.utils.project_on_unit_sphere" title="molecular_simulation_tools.utils.project_on_unit_sphere"><code class="xref py py-obj docutils literal notranslate"><span class="pre">project_on_unit_sphere</span></code></a>(→ numpy.ndarray)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#molecular_simulation_tools.utils.project_on_unit_sphere" title="molecular_simulation_tools.utils.project_on_unit_sphere"><code class="xref py py-obj docutils literal notranslate"><span class="pre">project_on_unit_sphere</span></code></a>(→ numpy.ndarray)</p></td>
 <td><p>Project a vector on the unit sphere, by dividing it by its length.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#molecular_simulation_tools.utils.sample_random_rotation" title="molecular_simulation_tools.utils.sample_random_rotation"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sample_random_rotation</span></code></a>(→ tuple[numpy.ndarray, float])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#molecular_simulation_tools.utils.sample_random_rotation" title="molecular_simulation_tools.utils.sample_random_rotation"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sample_random_rotation</span></code></a>(→ tuple[numpy.ndarray, float])</p></td>
 <td><p>Get a random rotation axis and rotation angle.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#molecular_simulation_tools.utils.turn_grid_into_position_vectors" title="molecular_simulation_tools.utils.turn_grid_into_position_vectors"><code class="xref py py-obj docutils literal notranslate"><span class="pre">turn_grid_into_position_vectors</span></code></a>(→ numpy.ndarray)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#molecular_simulation_tools.utils.turn_grid_into_position_vectors" title="molecular_simulation_tools.utils.turn_grid_into_position_vectors"><code class="xref py py-obj docutils literal notranslate"><span class="pre">turn_grid_into_position_vectors</span></code></a>(→ numpy.ndarray)</p></td>
 <td><p>Turn a grid created by <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.meshgrid.html#numpy.meshgrid" title="(in NumPy v2.5)"><code class="xref py py-func docutils literal notranslate"><span class="pre">numpy.meshgrid()</span></code></a> into position vectors.</p></td>
 </tr>
 </tbody>
@@ -263,6 +266,27 @@
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)">float</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="molecular_simulation_tools.utils.get_permutations_exchange_identical_atoms">
+<span class="sig-prename descclassname"><span class="pre">molecular_simulation_tools.utils.</span></span><span class="sig-name descname"><span class="pre">get_permutations_exchange_identical_atoms</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">atoms</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ase.Atoms</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">indices</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../../_modules/molecular_simulation_tools/utils.html#get_permutations_exchange_identical_atoms"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#molecular_simulation_tools.utils.get_permutations_exchange_identical_atoms" title="Link to this definition"></a></dt>
+<dd><p>Get all possible permutations of <cite>indices</cite> that result in the same ordering of atomic numbers.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>atoms</strong> (<em>Atoms</em>) – Atoms to permute.</p></li>
+<li><p><strong>indices</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><em>list</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a><em>] </em><em>| </em><em>None = None</em>) – Indices of atoms to take into account in the permuting.
+If None, do all atoms.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>List of possible correct permutations that exchange identical atoms.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)">list</a>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)">list</a>[<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)">int</a>]]</p>
 </dd>
 </dl>
 </dd></dl>
