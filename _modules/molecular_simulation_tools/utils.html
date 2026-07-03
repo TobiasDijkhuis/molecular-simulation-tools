@@ -75,8 +75,8 @@
   <h1>Source code for molecular_simulation_tools.utils</h1><div class="highlight"><pre>
 <span></span><span class="sd">&quot;&quot;&quot;Collection of utility functions.&quot;&quot;&quot;</span>
 
-<span class="kn">from</span> <span class="nn">random</span> <span class="kn">import</span> <span class="n">random</span>
 <span class="kn">import</span> <span class="nn">itertools</span>
+<span class="kn">from</span> <span class="nn">random</span> <span class="kn">import</span> <span class="n">random</span>
 
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">from</span> <span class="nn">ase</span> <span class="kn">import</span> <span class="n">Atoms</span>
@@ -363,15 +363,15 @@
     <span class="n">atoms</span><span class="p">:</span> <span class="n">Atoms</span><span class="p">,</span>
     <span class="n">indices</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">int</span><span class="p">]]:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Get all possible permutations of `indices` that result in the same ordering of atomic numbers.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Get all possible permutations of `indices` that exchange identical atoms.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    atoms : Atoms</span>
 <span class="sd">        Atoms to permute.</span>
-<span class="sd">    indices : list[int] | None = None</span>
+<span class="sd">    indices : list[int] | None</span>
 <span class="sd">        Indices of atoms to take into account in the permuting.</span>
-<span class="sd">        If None, do all atoms.</span>
+<span class="sd">        If None, do all atoms. Default = None.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>

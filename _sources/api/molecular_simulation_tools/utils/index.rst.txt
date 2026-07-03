@@ -125,13 +125,13 @@ Module Contents
 
 .. py:function:: get_permutations_exchange_identical_atoms(atoms: ase.Atoms, indices: list[int] | None = None) -> list[list[int]]
 
-   Get all possible permutations of `indices` that result in the same ordering of atomic numbers.
+   Get all possible permutations of `indices` that exchange identical atoms.
 
    :param atoms: Atoms to permute.
    :type atoms: Atoms
    :param indices: Indices of atoms to take into account in the permuting.
-                   If None, do all atoms.
-   :type indices: list[int] | None = None
+                   If None, do all atoms. Default = None.
+   :type indices: list[int] | None
 
    :returns: List of possible correct permutations that exchange identical atoms.
    :rtype: list[list[int]]
