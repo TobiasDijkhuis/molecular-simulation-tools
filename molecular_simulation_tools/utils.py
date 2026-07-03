@@ -1,7 +1,7 @@
 """Collection of utility functions."""
 
-from random import random
 import itertools
+from random import random
 
 import numpy as np
 from ase import Atoms
@@ -253,15 +253,15 @@ def get_permutations_exchange_identical_atoms(
     atoms: Atoms,
     indices: list[int] | None = None,
 ) -> list[list[int]]:
-    """Get all possible permutations of `indices` that result in the same ordering of atomic numbers.
+    """Get all possible permutations of `indices` that exchange identical atoms.
 
     Parameters
     ----------
     atoms : Atoms
         Atoms to permute.
-    indices : list[int] | None = None
+    indices : list[int] | None
         Indices of atoms to take into account in the permuting.
-        If None, do all atoms.
+        If None, do all atoms. Default = None.
 
     Returns
     -------

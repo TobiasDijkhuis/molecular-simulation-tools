@@ -15,9 +15,9 @@ from molecular_simulation_tools.connectivity import (
 from molecular_simulation_tools.utils import (
     check_same_number_of_atoms,
     correct_distance_for_pbc,
+    get_permutations_exchange_identical_atoms,
     get_random_unit_vector,
     project_on_unit_sphere,
-    get_permutations_exchange_identical_atoms,
 )
 
 
@@ -481,7 +481,7 @@ def calculate_rmsd(
     if permute:
         permutations = get_permutations_exchange_identical_atoms(atoms, indices=indices)
     else:
-        permutations = (indices.copy(),)
+        permutations = [indices.copy()]
 
     min_rmsd = sys.float_info.max
     for permutation in permutations:
