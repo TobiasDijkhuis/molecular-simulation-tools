@@ -17,6 +17,7 @@ from molecular_simulation_tools.utils import (
     correct_distance_for_pbc,
     get_random_unit_vector,
     project_on_unit_sphere,
+    get_permutations_exchange_identical_atoms,
 )
 
 
@@ -478,19 +479,12 @@ def calculate_rmsd(
     target_positions = target.get_positions()
 
     if permute:
-        permutations: itertools.permutations | tuple[list[int]] = (
-            itertools.permutations(indices)
-        )
+        permutations = get_permutations_exchange_identical_atoms(atoms, indices=indices)
     else:
         permutations = (indices.copy(),)
 
     min_rmsd = sys.float_info.max
     for permutation in permutations:
-        permutation = list(permutation)
-        if not np.all(atoms.numbers[indices] == target.numbers[permutation]):
-            # Only exchange identical atoms
-            continue
-
         _, distances = find_mic(
             original_positions[indices, :] - target_positions[permutation, :],
             atoms.cell,

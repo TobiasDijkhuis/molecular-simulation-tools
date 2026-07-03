@@ -1,6 +1,7 @@
 """Collection of utility functions."""
 
 from random import random
+import itertools
 
 import numpy as np
 from ase import Atoms
@@ -246,3 +247,35 @@ def check_same_number_of_atoms(frames: list[Atoms]) -> None:
     n_atoms = len(frames[0])
     if not all(len(frame) == n_atoms for frame in frames[1:]):
         raise ValueError
+
+
+def get_permutations_exchange_identical_atoms(
+    atoms: Atoms,
+    indices: list[int] | None = None,
+) -> list[list[int]]:
+    """Get all possible permutations of `indices` that result in the same ordering of atomic numbers.
+
+    Parameters
+    ----------
+    atoms : Atoms
+        Atoms to permute.
+    indices : list[int] | None = None
+        Indices of atoms to take into account in the permuting.
+        If None, do all atoms.
+
+    Returns
+    -------
+    list[list[int]]
+        List of possible correct permutations that exchange identical atoms.
+
+    """
+    if indices is None:
+        indices = list(range(len(atoms)))
+    permutations = [
+        list(permutation) for permutation in itertools.permutations(indices)
+    ]
+    return [
+        permutation
+        for permutation in permutations
+        if np.all(atoms.numbers[permutation] == atoms.numbers[indices])
+    ]

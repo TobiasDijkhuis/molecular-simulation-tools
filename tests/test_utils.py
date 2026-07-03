@@ -1,11 +1,14 @@
 import numpy as np
 import pytest
 
+from ase import Atoms
+
 from molecular_simulation_tools.utils import (
     convert_cartesian_to_spherical,
     convert_spherical_to_cartesian,
     project_on_unit_sphere,
     turn_grid_into_position_vectors,
+    get_permutations_exchange_identical_atoms,
 )
 
 
@@ -57,3 +60,38 @@ position_vector_data = [
 @pytest.mark.parametrize("grid_tuple, expected_output", position_vector_data)
 def test_turn_grid_into_position_vectors(grid_tuple, expected_output):
     assert np.allclose(turn_grid_into_position_vectors(grid_tuple), expected_output)
+
+
+get_permutations_exchange_identical_atoms_data = [
+    (Atoms("H2"), [0, 1], {(0, 1), (1, 0)}),
+    (Atoms("H2O"), [0, 1], {(0, 1), (1, 0)}),
+    (Atoms("H2O"), [0, 1, 2], {(0, 1, 2), (1, 0, 2)}),
+    (Atoms("H2O"), None, {(0, 1, 2), (1, 0, 2)}),
+    (
+        Atoms("CH3"),
+        [0, 1, 2, 3],
+        {
+            (0, 1, 2, 3),
+            (0, 1, 3, 2),
+            (0, 2, 1, 3),
+            (0, 2, 3, 1),
+            (0, 3, 1, 2),
+            (0, 3, 2, 1),
+        },
+    ),
+]
+
+
+@pytest.mark.parametrize(
+    "atoms, indices, expected_permutations",
+    get_permutations_exchange_identical_atoms_data,
+)
+def test_get_permutations_exchange_identical_atoms_data(
+    atoms, indices, expected_permutations
+):
+    permutations = get_permutations_exchange_identical_atoms(atoms, indices=indices)
+    print(permutations)
+    assert len(permutations) == len(expected_permutations)
+    assert all(
+        tuple(permutation) in expected_permutations for permutation in permutations
+    )
