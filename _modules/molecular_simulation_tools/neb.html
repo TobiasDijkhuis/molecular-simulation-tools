@@ -88,6 +88,7 @@
 <span class="kn">from</span> <span class="nn">ase.optimize.lbfgs</span> <span class="kn">import</span> <span class="n">LBFGS</span>
 <span class="kn">from</span> <span class="nn">ase.optimize.optimize</span> <span class="kn">import</span> <span class="n">Optimizer</span>
 <span class="kn">from</span> <span class="nn">ase.utils.forcecurve</span> <span class="kn">import</span> <span class="n">ForceFit</span><span class="p">,</span> <span class="n">fit_images</span>
+<span class="kn">from</span> <span class="nn">ase.optimize.optimize</span> <span class="kn">import</span> <span class="n">DEFAULT_MAX_STEPS</span>
 
 <span class="kn">from</span> <span class="nn">molecular_simulation_tools.utils</span> <span class="kn">import</span> <span class="n">check_same_number_of_atoms</span>
 
@@ -213,6 +214,7 @@
     <span class="n">calc</span><span class="p">:</span> <span class="n">Calculator</span><span class="p">,</span>
     <span class="n">fmax</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.05</span><span class="p">,</span>
     <span class="n">optimizer</span><span class="p">:</span> <span class="nb">type</span><span class="p">[</span><span class="n">Optimizer</span><span class="p">]</span> <span class="o">=</span> <span class="n">LBFGS</span><span class="p">,</span>
+    <span class="n">steps</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">DEFAULT_MAX_STEPS</span><span class="p">,</span>
     <span class="n">interpolate</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;linear&quot;</span><span class="p">,</span> <span class="s2">&quot;idpp&quot;</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">neb_kwargs</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">optimizer_kwargs</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -233,6 +235,8 @@
 <span class="sd">        Maximum force on the highest energy component in eV/Angstrom. Default = 0.05.</span>
 <span class="sd">    optimizer : type[Optimizer]</span>
 <span class="sd">        Optimizer to use for the NEB. Default = LBFGS.</span>
+<span class="sd">    steps : int</span>
+<span class="sd">        Maximum number of steps. Default = :data:`ase.optimize.optimize.DEFAULT_MAX_STEPS`.</span>
 <span class="sd">    interpolate : Literal[&#39;linear&#39;, &#39;idpp&#39;] | None</span>
 <span class="sd">        Method to interpolate see :meth:`ase.mep.neb.NEB.interpolate`.</span>
 <span class="sd">        If None, do not interpolate images. Default = None.</span>
@@ -294,7 +298,10 @@
 
     <span class="n">first_neb_fmax</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">fmax</span> <span class="k">if</span> <span class="n">climb</span> <span class="k">else</span> <span class="n">fmax</span>
     <span class="k">with</span> <span class="n">optimizer</span><span class="p">(</span><span class="n">neb</span><span class="p">,</span> <span class="o">**</span><span class="n">optimizer_kwargs</span><span class="p">)</span> <span class="k">as</span> <span class="n">opt</span><span class="p">:</span>  <span class="c1"># ty: ignore[invalid-argument-type]</span>
-        <span class="n">opt</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">fmax</span><span class="o">=</span><span class="n">first_neb_fmax</span><span class="p">)</span>
+        <span class="n">converged</span> <span class="o">=</span> <span class="n">opt</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">fmax</span><span class="o">=</span><span class="n">first_neb_fmax</span><span class="p">,</span> <span class="n">steps</span><span class="o">=</span><span class="n">steps</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">converged</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;NEB DID NOT CONVERGE&quot;</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="ow">not</span> <span class="n">climb</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">neb</span>
@@ -306,7 +313,10 @@
     <span class="n">neb</span> <span class="o">=</span> <span class="n">NEB</span><span class="p">(</span><span class="n">images</span><span class="p">,</span> <span class="n">climb</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="o">**</span><span class="n">neb_kwargs</span><span class="p">)</span>
 
     <span class="k">with</span> <span class="n">optimizer</span><span class="p">(</span><span class="n">neb</span><span class="p">,</span> <span class="o">**</span><span class="n">optimizer_kwargs</span><span class="p">)</span> <span class="k">as</span> <span class="n">opt</span><span class="p">:</span>  <span class="c1"># ty: ignore[invalid-argument-type]</span>
-        <span class="n">opt</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">fmax</span><span class="o">=</span><span class="n">fmax</span><span class="p">)</span>
+        <span class="n">converged</span> <span class="o">=</span> <span class="n">opt</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">fmax</span><span class="o">=</span><span class="n">fmax</span><span class="p">,</span> <span class="n">steps</span><span class="o">=</span><span class="n">steps</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">converged</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;CI-NEB DID NOT CONVERGE&quot;</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">neb</span></div>
 

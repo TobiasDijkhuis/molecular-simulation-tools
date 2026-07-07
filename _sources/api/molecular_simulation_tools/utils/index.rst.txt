@@ -15,6 +15,7 @@ Functions
 .. autoapisummary::
 
    molecular_simulation_tools.utils.check_same_number_of_atoms
+   molecular_simulation_tools.utils.combine_overlapping_sets
    molecular_simulation_tools.utils.convert_cartesian_to_spherical
    molecular_simulation_tools.utils.convert_spherical_to_cartesian
    molecular_simulation_tools.utils.correct_distance_for_pbc
@@ -39,6 +40,24 @@ Module Contents
    :type frames: list[Atoms]
 
    :raises ValueError: If not all frames have the same number of atoms as the first frame.
+
+
+.. py:function:: combine_overlapping_sets(list_of_sets: list[set[Any]]) -> list[set[Any]]
+
+   Combine sets that have overlapping elements.
+
+   :param list_of_sets: List of sets with potentially overlapping elements.
+   :type list_of_sets: list[set[Any]]
+
+   :returns: List of sets, without overlapping elements.
+   :rtype: list[set[Any]]
+
+   .. rubric:: Examples
+
+   >>> combine_overlapping_sets([{1,2,3},{3,4}])
+   [{1, 2, 3, 4}]
+   >>> combine_overlapping_sets([{1,2},{3,4}])
+   [{1, 2}, {3, 4}]
 
 
 .. py:function:: convert_cartesian_to_spherical(position: numpy.ndarray) -> tuple[float, float, float]

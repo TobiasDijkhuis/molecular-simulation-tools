@@ -89,7 +89,7 @@ Module Contents
    :rtype: matplotlib.pyplot.Axes
 
 
-.. py:function:: run_energy_weighted_neb(images: list[ase.Atoms], calc: ase.calculators.calculator.Calculator, fmax: float = 0.05, optimizer: type[ase.optimize.optimize.Optimizer] = LBFGS, interpolate: Literal['linear', 'idpp'] | None = None, neb_kwargs: dict[str, Any] | None = None, optimizer_kwargs: dict[str, Any] | None = None, climb: bool = False, idpp_subset_indices: list[int] | numpy.ndarray | None = None) -> ase.mep.neb.NEB
+.. py:function:: run_energy_weighted_neb(images: list[ase.Atoms], calc: ase.calculators.calculator.Calculator, fmax: float = 0.05, optimizer: type[ase.optimize.optimize.Optimizer] = LBFGS, steps: int = DEFAULT_MAX_STEPS, interpolate: Literal['linear', 'idpp'] | None = None, neb_kwargs: dict[str, Any] | None = None, optimizer_kwargs: dict[str, Any] | None = None, climb: bool = False, idpp_subset_indices: list[int] | numpy.ndarray | None = None) -> ase.mep.neb.NEB
 
    Do an energy-weighted climbing image nudged elastic band (EW-CI-NEB) calculation.
 
@@ -103,6 +103,8 @@ Module Contents
    :type fmax: float
    :param optimizer: Optimizer to use for the NEB. Default = LBFGS.
    :type optimizer: type[Optimizer]
+   :param steps: Maximum number of steps. Default = :data:`ase.optimize.optimize.DEFAULT_MAX_STEPS`.
+   :type steps: int
    :param interpolate: Method to interpolate see :meth:`ase.mep.neb.NEB.interpolate`.
                        If None, do not interpolate images. Default = None.
    :type interpolate: Literal['linear', 'idpp'] | None
