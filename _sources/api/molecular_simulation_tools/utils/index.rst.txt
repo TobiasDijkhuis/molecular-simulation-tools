@@ -20,6 +20,7 @@ Functions
    molecular_simulation_tools.utils.convert_spherical_to_cartesian
    molecular_simulation_tools.utils.correct_distance_for_pbc
    molecular_simulation_tools.utils.get_autocorrelation_function
+   molecular_simulation_tools.utils.get_minimum_site_idx_for_binding_sites
    molecular_simulation_tools.utils.get_moving_average
    molecular_simulation_tools.utils.get_nyquist_frequency
    molecular_simulation_tools.utils.get_permutations_exchange_identical_atoms
@@ -116,6 +117,22 @@ Module Contents
 
    :returns: Array of length N
    :rtype: numpy.ndarray
+
+
+.. py:function:: get_minimum_site_idx_for_binding_sites(binding_site_sets: list[set[int]], energies: list[float] | numpy.ndarray) -> list[int]
+
+   Get the indices with the minimum energy out of sets of binding sites.
+
+   :param binding_site_sets: List of sets of binding sites.
+   :type binding_site_sets: list[set[int]]
+   :param energies: Energies of each binding site.
+   :type energies: list[float] | numpy.ndarray
+
+   :returns: **minimum_for_each_set** -- Index for each binding site set corresponding to the minimum of that set.
+   :rtype: list[int]
+
+   :raises ValueError: If the length of `energies` is not the same as the total number of
+       indices in `binding_site_sets`.
 
 
 .. py:function:: get_moving_average(array: numpy.ndarray, window_size: int) -> numpy.ndarray

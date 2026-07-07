@@ -625,6 +625,50 @@
     <span class="n">vertices</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">vertices_below</span><span class="p">,</span> <span class="n">new_points</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">vertices</span></div>
 
+
+
+<div class="viewcode-block" id="get_minimum_site_idx_for_binding_sites">
+<a class="viewcode-back" href="../../api/molecular_simulation_tools/utils/index.html#molecular_simulation_tools.utils.get_minimum_site_idx_for_binding_sites">[docs]</a>
+<span class="k">def</span> <span class="nf">get_minimum_site_idx_for_binding_sites</span><span class="p">(</span>
+    <span class="n">binding_site_sets</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">set</span><span class="p">[</span><span class="nb">int</span><span class="p">]],</span>
+    <span class="n">energies</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">|</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">int</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Get the indices with the minimum energy out of sets of binding sites.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    binding_site_sets : list[set[int]]</span>
+<span class="sd">        List of sets of binding sites.</span>
+<span class="sd">    energies : list[float] | np.ndarray</span>
+<span class="sd">        Energies of each binding site.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    minimum_for_each_set : list[int]</span>
+<span class="sd">        Index for each binding site set corresponding to the minimum of that set.</span>
+
+<span class="sd">    Raises</span>
+<span class="sd">    ------</span>
+<span class="sd">    ValueError</span>
+<span class="sd">        If the length of `energies` is not the same as the total number of</span>
+<span class="sd">        indices in `binding_site_sets`.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">total_binding_sites</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span>
+        <span class="nb">len</span><span class="p">(</span><span class="n">binding_site_set</span><span class="p">)</span> <span class="k">for</span> <span class="n">binding_site_set</span> <span class="ow">in</span> <span class="n">binding_site_sets</span>
+    <span class="p">)</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">energies</span><span class="p">)</span> <span class="o">!=</span> <span class="n">total_binding_sites</span><span class="p">:</span>
+        <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Length of energies (</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">energies</span><span class="p">)</span><span class="si">}</span><span class="s2">) was not the same as the length of sites (total_binding_sites)&quot;</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+    <span class="n">energies</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">energies</span><span class="p">)</span>
+
+    <span class="n">minimum_for_each_set</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">binding_site_set</span> <span class="ow">in</span> <span class="n">binding_site_sets</span><span class="p">:</span>
+        <span class="n">binding_site_list</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">binding_site_set</span><span class="p">)</span>
+        <span class="n">min_index</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argmin</span><span class="p">(</span><span class="n">energies</span><span class="p">[</span><span class="n">binding_site_list</span><span class="p">])</span>
+        <span class="n">minimum_for_each_set</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">binding_site_list</span><span class="p">[</span><span class="n">min_index</span><span class="p">])</span>
+    <span class="k">return</span> <span class="n">minimum_for_each_set</span></div>
+
 </pre></div>
 
            </div>
