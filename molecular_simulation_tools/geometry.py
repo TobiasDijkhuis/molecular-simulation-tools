@@ -12,6 +12,7 @@ from molecular_simulation_tools.connectivity import (
 )
 from molecular_simulation_tools.utils import (
     check_same_number_of_atoms,
+    combine_overlapping_sets,
     correct_distance_for_pbc,
     get_permutations_exchange_identical_atoms,
 )
@@ -530,3 +531,80 @@ def calculate_rmsd(
     else:
         return_atoms = (atoms[indices], target[indices])
     return min_rmsd, return_atoms
+
+
+def course_grain_binding_sites(
+    sites: list[Atoms],
+    indices: int | list[int] | None,
+    max_rmsd: int | float = 0.5,
+    permute: bool = True,
+    top_down: bool = False,
+) -> list[set[int]]:
+    """Course grain binding sites that are near to eachother.
+
+    Parameters
+    ----------
+    sites : list[Atoms]
+        List of geometries of surfaces with adsorbates.
+    indices : int | list[int] | None
+        Indices to be used to calculate the RMSD. If None, use all.
+    max_rmsd : int | float
+        Maximum RMSD to be considered the same site. Default = 0.5 Angstrom.
+    permute : bool
+        Whether to permute indices in `indices` with identical atoms. Default = True.
+    top_down : bool
+        Only take into account the two-dimensional projected distance.
+        If True, `indices` needs to be passed as a single integer.
+        Default = False.
+
+    Returns
+    -------
+    binding_site_sets : list[set[int]]
+        List of binding sites that are considered the same.
+
+    Raises
+    ------
+    TypeError
+        If `top_down` is True, but `indices` is not given, or is not a single
+        integer.
+
+    """
+    if top_down and indices is None or not isinstance(indices, int):
+        raise TypeError
+
+    binding_site_sets: list[set[int]] = []
+    for frame_idx, frame in enumerate(sites):
+        for other_frame_idx in range(frame_idx + 1, len(sites)):
+            other_frame = sites[other_frame_idx]
+
+            if top_down:
+                rmsd = get_two_dimensional_distances(
+                    frame.positions[indices, 0],
+                    frame.positions[indices, 1],
+                    other_frame.positions[indices, :],
+                    box_size=np.diag(frame.cell),
+                )[0]
+            else:
+                rmsd, _ = calculate_rmsd(frame, other_frame, indices, permute=permute)
+            if rmsd > max_rmsd:
+                continue
+
+            new_set = True
+            for binding_site_set in binding_site_sets:
+                if frame_idx in binding_site_set or other_frame_idx in binding_site_set:
+                    binding_site_set.add(frame_idx)
+                    binding_site_set.add(other_frame_idx)
+                    new_set = False
+            if new_set:
+                binding_site_sets.append({frame_idx, other_frame_idx})
+
+        saw_this_frame = False
+        for binding_site_set in binding_site_sets:
+            if frame_idx in binding_site_set:
+                saw_this_frame = True
+                break
+        if not saw_this_frame:
+            binding_site_sets.append({frame_idx})
+
+    binding_site_sets = combine_overlapping_sets(binding_site_sets)
+    return binding_site_sets
