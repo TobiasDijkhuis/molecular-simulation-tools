@@ -7,7 +7,9 @@ from molecular_simulation_tools.utils import (
     convert_cartesian_to_spherical,
     convert_spherical_to_cartesian,
     get_permutations_exchange_identical_atoms,
+    icosahedron_unit_sphere,
     project_on_unit_sphere,
+    sample_new_point,
     turn_grid_into_position_vectors,
 )
 
@@ -111,3 +113,78 @@ overlapping_sets_data = [
 def test_combine_overlapping_sets(list_of_sets, expected_sets):
     combined_sets = combine_overlapping_sets(list_of_sets)
     assert expected_sets == combined_sets
+
+
+def test_icosahedron_unit_sphere():
+    vertices = icosahedron_unit_sphere(level=0)
+
+    assert np.allclose(np.linalg.norm(vertices, axis=1), 1)
+    assert np.shape(vertices) == (12, 3)
+    phi = 2 * np.cos(np.pi / 5)
+    expected = np.array(
+        [
+            [0, phi, 1],
+            [0, -phi, 1],
+            [0, phi, -1],
+            [0, -phi, -1],
+            [1, 0, phi],
+            [-1, 0, phi],
+            [1, 0, -phi],
+            [-1, 0, -phi],
+            [phi, 1, 0],
+            [-phi, 1, 0],
+            [phi, -1, 0],
+            [-phi, -1, 0],
+        ]
+    )
+    expected /= np.linalg.norm(expected, axis=1)[:, np.newaxis]
+    assert np.allclose(vertices, expected)
+
+
+icosahedron_data = [
+    (0, 12),
+    (1, 42),
+    (2, 162),
+]
+
+
+@pytest.mark.parametrize("level, expected_number_of_vertices", icosahedron_data)
+def test_icosahedron_unit_sphere_shapes(level, expected_number_of_vertices):
+    vertices = icosahedron_unit_sphere(level=level)
+    assert np.shape(np.unique(vertices, axis=0)) == np.shape(vertices)
+    assert np.shape(vertices)[0] == expected_number_of_vertices
+
+
+sample_data = [
+    (np.array([[0.0, 0.0, 0.0]]), 0.5, 1e-12, 1e-5),
+    (np.array([[1.0, 0.0, 0.5], [0.0, 4.0, 2.0]]), 2, 1e-12, 1e-5),
+]
+
+
+@pytest.mark.parametrize("initial_points, minimum_distance, atol, rtol", sample_data)
+def test_sample_new_point(initial_points, minimum_distance, atol, rtol):
+    for _try_idx in range(10):
+        new_point = sample_new_point(
+            initial_points, minimum_distance, 0.2, rtol=rtol, atol=atol, n=1
+        )
+        assert np.all(
+            np.linalg.norm(initial_points - new_point, axis=1)
+            >= minimum_distance - atol
+        )
+
+
+@pytest.mark.parametrize("_initial_points, minimum_distance, atol, rtol", sample_data)
+def test_sample_multiple_new_point(_initial_points, minimum_distance, atol, rtol):
+    initial_point = np.array([[0, 0, 0]])
+    npoints = 10
+    for _try_idx in range(10):
+        points = sample_new_point(
+            initial_point, minimum_distance, 0.2, rtol=rtol, atol=atol, n=npoints
+        )
+        assert np.shape(points) == (10, 3)
+        for point_idx in range(npoints):
+            assert np.all(
+                np.linalg.norm(points[point_idx, :] - points, axis=1)
+                >= minimum_distance - atol,
+                where=[idx != point_idx for idx in range(npoints)],
+            )
