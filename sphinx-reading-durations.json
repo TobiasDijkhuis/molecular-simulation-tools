@@ -1,7 +1,7 @@
 {
     "api/index": 0.014,
     "api/molecular_simulation_tools/connectivity/index": 0.027,
-    "api/molecular_simulation_tools/geometry/index": 0.188,
+    "api/molecular_simulation_tools/geometry/index": 0.203,
     "api/molecular_simulation_tools/index": 0.003,
     "api/molecular_simulation_tools/io/index": 0.009,
     "api/molecular_simulation_tools/neb/index": 0.059,

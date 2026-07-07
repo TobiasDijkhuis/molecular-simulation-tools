@@ -30,7 +30,7 @@ Functions
 Module Contents
 ---------------
 
-.. py:function:: calculate_rmsd(atoms: ase.Atoms, target: ase.Atoms, indices: list[int] | None, permute: bool = True, return_permuted_target: bool = True) -> tuple[float, tuple[ase.Atoms, ase.Atoms]]
+.. py:function:: calculate_rmsd(atoms: ase.Atoms, target: ase.Atoms, indices: int | list[int] | None, permute: bool = True, return_permuted_target: bool = True) -> tuple[float, tuple[ase.Atoms, ase.Atoms]]
 
    Calculate the root-mean-squared-displacement (rmsd) between atoms `atoms` and `target`.
 
@@ -38,8 +38,8 @@ Module Contents
    :type atoms: Atoms
    :param target: target
    :type target: Atoms
-   :param indices: List of indices, or None if all atoms.
-   :type indices: list[int] | None
+   :param indices: Single index, list of indices, or None if all atoms.
+   :type indices: int | list[int] | None
    :param permute: Whether to permute the atom indices to get the minimum
                    rmsd. Only permutes between identical elements. Default = True.
    :type permute: bool
