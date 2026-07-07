@@ -82,6 +82,7 @@
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">from</span> <span class="nn">ase</span> <span class="kn">import</span> <span class="n">Atoms</span>
 <span class="kn">from</span> <span class="nn">scipy.signal</span> <span class="kn">import</span> <span class="n">correlate</span>
+<span class="kn">from</span> <span class="nn">scipy.spatial</span> <span class="kn">import</span> <span class="n">ConvexHull</span>
 
 
 <div class="viewcode-block" id="get_nyquist_frequency">
@@ -439,6 +440,190 @@
         <span class="n">non_overlapping_sets</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">merged</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">non_overlapping_sets</span><span class="p">[::</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span></div>
+
+
+
+<div class="viewcode-block" id="sample_new_point">
+<a class="viewcode-back" href="../../api/molecular_simulation_tools/utils/index.html#molecular_simulation_tools.utils.sample_new_point">[docs]</a>
+<span class="k">def</span> <span class="nf">sample_new_point</span><span class="p">(</span>
+    <span class="n">points</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+    <span class="n">minimum_distance</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+    <span class="n">initial_spawn_distance</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">rtol</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1e-5</span><span class="p">,</span>
+    <span class="n">atol</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1e-8</span><span class="p">,</span>
+    <span class="n">n</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Generate a new point in a random direction that is a certain distance from other points.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    points : np.ndarray</span>
+<span class="sd">        NxM array of coordinates of all old points,</span>
+<span class="sd">        where N is the number of points and M the dimension</span>
+<span class="sd">    minimum_distance : float</span>
+<span class="sd">        Minimum distance for the newly generated</span>
+<span class="sd">        point to be from all other points</span>
+<span class="sd">    initial_spawn_distance : float | None</span>
+<span class="sd">        Initial distance from origin.</span>
+<span class="sd">        If None, is the same as minimum_distance. Default = None</span>
+<span class="sd">    rtol : float</span>
+<span class="sd">        Relative tolerance. Default: 1e-5</span>
+<span class="sd">    atol : float</span>
+<span class="sd">        Absolute tolerance. Default: 1e-8</span>
+<span class="sd">    n : int</span>
+<span class="sd">        number of points to generate. Default: 1</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    r_vec : np.ndarray</span>
+<span class="sd">        Array of length M of coordinates of new point.</span>
+<span class="sd">        Shape n*M if multiple points are being generated.</span>
+
+<span class="sd">    Raises</span>
+<span class="sd">    ------</span>
+<span class="sd">    ValueError</span>
+<span class="sd">        If `minimum_distance` or `initial_spawn_distance` is less or equal to 0</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># If points is only a 1d array (when only one initial point is supplied)</span>
+    <span class="c1"># make sure it is 2d so we index it correctly.</span>
+    <span class="n">points</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">atleast_2d</span><span class="p">(</span><span class="n">points</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">n</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="n">n_initial_points</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">shape</span><span class="p">(</span><span class="n">points</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+
+        <span class="n">new_points</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">n_initial_points</span> <span class="o">+</span> <span class="n">n</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+
+        <span class="c1"># Add original points into this array</span>
+        <span class="n">new_points</span><span class="p">[:</span><span class="n">n_initial_points</span><span class="p">,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">points</span>
+
+        <span class="c1"># Overwrite original points</span>
+        <span class="n">points</span> <span class="o">=</span> <span class="n">new_points</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
+            <span class="n">new_point</span> <span class="o">=</span> <span class="n">sample_new_point</span><span class="p">(</span>
+                <span class="n">points</span><span class="p">[:</span> <span class="n">n_initial_points</span> <span class="o">+</span> <span class="n">i</span><span class="p">,</span> <span class="p">:],</span>
+                <span class="n">minimum_distance</span><span class="p">,</span>
+                <span class="n">initial_spawn_distance</span><span class="o">=</span><span class="n">initial_spawn_distance</span><span class="p">,</span>
+                <span class="n">rtol</span><span class="o">=</span><span class="n">rtol</span><span class="p">,</span>
+                <span class="n">atol</span><span class="o">=</span><span class="n">atol</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="n">points</span><span class="p">[</span><span class="n">n_initial_points</span> <span class="o">+</span> <span class="n">i</span><span class="p">,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">new_point</span>
+        <span class="k">return</span> <span class="n">points</span><span class="p">[</span><span class="n">n_initial_points</span><span class="p">:,</span> <span class="p">:]</span>
+
+    <span class="n">minimum_distance</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">minimum_distance</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">initial_spawn_distance</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">initial_spawn_distance</span> <span class="o">=</span> <span class="n">minimum_distance</span>
+
+    <span class="k">if</span> <span class="n">minimum_distance</span> <span class="o">&lt;=</span> <span class="mf">0.0</span> <span class="ow">or</span> <span class="n">initial_spawn_distance</span> <span class="o">&lt;=</span> <span class="mf">0.0</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">()</span>
+
+    <span class="n">r_unit</span> <span class="o">=</span> <span class="n">get_random_unit_vector</span><span class="p">()</span>
+    <span class="n">r_vec</span> <span class="o">=</span> <span class="n">r_unit</span> <span class="o">*</span> <span class="n">initial_spawn_distance</span>
+
+    <span class="n">distances</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">points</span> <span class="o">-</span> <span class="n">r_vec</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+    <span class="k">while</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">isclose</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">distances</span><span class="p">),</span> <span class="n">minimum_distance</span><span class="p">,</span> <span class="n">rtol</span><span class="o">=</span><span class="n">rtol</span><span class="p">,</span> <span class="n">atol</span><span class="o">=</span><span class="n">atol</span><span class="p">):</span>
+        <span class="n">min_distance_position</span> <span class="o">=</span> <span class="n">points</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">argmin</span><span class="p">(</span><span class="n">distances</span><span class="p">),</span> <span class="p">:]</span>
+        <span class="n">r_length</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">r_vec</span><span class="p">)</span>
+
+        <span class="n">b</span> <span class="o">=</span> <span class="mf">2.0</span> <span class="o">*</span> <span class="n">r_length</span> <span class="o">-</span> <span class="mf">2.0</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">min_distance_position</span><span class="p">,</span> <span class="n">r_unit</span><span class="p">)</span>
+        <span class="n">c</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="o">-</span><span class="mf">2.0</span> <span class="o">*</span> <span class="n">r_length</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">min_distance_position</span><span class="p">,</span> <span class="n">r_unit</span><span class="p">)</span>
+            <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">min_distance_position</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span>
+            <span class="o">-</span> <span class="n">minimum_distance</span><span class="o">**</span><span class="mi">2</span>
+            <span class="o">+</span> <span class="n">r_length</span><span class="o">**</span><span class="mi">2</span>
+        <span class="p">)</span>
+
+        <span class="n">roots</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">polynomial</span><span class="o">.</span><span class="n">polynomial</span><span class="o">.</span><span class="n">polyroots</span><span class="p">([</span><span class="n">c</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">])</span>
+        <span class="n">k</span> <span class="o">=</span> <span class="p">(</span><span class="n">roots</span><span class="p">[</span><span class="n">roots</span> <span class="o">&gt;=</span> <span class="mf">0.0</span><span class="p">])</span><span class="o">.</span><span class="n">min</span><span class="p">()</span>
+        <span class="n">r_vec</span> <span class="o">+=</span> <span class="n">k</span> <span class="o">*</span> <span class="n">r_unit</span>
+
+        <span class="n">distances</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">points</span> <span class="o">-</span> <span class="n">r_vec</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">r_vec</span></div>
+
+
+
+<div class="viewcode-block" id="icosahedron_unit_sphere">
+<a class="viewcode-back" href="../../api/molecular_simulation_tools/utils/index.html#molecular_simulation_tools.utils.icosahedron_unit_sphere">[docs]</a>
+<span class="k">def</span> <span class="nf">icosahedron_unit_sphere</span><span class="p">(</span><span class="n">level</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">subdivision</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">2</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Get vertices of an icosahedron for even sampling of a unit sphere.</span>
+
+<span class="sd">    Teanby et al, 2006. https://sci-hub.se/https://doi.org/10.1016/j.cageo.2006.01.007</span>
+<span class="sd">    Recursive. Might be</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    level : int</span>
+<span class="sd">        Level. Default = 1</span>
+<span class="sd">    subdivision : int</span>
+<span class="sd">        Prime integer, currently only 2 implemented. Default = 2</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    vertices : np.ndarray</span>
+<span class="sd">        Numpy array of shape Nx3, with N vertices</span>
+
+<span class="sd">    Raises</span>
+<span class="sd">    ------</span>
+<span class="sd">    NotImplementedError</span>
+<span class="sd">        If `subdivision` is not 2</span>
+<span class="sd">    ValueError</span>
+<span class="sd">        If `level` is less than 0.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">subdivision</span> <span class="o">!=</span> <span class="mi">2</span><span class="p">:</span>
+        <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Only subdivision == 2 (bisection) is implemented at the moment, but was </span><span class="si">{</span><span class="n">subdivision</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">subdivision</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">{</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">11</span><span class="p">}:</span>
+        <span class="c1"># Check only up to 11 for now.</span>
+        <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Subdivision needs to be a prime integer, but was </span><span class="si">{</span><span class="n">subdivision</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">level</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">()</span>
+
+    <span class="k">if</span> <span class="n">level</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">phi</span> <span class="o">=</span> <span class="mf">2.0</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">/</span> <span class="mf">5.0</span><span class="p">)</span>
+        <span class="n">vertices</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span>
+            <span class="p">[</span>
+                <span class="p">[</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">phi</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">],</span>
+                <span class="p">[</span><span class="mf">0.0</span><span class="p">,</span> <span class="o">-</span><span class="n">phi</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">],</span>
+                <span class="p">[</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">phi</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.0</span><span class="p">],</span>
+                <span class="p">[</span><span class="mf">0.0</span><span class="p">,</span> <span class="o">-</span><span class="n">phi</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.0</span><span class="p">],</span>
+                <span class="p">[</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="n">phi</span><span class="p">],</span>
+                <span class="p">[</span><span class="o">-</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="n">phi</span><span class="p">],</span>
+                <span class="p">[</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="o">-</span><span class="n">phi</span><span class="p">],</span>
+                <span class="p">[</span><span class="o">-</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="o">-</span><span class="n">phi</span><span class="p">],</span>
+                <span class="p">[</span><span class="n">phi</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">],</span>
+                <span class="p">[</span><span class="o">-</span><span class="n">phi</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">],</span>
+                <span class="p">[</span><span class="n">phi</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">],</span>
+                <span class="p">[</span><span class="o">-</span><span class="n">phi</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">],</span>
+            <span class="p">]</span>
+        <span class="p">)</span>
+        <span class="n">normalization</span> <span class="o">=</span> <span class="mf">1.0</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mf">1.0</span> <span class="o">+</span> <span class="mf">4.0</span> <span class="o">*</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">/</span> <span class="mf">5.0</span><span class="p">))</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">vertices</span> <span class="o">*</span> <span class="n">normalization</span>
+
+    <span class="n">vertices_below</span> <span class="o">=</span> <span class="n">icosahedron_unit_sphere</span><span class="p">(</span><span class="n">level</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="n">subdivision</span><span class="o">=</span><span class="n">subdivision</span><span class="p">)</span>
+    <span class="n">hull</span> <span class="o">=</span> <span class="n">ConvexHull</span><span class="p">(</span><span class="n">points</span><span class="o">=</span><span class="n">vertices_below</span><span class="p">,</span> <span class="n">incremental</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">triangle_indices</span> <span class="o">=</span> <span class="n">hull</span><span class="o">.</span><span class="n">simplices</span>
+
+    <span class="n">ntriangles</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">shape</span><span class="p">(</span><span class="n">triangle_indices</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+
+    <span class="n">new_points</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="n">ntriangles</span> <span class="o">*</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">))</span>
+    <span class="k">for</span> <span class="n">triangle_idx</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">ntriangles</span><span class="p">):</span>
+        <span class="n">vertices_of_triangle</span> <span class="o">=</span> <span class="n">triangle_indices</span><span class="p">[</span><span class="n">triangle_idx</span><span class="p">,</span> <span class="p">:]</span>
+
+        <span class="n">edges</span> <span class="o">=</span> <span class="n">itertools</span><span class="o">.</span><span class="n">combinations</span><span class="p">(</span><span class="n">iterable</span><span class="o">=</span><span class="n">vertices_of_triangle</span><span class="p">,</span> <span class="n">r</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+
+        <span class="n">new_points</span><span class="p">[</span><span class="n">triangle_idx</span> <span class="o">*</span> <span class="mi">3</span> <span class="p">:</span> <span class="n">triangle_idx</span> <span class="o">*</span> <span class="mi">3</span> <span class="o">+</span> <span class="mi">3</span><span class="p">,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span>
+            <span class="p">[</span>
+                <span class="n">project_on_unit_sphere</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">vertices_below</span><span class="p">[</span><span class="n">edge</span><span class="p">,</span> <span class="p">:],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">))</span>
+                <span class="k">for</span> <span class="n">edge</span> <span class="ow">in</span> <span class="n">edges</span>
+            <span class="p">]</span>
+        <span class="p">)</span>
+    <span class="n">vertices</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">vertices_below</span><span class="p">,</span> <span class="n">new_points</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">vertices</span></div>
 
 </pre></div>
 

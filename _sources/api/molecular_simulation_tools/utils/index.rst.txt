@@ -24,7 +24,9 @@ Functions
    molecular_simulation_tools.utils.get_nyquist_frequency
    molecular_simulation_tools.utils.get_permutations_exchange_identical_atoms
    molecular_simulation_tools.utils.get_random_unit_vector
+   molecular_simulation_tools.utils.icosahedron_unit_sphere
    molecular_simulation_tools.utils.project_on_unit_sphere
+   molecular_simulation_tools.utils.sample_new_point
    molecular_simulation_tools.utils.sample_random_rotation
    molecular_simulation_tools.utils.turn_grid_into_position_vectors
 
@@ -170,6 +172,25 @@ Module Contents
    :rtype: numpy.ndarray
 
 
+.. py:function:: icosahedron_unit_sphere(level: int = 0, subdivision: int = 2) -> numpy.ndarray
+
+   Get vertices of an icosahedron for even sampling of a unit sphere.
+
+   Teanby et al, 2006. https://sci-hub.se/https://doi.org/10.1016/j.cageo.2006.01.007
+   Recursive. Might be
+
+   :param level: Level. Default = 1
+   :type level: int
+   :param subdivision: Prime integer, currently only 2 implemented. Default = 2
+   :type subdivision: int
+
+   :returns: **vertices** -- Numpy array of shape Nx3, with N vertices
+   :rtype: numpy.ndarray
+
+   :raises NotImplementedError: If `subdivision` is not 2
+   :raises ValueError: If `level` is less than 0.
+
+
 .. py:function:: project_on_unit_sphere(vector: numpy.ndarray) -> numpy.ndarray
 
    Project a vector on the unit sphere, by dividing it by its length.
@@ -179,6 +200,33 @@ Module Contents
 
    :returns: Vector projected on N-dimensional unit sphere
    :rtype: numpy.ndarray
+
+
+.. py:function:: sample_new_point(points: numpy.ndarray, minimum_distance: float, initial_spawn_distance: float | None = None, rtol: float = 1e-05, atol: float = 1e-08, n: int = 1) -> numpy.ndarray
+
+   Generate a new point in a random direction that is a certain distance from other points.
+
+   :param points: NxM array of coordinates of all old points,
+                  where N is the number of points and M the dimension
+   :type points: numpy.ndarray
+   :param minimum_distance: Minimum distance for the newly generated
+                            point to be from all other points
+   :type minimum_distance: float
+   :param initial_spawn_distance: Initial distance from origin.
+                                  If None, is the same as minimum_distance. Default = None
+   :type initial_spawn_distance: float | None
+   :param rtol: Relative tolerance. Default: 1e-5
+   :type rtol: float
+   :param atol: Absolute tolerance. Default: 1e-8
+   :type atol: float
+   :param n: number of points to generate. Default: 1
+   :type n: int
+
+   :returns: **r_vec** -- Array of length M of coordinates of new point.
+             Shape n*M if multiple points are being generated.
+   :rtype: numpy.ndarray
+
+   :raises ValueError: If `minimum_distance` or `initial_spawn_distance` is less or equal to 0
 
 
 .. py:function:: sample_random_rotation() -> tuple[numpy.ndarray, float]
