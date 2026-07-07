@@ -87,6 +87,7 @@
 <span class="p">)</span>
 <span class="kn">from</span> <span class="nn">molecular_simulation_tools.utils</span> <span class="kn">import</span> <span class="p">(</span>
     <span class="n">check_same_number_of_atoms</span><span class="p">,</span>
+    <span class="n">combine_overlapping_sets</span><span class="p">,</span>
     <span class="n">correct_distance_for_pbc</span><span class="p">,</span>
     <span class="n">get_permutations_exchange_identical_atoms</span><span class="p">,</span>
 <span class="p">)</span>
@@ -634,6 +635,86 @@
     <span class="k">else</span><span class="p">:</span>
         <span class="n">return_atoms</span> <span class="o">=</span> <span class="p">(</span><span class="n">atoms</span><span class="p">[</span><span class="n">indices</span><span class="p">],</span> <span class="n">target</span><span class="p">[</span><span class="n">indices</span><span class="p">])</span>
     <span class="k">return</span> <span class="n">min_rmsd</span><span class="p">,</span> <span class="n">return_atoms</span></div>
+
+
+
+<div class="viewcode-block" id="course_grain_binding_sites">
+<a class="viewcode-back" href="../../api/molecular_simulation_tools/geometry/index.html#molecular_simulation_tools.geometry.course_grain_binding_sites">[docs]</a>
+<span class="k">def</span> <span class="nf">course_grain_binding_sites</span><span class="p">(</span>
+    <span class="n">sites</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">Atoms</span><span class="p">],</span>
+    <span class="n">indices</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="nb">list</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">max_rmsd</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.5</span><span class="p">,</span>
+    <span class="n">permute</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+    <span class="n">top_down</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">set</span><span class="p">[</span><span class="nb">int</span><span class="p">]]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Course grain binding sites that are near to eachother.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    sites : list[Atoms]</span>
+<span class="sd">        List of geometries of surfaces with adsorbates.</span>
+<span class="sd">    indices : int | list[int] | None</span>
+<span class="sd">        Indices to be used to calculate the RMSD. If None, use all.</span>
+<span class="sd">    max_rmsd : int | float</span>
+<span class="sd">        Maximum RMSD to be considered the same site. Default = 0.5 Angstrom.</span>
+<span class="sd">    permute : bool</span>
+<span class="sd">        Whether to permute indices in `indices` with identical atoms. Default = True.</span>
+<span class="sd">    top_down : bool</span>
+<span class="sd">        Only take into account the two-dimensional projected distance.</span>
+<span class="sd">        If True, `indices` needs to be passed as a single integer.</span>
+<span class="sd">        Default = False.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    binding_site_sets : list[set[int]]</span>
+<span class="sd">        List of binding sites that are considered the same.</span>
+
+<span class="sd">    Raises</span>
+<span class="sd">    ------</span>
+<span class="sd">    TypeError</span>
+<span class="sd">        If `top_down` is True, but `indices` is not given, or is not a single</span>
+<span class="sd">        integer.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">top_down</span> <span class="ow">and</span> <span class="n">indices</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">indices</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span>
+
+    <span class="n">binding_site_sets</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">set</span><span class="p">[</span><span class="nb">int</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">frame_idx</span><span class="p">,</span> <span class="n">frame</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">sites</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">other_frame_idx</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">frame_idx</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">sites</span><span class="p">)):</span>
+            <span class="n">other_frame</span> <span class="o">=</span> <span class="n">sites</span><span class="p">[</span><span class="n">other_frame_idx</span><span class="p">]</span>
+
+            <span class="k">if</span> <span class="n">top_down</span><span class="p">:</span>
+                <span class="n">rmsd</span> <span class="o">=</span> <span class="n">get_two_dimensional_distances</span><span class="p">(</span>
+                    <span class="n">frame</span><span class="o">.</span><span class="n">positions</span><span class="p">[</span><span class="n">indices</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span>
+                    <span class="n">frame</span><span class="o">.</span><span class="n">positions</span><span class="p">[</span><span class="n">indices</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span>
+                    <span class="n">other_frame</span><span class="o">.</span><span class="n">positions</span><span class="p">[</span><span class="n">indices</span><span class="p">,</span> <span class="p">:],</span>
+                    <span class="n">box_size</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">diag</span><span class="p">(</span><span class="n">frame</span><span class="o">.</span><span class="n">cell</span><span class="p">),</span>
+                <span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">rmsd</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">calculate_rmsd</span><span class="p">(</span><span class="n">frame</span><span class="p">,</span> <span class="n">other_frame</span><span class="p">,</span> <span class="n">indices</span><span class="p">,</span> <span class="n">permute</span><span class="o">=</span><span class="n">permute</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">rmsd</span> <span class="o">&gt;</span> <span class="n">max_rmsd</span><span class="p">:</span>
+                <span class="k">continue</span>
+
+            <span class="n">new_set</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="k">for</span> <span class="n">binding_site_set</span> <span class="ow">in</span> <span class="n">binding_site_sets</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">frame_idx</span> <span class="ow">in</span> <span class="n">binding_site_set</span> <span class="ow">or</span> <span class="n">other_frame_idx</span> <span class="ow">in</span> <span class="n">binding_site_set</span><span class="p">:</span>
+                    <span class="n">binding_site_set</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">frame_idx</span><span class="p">)</span>
+                    <span class="n">binding_site_set</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">other_frame_idx</span><span class="p">)</span>
+                    <span class="n">new_set</span> <span class="o">=</span> <span class="kc">False</span>
+            <span class="k">if</span> <span class="n">new_set</span><span class="p">:</span>
+                <span class="n">binding_site_sets</span><span class="o">.</span><span class="n">append</span><span class="p">({</span><span class="n">frame_idx</span><span class="p">,</span> <span class="n">other_frame_idx</span><span class="p">})</span>
+
+        <span class="n">saw_this_frame</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="k">for</span> <span class="n">binding_site_set</span> <span class="ow">in</span> <span class="n">binding_site_sets</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">frame_idx</span> <span class="ow">in</span> <span class="n">binding_site_set</span><span class="p">:</span>
+                <span class="n">saw_this_frame</span> <span class="o">=</span> <span class="kc">True</span>
+                <span class="k">break</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">saw_this_frame</span><span class="p">:</span>
+            <span class="n">binding_site_sets</span><span class="o">.</span><span class="n">append</span><span class="p">({</span><span class="n">frame_idx</span><span class="p">})</span>
+
+    <span class="n">binding_site_sets</span> <span class="o">=</span> <span class="n">combine_overlapping_sets</span><span class="p">(</span><span class="n">binding_site_sets</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">binding_site_sets</span></div>
 
 </pre></div>
 
