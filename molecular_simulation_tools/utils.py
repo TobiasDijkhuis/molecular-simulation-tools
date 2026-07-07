@@ -505,3 +505,44 @@ def icosahedron_unit_sphere(level: int = 0, subdivision: int = 2) -> np.ndarray:
         )
     vertices = np.unique(np.append(vertices_below, new_points, axis=0), axis=0)
     return vertices
+
+
+def get_minimum_site_idx_for_binding_sites(
+    binding_site_sets: list[set[int]],
+    energies: list[float] | np.ndarray,
+) -> list[int]:
+    """Get the indices with the minimum energy out of sets of binding sites.
+
+    Parameters
+    ----------
+    binding_site_sets : list[set[int]]
+        List of sets of binding sites.
+    energies : list[float] | np.ndarray
+        Energies of each binding site.
+
+    Returns
+    -------
+    minimum_for_each_set : list[int]
+        Index for each binding site set corresponding to the minimum of that set.
+
+    Raises
+    ------
+    ValueError
+        If the length of `energies` is not the same as the total number of
+        indices in `binding_site_sets`.
+
+    """
+    total_binding_sites = sum(
+        len(binding_site_set) for binding_site_set in binding_site_sets
+    )
+    if len(energies) != total_binding_sites:
+        msg = f"Length of energies ({len(energies)}) was not the same as the length of sites (total_binding_sites)"
+        raise ValueError(msg)
+    energies = np.asarray(energies)
+
+    minimum_for_each_set = []
+    for binding_site_set in binding_site_sets:
+        binding_site_list = list(binding_site_set)
+        min_index = np.argmin(energies[binding_site_list])
+        minimum_for_each_set.append(binding_site_list[min_index])
+    return minimum_for_each_set
