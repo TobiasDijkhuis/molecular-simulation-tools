@@ -8,6 +8,7 @@ from molecular_simulation_tools.utils import (
     get_permutations_exchange_identical_atoms,
     project_on_unit_sphere,
     turn_grid_into_position_vectors,
+    combine_overlapping_sets,
 )
 
 
@@ -94,3 +95,19 @@ def test_get_permutations_exchange_identical_atoms_data(
     assert all(
         tuple(permutation) in expected_permutations for permutation in permutations
     )
+
+
+overlapping_sets_data = [
+    ([{1, 2, 3}, {4, 5}], [{1, 2, 3}, {4, 5}]),
+    ([{1, 2, 3}, {3, 5}], [{1, 2, 3, 5}]),
+    ([{1, 2, 3}, {4, 5}, {1, 5}], [{1, 2, 3, 4, 5}]),
+    ([{1}, {2}, {3}], [{1}, {2}, {3}]),
+    ([{1, 2}, {2, 3}, {4, 5}, {5, 6}], [{1, 2, 3}, {4, 5, 6}]),
+    ([{1, 2}, {1, 2}, {4, 5}, {5, 6}], [{1, 2}, {4, 5, 6}]),
+]
+
+
+@pytest.mark.parametrize("list_of_sets, expected_sets", overlapping_sets_data)
+def test_combine_overlapping_sets(list_of_sets, expected_sets):
+    combined_sets = combine_overlapping_sets(list_of_sets)
+    assert expected_sets == combined_sets

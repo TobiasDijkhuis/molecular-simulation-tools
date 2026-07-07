@@ -7,6 +7,8 @@ import numpy as np
 from ase import Atoms
 from scipy.signal import correlate
 
+from typing import Any
+
 
 def get_nyquist_frequency(dt: float) -> float:
     """Get the nyquist frequency.
@@ -279,3 +281,49 @@ def get_permutations_exchange_identical_atoms(
         for permutation in permutations
         if np.all(atoms.numbers[permutation] == atoms.numbers[indices])
     ]
+
+
+def combine_overlapping_sets(list_of_sets: list[set[Any]]) -> list[set[Any]]:
+    """Combine sets that have overlapping elements.
+
+    Parameters
+    ----------
+    list_of_sets : list[set[Any]]
+        List of sets with potentially overlapping elements.
+
+    Returns
+    -------
+    list[set[Any]]
+        List of sets, without overlapping elements.
+
+    Examples
+    --------
+    >>> combine_overlapping_sets([{1,2,3},{3,4}])
+    [{1, 2, 3, 4}]
+    >>> combine_overlapping_sets([{1,2},{3,4}])
+    [{1, 2}, {3, 4}]
+
+    """
+    remaining_sets = list_of_sets.copy()
+    non_overlapping_sets = []
+
+    while remaining_sets:
+        merged = remaining_sets.pop()
+
+        changed = True
+        while changed:
+            changed = False
+            still_remaining = []
+
+            for s in remaining_sets:
+                if not merged.isdisjoint(s):
+                    merged.update(s)
+                    changed = True
+                else:
+                    still_remaining.append(s)
+
+            remaining_sets = still_remaining
+
+        non_overlapping_sets.append(merged)
+
+    return non_overlapping_sets[::-1]

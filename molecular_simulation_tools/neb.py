@@ -13,6 +13,7 @@ from ase.mep.neb import NEB, BaseNEB, idpp_interpolate, interpolate
 from ase.optimize.lbfgs import LBFGS
 from ase.optimize.optimize import Optimizer
 from ase.utils.forcecurve import ForceFit, fit_images
+from ase.optimize.optimize import DEFAULT_MAX_STEPS
 
 from molecular_simulation_tools.utils import check_same_number_of_atoms
 
@@ -130,6 +131,7 @@ def run_energy_weighted_neb(
     calc: Calculator,
     fmax: float = 0.05,
     optimizer: type[Optimizer] = LBFGS,
+    steps: int = DEFAULT_MAX_STEPS,
     interpolate: Literal["linear", "idpp"] | None = None,
     neb_kwargs: dict[str, Any] | None = None,
     optimizer_kwargs: dict[str, Any] | None = None,
@@ -150,6 +152,8 @@ def run_energy_weighted_neb(
         Maximum force on the highest energy component in eV/Angstrom. Default = 0.05.
     optimizer : type[Optimizer]
         Optimizer to use for the NEB. Default = LBFGS.
+    steps : int
+        Maximum number of steps. Default = :data:`ase.optimize.optimize.DEFAULT_MAX_STEPS`.
     interpolate : Literal['linear', 'idpp'] | None
         Method to interpolate see :meth:`ase.mep.neb.NEB.interpolate`.
         If None, do not interpolate images. Default = None.
@@ -211,7 +215,10 @@ def run_energy_weighted_neb(
 
     first_neb_fmax = 2 * fmax if climb else fmax
     with optimizer(neb, **optimizer_kwargs) as opt:  # ty: ignore[invalid-argument-type]
-        opt.run(fmax=first_neb_fmax)
+        converged = opt.run(fmax=first_neb_fmax, steps=steps)
+
+    if not converged:
+        print("NEB DID NOT CONVERGE")
 
     if not climb:
         return neb
@@ -223,7 +230,10 @@ def run_energy_weighted_neb(
     neb = NEB(images, climb=True, **neb_kwargs)
 
     with optimizer(neb, **optimizer_kwargs) as opt:  # ty: ignore[invalid-argument-type]
-        opt.run(fmax=fmax)
+        converged = opt.run(fmax=fmax, steps=steps)
+
+    if not converged:
+        print("CI-NEB DID NOT CONVERGE")
 
     return neb
 

@@ -115,3 +115,7 @@ possibly-missing-submodule = "ignore"
 
 [tool.coverage.run]
 omit = ['molecular_simulation_tools/_version.py']
+
+[tool.pytest]
+addopts = ["--doctest-modules"]
+doctest_optionflags = ["NORMALIZE_WHITESPACE", "IGNORE_EXCEPTION_DETAIL"]
