@@ -2,12 +2,11 @@
 
 import itertools
 from random import random
+from typing import Any
 
 import numpy as np
 from ase import Atoms
 from scipy.signal import correlate
-
-from typing import Any
 
 
 def get_nyquist_frequency(dt: float) -> float:

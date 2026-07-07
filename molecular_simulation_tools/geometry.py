@@ -424,7 +424,7 @@ def find_min_height_for_adsorbate_on_surface(
 def calculate_rmsd(
     atoms: Atoms,
     target: Atoms,
-    indices: list[int] | None,
+    indices: int | list[int] | None,
     permute: bool = True,
     return_permuted_target: bool = True,
 ) -> tuple[float, tuple[Atoms, Atoms]]:
@@ -436,8 +436,8 @@ def calculate_rmsd(
         atoms
     target : Atoms
         target
-    indices : list[int] | None
-        List of indices, or None if all atoms.
+    indices : int | list[int] | None
+        Single index, list of indices, or None if all atoms.
     permute : bool
         Whether to permute the atom indices to get the minimum
         rmsd. Only permutes between identical elements. Default = True.
@@ -473,6 +473,8 @@ def calculate_rmsd(
 
     if indices is None:
         indices = list(range(len(atoms)))
+    if isinstance(indices, int):
+        indices = [indices]
     n_atoms_for_rmsd = len(indices)
 
     original_positions = atoms.get_positions()

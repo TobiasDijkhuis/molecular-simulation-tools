@@ -3,12 +3,12 @@ import pytest
 from ase import Atoms
 
 from molecular_simulation_tools.utils import (
+    combine_overlapping_sets,
     convert_cartesian_to_spherical,
     convert_spherical_to_cartesian,
     get_permutations_exchange_identical_atoms,
     project_on_unit_sphere,
     turn_grid_into_position_vectors,
-    combine_overlapping_sets,
 )
 
 

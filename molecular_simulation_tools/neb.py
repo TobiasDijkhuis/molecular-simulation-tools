@@ -11,9 +11,8 @@ from ase.geometry import conditional_find_mic
 from ase.mep.dimer import DimerControl, MinModeAtoms, MinModeTranslate
 from ase.mep.neb import NEB, BaseNEB, idpp_interpolate, interpolate
 from ase.optimize.lbfgs import LBFGS
-from ase.optimize.optimize import Optimizer
+from ase.optimize.optimize import DEFAULT_MAX_STEPS, Optimizer
 from ase.utils.forcecurve import ForceFit, fit_images
-from ase.optimize.optimize import DEFAULT_MAX_STEPS
 
 from molecular_simulation_tools.utils import check_same_number_of_atoms
 
