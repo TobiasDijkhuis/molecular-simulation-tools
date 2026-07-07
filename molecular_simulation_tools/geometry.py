@@ -307,11 +307,11 @@ def get_two_dimensional_distances(
         `point_coordinates`.
 
     """
+    point_coordinates = np.atleast_2d(point_coordinates)
     delta_x = point_coordinates[:, 0] - x
     delta_y = point_coordinates[:, 1] - y
 
     if box_size is not None:
-        print(box_size)
         delta_x = correct_distance_for_pbc(delta_x, box_size[0])
         delta_y = correct_distance_for_pbc(delta_y, box_size[1])
 

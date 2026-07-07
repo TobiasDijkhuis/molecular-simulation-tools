@@ -92,7 +92,6 @@ def test_get_permutations_exchange_identical_atoms_data(
     atoms, indices, expected_permutations
 ):
     permutations = get_permutations_exchange_identical_atoms(atoms, indices=indices)
-    print(permutations)
     assert len(permutations) == len(expected_permutations)
     assert all(
         tuple(permutation) in expected_permutations for permutation in permutations
