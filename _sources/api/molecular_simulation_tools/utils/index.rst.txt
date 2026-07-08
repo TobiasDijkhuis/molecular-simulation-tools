@@ -26,10 +26,13 @@ Functions
    molecular_simulation_tools.utils.get_permutations_exchange_identical_atoms
    molecular_simulation_tools.utils.get_random_unit_vector
    molecular_simulation_tools.utils.icosahedron_unit_sphere
+   molecular_simulation_tools.utils.plot_periodic_images
    molecular_simulation_tools.utils.project_on_unit_sphere
    molecular_simulation_tools.utils.sample_new_point
    molecular_simulation_tools.utils.sample_random_rotation
+   molecular_simulation_tools.utils.set_up_periodic_plot
    molecular_simulation_tools.utils.turn_grid_into_position_vectors
+   molecular_simulation_tools.utils.unwrap_trajectory_from_displacement
 
 
 Module Contents
@@ -208,6 +211,31 @@ Module Contents
    :raises ValueError: If `level` is less than 0.
 
 
+.. py:function:: plot_periodic_images(x: numpy.ndarray, y: numpy.ndarray, box_size: numpy.ndarray, ax: matplotlib.pyplot.Axes | None = None, plot_kwargs: dict[str, Any] | None = None) -> matplotlib.pyplot.Axes
+
+   Plot periodic images of the data as well.
+
+   :param x: X-data
+   :type x: numpy.ndarray
+   :param y: Y-data
+   :type y: numpy.ndarray
+   :param box_size: Size of the box. 3x3 array or 1d array of the diagonal.
+   :type box_size: numpy.ndarray
+   :param ax: Axes to plot on. If None, uses :func:`matplotlib.pyplot.gca()`.
+              Default = None.
+   :type ax: matplotlib.pyplot.Axes | None
+   :param plot_kwargs: Keyword arguments passed to :meth:`matplotlib.pyplot.Axes.plot`.
+                       Default = None.
+   :type plot_kwargs: dict[str, Any] | None
+
+   :returns: **ax** -- Axes that was plotted on.
+   :rtype: matplotlib.pyplot.Axes
+
+   :raises NotImplementedError: If an absolute value `x` or `y` is larger than the box size.
+       This function currently only plots the central image, and the first
+       outer image.
+
+
 .. py:function:: project_on_unit_sphere(vector: numpy.ndarray) -> numpy.ndarray
 
    Project a vector on the unit sphere, by dividing it by its length.
@@ -256,6 +284,23 @@ Module Contents
              * **rotation_angle** (*float*) -- Rotation angle in radians.
 
 
+.. py:function:: set_up_periodic_plot(box_size: numpy.ndarray, ax: matplotlib.pyplot.Axes | None = None, additional_width: float = 0.1) -> matplotlib.pyplot.Axes
+
+   Set up a plot of a periodic box.
+
+   :param box_size: Size of the box. 3x3 array or 1d array of the diagonal.
+   :type box_size: numpy.ndarray
+   :param ax: Axes to plot on. If None, uses :func:`matplotlib.pyplot.gca()`.
+              Default = None.
+   :type ax: matplotlib.pyplot.Axes | None
+   :param additional_width: Additional width (margins) to include around the central image.
+                            Default = 0.1.
+   :type additional_width: float
+
+   :returns: **ax** -- Axes to plot on.
+   :rtype: matplotlib.pyplot.Axes
+
+
 .. py:function:: turn_grid_into_position_vectors(grid_matrices: tuple[numpy.ndarray, Ellipsis]) -> numpy.ndarray
 
    Turn a grid created by :func:`numpy.meshgrid` into position vectors.
@@ -266,6 +311,19 @@ Module Contents
    :type grid_matrices: tuple[numpy.ndarray, ...]
 
    :returns: MxN numpy array of the grid positions in N dimensions.
+   :rtype: numpy.ndarray
+
+
+.. py:function:: unwrap_trajectory_from_displacement(positions: numpy.ndarray, cell: numpy.ndarray) -> numpy.ndarray
+
+   Unwrap trajectory based on displacement between frames.
+
+   :param positions: Array of shape Nx3 of the wrapped positions over N frames.
+   :type positions: numpy.ndarray
+   :param cell: 3x3 array or 1d array of diagonal of cell lengths.
+   :type cell: numpy.ndarray
+
+   :returns: **unwrapped_positions** -- Unwrapped positions.
    :rtype: numpy.ndarray
 
 
