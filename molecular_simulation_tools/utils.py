@@ -661,7 +661,7 @@ def plot_periodic_images(
 
     if np.any(np.abs(x) > box_size[0]) or np.any(np.abs(y) > box_size[1]):
         # Outside of first periodic image
-        images_to_include = (-2, -1, 0, 1, 2)
+        images_to_include: tuple[int, ...] = (-2, -1, 0, 1, 2)
     else:
         images_to_include = (-1, 0, 1)
 
