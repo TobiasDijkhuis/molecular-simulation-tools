@@ -7,6 +7,7 @@ from typing import Any
 import matplotlib.pyplot as plt
 import numpy as np
 from ase import Atoms
+from scipy.stats import norm
 from matplotlib import patches
 from scipy.signal import correlate
 from scipy.spatial import ConvexHull
@@ -203,14 +204,9 @@ def get_random_unit_vector(n: int = 1) -> np.ndarray:
         `n` is 1.
 
     """
-    vectors = np.empty(shape=(n, 3))
-    for i in range(n):
-        u1 = random()
-        u2 = random()
+    vectors = norm.rvs(size=(n, 3))
+    vectors /= np.linalg.norm(vectors, axis=1)
 
-        theta = 2.0 * np.pi * u2
-        phi = np.acos(2.0 * u1 - 1.0)
-        vectors[i, :] = convert_spherical_to_cartesian(1.0, theta, phi)
     if n == 1:
         return vectors[0, :]
     return vectors
