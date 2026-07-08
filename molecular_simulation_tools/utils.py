@@ -623,8 +623,8 @@ def set_up_periodic_plot(
 
 
 def plot_periodic_images(
-    x: np.ndarray,
-    y: np.ndarray,
+    x: np.ndarray | list,
+    y: np.ndarray | list,
     box_size: np.ndarray,
     ax: plt.Axes | None = None,
     plot_kwargs: dict[str, Any] | None = None,
@@ -633,9 +633,9 @@ def plot_periodic_images(
 
     Parameters
     ----------
-    x : np.ndarray
+    x : np.ndarray | list
         X-data
-    y : np.ndarray
+    y : np.ndarray | list
         Y-data
     box_size : np.ndarray
         Size of the box. 3x3 array or 1d array of the diagonal.
@@ -643,20 +643,13 @@ def plot_periodic_images(
         Axes to plot on. If None, uses :func:`matplotlib.pyplot.gca()`.
         Default = None.
     plot_kwargs : dict[str, Any] | None
-        Keyword arguments passed to :meth:`matplotlib.pyplot.Axes.plot`.
+        Keyword arguments passed to :meth:`matplotlib.pyplot.axes.Axes.plot`.
         Default = None.
 
     Returns
     -------
     ax : plt.Axes
         Axes that was plotted on.
-
-    Raises
-    ------
-    NotImplementedError
-        If an absolute value `x` or `y` is larger than the box size.
-        This function currently only plots the central image, and the first
-        outer image.
 
     """
     if plot_kwargs is None:
@@ -665,12 +658,18 @@ def plot_periodic_images(
         box_size = np.diag(box_size)
     if ax is None:
         ax = plt.gca()
+    if isinstance(x, list):
+        x = np.asarray(x)
+    if isinstance(y, list):
+        y = np.asarray(y)
 
     if np.any(np.abs(x) > box_size[0]) or np.any(np.abs(y) > box_size[1]):
         # Outside of first periodic image
-        raise NotImplementedError
+        images_to_include = (-2, -1, 0, 1, 2)
+    else:
+        images_to_include = (-1, 0, 1)
 
-    images = itertools.product((-1, 0, 1), (-1, 0, 1))
+    images = itertools.product(images_to_include, images_to_include)
     for image in images:
         image_x = x + image[0] * box_size[0]
         image_y = y + image[1] * box_size[1]
