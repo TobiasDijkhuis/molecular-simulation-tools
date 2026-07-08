@@ -4,8 +4,10 @@ import itertools
 from random import random
 from typing import Any
 
+import matplotlib.pyplot as plt
 import numpy as np
 from ase import Atoms
+from matplotlib import patches
 from scipy.signal import correlate
 from scipy.spatial import ConvexHull
 
@@ -546,3 +548,132 @@ def get_minimum_site_idx_for_binding_sites(
         min_index = np.argmin(energies[binding_site_list])
         minimum_for_each_set.append(binding_site_list[min_index])
     return minimum_for_each_set
+
+
+def unwrap_trajectory_from_displacement(
+    positions: np.ndarray, cell: np.ndarray
+) -> np.ndarray:
+    """Unwrap trajectory based on displacement between frames.
+
+    Parameters
+    ----------
+    positions : np.ndarray
+        Array of shape Nx3 of the wrapped positions over N frames.
+    cell : np.ndarray
+        3x3 array or 1d array of diagonal of cell lengths.
+
+    Returns
+    -------
+    unwrapped_positions : np.ndarray
+        Unwrapped positions.
+
+    """
+    if cell.ndim == 2:
+        cell = np.diag(cell)
+    diff = np.diff(positions, axis=0)
+    diff = np.insert(diff, 0, 0, axis=0)
+    is_currently_in_image = np.cumsum(np.sign(np.round(diff / (cell * 0.5))), axis=0)
+    unwrapped_positions = positions - cell * is_currently_in_image
+    return unwrapped_positions
+
+
+def set_up_periodic_plot(
+    box_size: np.ndarray, ax: plt.Axes | None = None, additional_width: float = 0.1
+) -> plt.Axes:
+    """Set up a plot of a periodic box.
+
+    Parameters
+    ----------
+    box_size : np.ndarray
+        Size of the box. 3x3 array or 1d array of the diagonal.
+    ax : plt.Axes | None
+        Axes to plot on. If None, uses :func:`matplotlib.pyplot.gca()`.
+        Default = None.
+    additional_width : float
+        Additional width (margins) to include around the central image.
+        Default = 0.1.
+
+    Returns
+    -------
+    ax : plt.Axes
+        Axes to plot on.
+
+    """
+    if ax is None:
+        ax = plt.gca()
+
+    ax.set_aspect("equal")
+    ax.set_xlabel("x (Angstrom)")
+    ax.set_ylabel("y (Angstrom)")
+
+    if box_size.ndim == 2:
+        box_size = np.diag(box_size)
+
+    x_extra = box_size[0] * additional_width
+    y_extra = box_size[1] * additional_width
+    ax.set_xlim((-x_extra, box_size[0] + x_extra))
+    ax.set_ylim((-y_extra, box_size[1] + y_extra))
+
+    box = patches.Rectangle(
+        (0, 0), box_size[0], box_size[1], edgecolor="k", facecolor="none", lw=0.25
+    )
+    ax.add_patch(box)
+
+    return ax
+
+
+def plot_periodic_images(
+    x: np.ndarray,
+    y: np.ndarray,
+    box_size: np.ndarray,
+    ax: plt.Axes | None = None,
+    plot_kwargs: dict[str, Any] | None = None,
+) -> plt.Axes:
+    """Plot periodic images of the data as well.
+
+    Parameters
+    ----------
+    x : np.ndarray
+        X-data
+    y : np.ndarray
+        Y-data
+    box_size : np.ndarray
+        Size of the box. 3x3 array or 1d array of the diagonal.
+    ax : plt.Axes | None
+        Axes to plot on. If None, uses :func:`matplotlib.pyplot.gca()`.
+        Default = None.
+    plot_kwargs : dict[str, Any] | None
+        Keyword arguments passed to :meth:`matplotlib.pyplot.Axes.plot`.
+        Default = None.
+
+    Returns
+    -------
+    ax : plt.Axes
+        Axes that was plotted on.
+
+    Raises
+    ------
+    NotImplementedError
+        If an absolute value `x` or `y` is larger than the box size.
+        This function currently only plots the central image, and the first
+        outer image.
+
+    """
+    if plot_kwargs is None:
+        plot_kwargs = {}
+    if box_size.ndim == 2:
+        box_size = np.diag(box_size)
+    if ax is None:
+        ax = plt.gca()
+
+    if np.any(np.abs(x) > box_size[0]) or np.any(np.abs(y) > box_size[1]):
+        # Outside of first periodic image
+        raise NotImplementedError
+
+    images = itertools.product((-1, 0, 1), (-1, 0, 1))
+    for image in images:
+        image_x = x + image[0] * box_size[0]
+        image_y = y + image[1] * box_size[1]
+        ax.plot(image_x, image_y, **plot_kwargs)
+
+    return ax
