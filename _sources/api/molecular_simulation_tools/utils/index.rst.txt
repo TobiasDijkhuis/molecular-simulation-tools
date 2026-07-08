@@ -25,6 +25,7 @@ Functions
    molecular_simulation_tools.utils.get_nyquist_frequency
    molecular_simulation_tools.utils.get_permutations_exchange_identical_atoms
    molecular_simulation_tools.utils.get_random_unit_vector
+   molecular_simulation_tools.utils.get_tip4p_water
    molecular_simulation_tools.utils.icosahedron_unit_sphere
    molecular_simulation_tools.utils.plot_periodic_images
    molecular_simulation_tools.utils.project_on_unit_sphere
@@ -191,6 +192,8 @@ Module Contents
              `n` is 1.
    :rtype: numpy.ndarray
 
+
+.. py:function:: get_tip4p_water() -> ase.Atoms
 
 .. py:function:: icosahedron_unit_sphere(level: int = 0, subdivision: int = 2) -> numpy.ndarray
 

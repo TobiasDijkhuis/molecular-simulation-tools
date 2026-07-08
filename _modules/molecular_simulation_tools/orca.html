@@ -265,6 +265,23 @@
     <span class="k">def</span> <span class="nf">from_atoms</span><span class="p">(</span>
         <span class="bp">cls</span><span class="p">,</span> <span class="n">atoms</span><span class="p">:</span> <span class="n">Atoms</span><span class="p">,</span> <span class="n">current_step</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">current_time</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.0</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">MDrestart</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Create the MDrestart object from an Atoms insance.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        atoms : Atoms</span>
+<span class="sd">            Atoms instance</span>
+<span class="sd">        current_step : int</span>
+<span class="sd">            Step index. Default = 0</span>
+<span class="sd">        current_time : float</span>
+<span class="sd">            Current time. Default = 0.0</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        mdrestart : MDrestart</span>
+<span class="sd">            Initialized MDrestart object.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">comment</span> <span class="o">=</span> <span class="s2">&quot;# From Atoms instance</span><span class="se">\n</span><span class="s2">&quot;</span>
         <span class="n">dct</span> <span class="o">=</span> <span class="p">{</span>
             <span class="s2">&quot;AtomCount&quot;</span><span class="p">:</span> <span class="s2">&quot;   0&quot;</span><span class="p">,</span>
@@ -282,6 +299,14 @@
 <div class="viewcode-block" id="MDrestart.get_atoms">
 <a class="viewcode-back" href="../../api/molecular_simulation_tools/orca/index.html#molecular_simulation_tools.orca.MDrestart.get_atoms">[docs]</a>
     <span class="k">def</span> <span class="nf">get_atoms</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Atoms</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get the Atoms object corresponding to the MDrestart.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        Atoms</span>
+<span class="sd">            Atoms with the correct symbols, positions, and velocities.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">symbols</span> <span class="o">=</span> <span class="p">[</span><span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">dict</span><span class="p">[</span><span class="s2">&quot;Positions&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)]</span>
         <span class="n">positions</span> <span class="o">=</span> <span class="p">(</span>
             <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span>
@@ -379,6 +404,14 @@
                 <span class="bp">self</span><span class="o">.</span><span class="n">dict</span><span class="p">[</span><span class="s2">&quot;Forces&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">dict</span><span class="p">[</span><span class="s2">&quot;Forces&quot;</span><span class="p">],</span> <span class="n">line</span><span class="p">])</span>
 
     <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get a printable representation.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        str</span>
+<span class="sd">            Printable representation.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dict</span><span class="p">)</span></div>
 
 </pre></div>

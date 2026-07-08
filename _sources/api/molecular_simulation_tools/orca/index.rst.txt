@@ -38,6 +38,19 @@ Module Contents
       :classmethod:
 
 
+      Create the MDrestart object from an Atoms insance.
+
+      :param atoms: Atoms instance
+      :type atoms: Atoms
+      :param current_step: Step index. Default = 0
+      :type current_step: int
+      :param current_time: Current time. Default = 0.0
+      :type current_time: float
+
+      :returns: **mdrestart** -- Initialized MDrestart object.
+      :rtype: MDrestart
+
+
 
    .. py:method:: from_mdrestart(filepath: str | pathlib.Path) -> MDrestart
       :classmethod:
@@ -45,6 +58,12 @@ Module Contents
 
 
    .. py:method:: get_atoms() -> ase.Atoms
+
+      Get the Atoms object corresponding to the MDrestart.
+
+      :returns: Atoms with the correct symbols, positions, and velocities.
+      :rtype: Atoms
+
 
 
    .. py:method:: write(filepath: str | pathlib.Path) -> None
