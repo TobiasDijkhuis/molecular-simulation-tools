@@ -1,0 +1,32 @@
+molecular_simulation_tools.slurm_manager
+========================================
+
+.. py:module:: molecular_simulation_tools.slurm_manager
+
+
+Submodules
+----------
+
+.. toctree::
+   :maxdepth: 1
+
+   /api/molecular_simulation_tools/slurm_manager/job/index
+   /api/molecular_simulation_tools/slurm_manager/manager/index
+   /api/molecular_simulation_tools/slurm_manager/utils/index
+
+
+Attributes
+----------
+
+.. autoapisummary::
+
+   molecular_simulation_tools.slurm_manager.msg
+
+
+Package Contents
+----------------
+
+.. py:data:: msg
+   :value: 'Tried to import molecular_simulation_tools.slurm_manager, but slurm is not installed or not active'
+
+

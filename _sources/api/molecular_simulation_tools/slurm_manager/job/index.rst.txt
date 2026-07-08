@@ -1,0 +1,102 @@
+molecular_simulation_tools.slurm_manager.job
+============================================
+
+.. py:module:: molecular_simulation_tools.slurm_manager.job
+
+.. autoapi-nested-parse::
+
+   A nice way to manage a slurm job.
+
+
+
+Classes
+-------
+
+.. autoapisummary::
+
+   molecular_simulation_tools.slurm_manager.job.SlurmJob
+
+
+Module Contents
+---------------
+
+.. py:class:: SlurmJob(job_id: str | int)
+
+   Class representing a slurm job.
+
+   :param job_id: Job ID returned after slurm job is started.
+   :type job_id: str | int
+
+
+   .. py:method:: cancel() -> None
+
+      Cancel this job.
+
+
+
+   .. py:method:: get_state() -> str
+
+      Get the state of the job.
+
+      :returns: **state** -- State of the job.
+      :rtype: str
+
+
+
+   .. py:method:: is_completed() -> bool
+
+      Whether the current status of the job is "COMPLETED".
+
+      :returns: Whether the current status of the job is "COMPLETED"
+      :rtype: bool
+
+
+
+   .. py:method:: is_done() -> bool
+
+      Check whether the job is done.
+
+      Done means not the state is not "RUNNING" or "PENDING".
+      A job failing (with status "FAILED") also means that it is done.
+
+      :returns: Whether the job is done.
+      :rtype: bool
+
+
+
+   .. py:method:: start_from_command(command: str, directory: str | pathlib.Path = '.', force: bool = False) -> SlurmJob
+      :classmethod:
+
+
+      Start a slurm job from a command.
+
+      Start a job from a command in a certain directory,
+      and initialize a SlurmJob instance from the resulting job ID.
+
+      :param command: Command to execute.
+                      Should probably be something with "sbatch" and a shell script.
+      :type command: str
+      :param directory: Directory in which to execute command.
+                        The directory should already exist. Default: "."
+      :type directory: str | Path
+
+      :returns: Initialized `SlurmJob` instance.
+      :rtype: SlurmJob
+
+      :raises ValueError: If the command does not contain a file as its second argument.
+      :raises FileNotFoundError: If the executable cannot be found.
+      :raises RuntimeError: If there was an error starting the job.
+      :raises ValueError: If the job ID could not be extracted from the return message of starting
+          the job.
+
+
+
+   .. py:method:: wait(sleep_interval: float = 0.5) -> None
+
+      Wait until the job is done.
+
+      :param sleep_interval: Time between checking the state in seconds.
+      :type sleep_interval: float
+
+
+

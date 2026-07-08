@@ -1,0 +1,55 @@
+molecular_simulation_tools.slurm_manager.utils
+==============================================
+
+.. py:module:: molecular_simulation_tools.slurm_manager.utils
+
+.. autoapi-nested-parse::
+
+   Some utilities for managing slurm jobs.
+
+
+
+Functions
+---------
+
+.. autoapisummary::
+
+   molecular_simulation_tools.slurm_manager.utils.get_user
+   molecular_simulation_tools.slurm_manager.utils.is_slurm_active
+   molecular_simulation_tools.slurm_manager.utils.same_submission_script_already_submitted
+
+
+Module Contents
+---------------
+
+.. py:function:: get_user() -> str
+
+   Get the username of the user by running "$whoami".
+
+   :returns: user
+   :rtype: str
+
+
+.. py:function:: is_slurm_active() -> bool
+
+   Run a command to find out if slurm is installed and active.
+
+   :returns: whether slurm is installed and active.
+   :rtype: bool
+
+
+.. py:function:: same_submission_script_already_submitted(submission_script_path: str | pathlib.Path) -> tuple[bool, int | None]
+
+   Whether the same submission script has already been submitted to Slurm.
+
+   Inputs
+   ------
+   submission_script_path : str | Path
+       path to job submission script. Absolute path.
+
+   :returns: Whether the job has already been submitted, and if so its job ID.
+   :rtype: tuple[bool, int | None]
+
+   :raises RuntimeError: If ...
+
+

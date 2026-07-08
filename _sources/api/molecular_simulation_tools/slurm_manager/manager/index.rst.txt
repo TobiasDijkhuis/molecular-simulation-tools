@@ -1,0 +1,85 @@
+molecular_simulation_tools.slurm_manager.manager
+================================================
+
+.. py:module:: molecular_simulation_tools.slurm_manager.manager
+
+.. autoapi-nested-parse::
+
+   Manager for multiple slurm jobs.
+
+
+
+Classes
+-------
+
+.. autoapisummary::
+
+   molecular_simulation_tools.slurm_manager.manager.SlurmJobManager
+
+
+Module Contents
+---------------
+
+.. py:class:: SlurmJobManager(jobs: list[molecular_simulation_tools.slurm_manager.job.SlurmJob | int | str] | None = None)
+
+   A nice wrapper to manage a bunch of slurm jobs together.
+
+   :param jobs: list of jobs to manage, or their ids.
+   :type jobs: list[SlurmJob | int | str] | None
+
+
+   .. py:method:: add_job(job: molecular_simulation_tools.slurm_manager.job.SlurmJob | int | str) -> None
+
+      Add another job to the jobs to manage.
+
+      :param job: job to manage, or its id
+      :type job: SlurmJob | int | str
+
+
+
+   .. py:method:: add_jobs(jobs: list[molecular_simulation_tools.slurm_manager.job.SlurmJob | int | str]) -> None
+
+      Add a list of jobs to the jobs to manage.
+
+      :param jobs: list of SlurmJob objects to manage, or their job ids.
+      :type jobs: list[SlurmJob | int | str]
+
+
+
+   .. py:method:: cancel() -> None
+
+      Cancel all jobs.
+
+      :raises RuntimeError: If this instance has no jobs.
+
+
+
+   .. py:method:: clear_jobs() -> None
+
+      Clear the list of jobs by setting jobs to be an empty list.
+
+
+
+   .. py:method:: has_jobs() -> bool
+
+      Check whether the instance has jobs attached to it.
+
+      :returns: whether the instance manages job(s)
+      :rtype: bool
+
+
+
+   .. py:method:: wait(sleep_interval: float = 0.5) -> None
+
+      Wait until all jobs are done.
+
+      :raises RuntimeError: If this instance has no jobs.
+
+
+
+   .. py:attribute:: jobs
+      :type:  list[molecular_simulation_tools.slurm_manager.job.SlurmJob]
+      :value: []
+
+
+

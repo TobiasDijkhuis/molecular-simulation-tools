@@ -9,6 +9,14 @@ molecular_simulation_tools.orca
 
 
 
+Classes
+-------
+
+.. autoapisummary::
+
+   molecular_simulation_tools.orca.MDrestart
+
+
 Functions
 ---------
 
@@ -20,6 +28,35 @@ Functions
 
 Module Contents
 ---------------
+
+.. py:class:: MDrestart(dct: dict, comment: str | None = None)
+
+   .. py:method:: add_atoms(atoms: ase.Atoms) -> None
+
+
+   .. py:method:: from_atoms(atoms: ase.Atoms, current_step: int = 0, current_time: float = 0.0) -> MDrestart
+      :classmethod:
+
+
+
+   .. py:method:: from_mdrestart(filepath: str | pathlib.Path) -> MDrestart
+      :classmethod:
+
+
+
+   .. py:method:: get_atoms() -> ase.Atoms
+
+
+   .. py:method:: write(filepath: str | pathlib.Path) -> None
+
+
+   .. py:attribute:: comment
+      :value: None
+
+
+
+   .. py:attribute:: dict
+
 
 .. py:function:: get_calculator_from_orca_inp(path: str | pathlib.Path, profile: ase.calculators.orca.OrcaProfile | None = None) -> ase.calculators.orca.ORCA
 
