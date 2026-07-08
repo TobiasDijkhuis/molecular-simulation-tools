@@ -7,10 +7,10 @@ from typing import Any
 import matplotlib.pyplot as plt
 import numpy as np
 from ase import Atoms
-from scipy.stats import norm
 from matplotlib import patches
 from scipy.signal import correlate
 from scipy.spatial import ConvexHull
+from scipy.stats import norm
 
 
 def get_nyquist_frequency(dt: float) -> float:
