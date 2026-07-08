@@ -171,6 +171,23 @@ class MDrestart:
     def from_atoms(
         cls, atoms: Atoms, current_step: int = 0, current_time: float = 0.0
     ) -> MDrestart:
+        """Create the MDrestart object from an Atoms insance.
+
+        Parameters
+        ----------
+        atoms : Atoms
+            Atoms instance
+        current_step : int
+            Step index. Default = 0
+        current_time : float
+            Current time. Default = 0.0
+
+        Returns
+        -------
+        mdrestart : MDrestart
+            Initialized MDrestart object.
+
+        """
         comment = "# From Atoms instance\n"
         dct = {
             "AtomCount": "   0",
@@ -185,6 +202,14 @@ class MDrestart:
         return mdrestart
 
     def get_atoms(self) -> Atoms:
+        """Get the Atoms object corresponding to the MDrestart.
+
+        Returns
+        -------
+        Atoms
+            Atoms with the correct symbols, positions, and velocities.
+
+        """
         symbols = [line.split()[0] for line in self.dict["Positions"].split("\n")]
         positions = (
             np.array(
@@ -275,4 +300,12 @@ class MDrestart:
                 self.dict["Forces"] = "\n".join([self.dict["Forces"], line])
 
     def __repr__(self) -> str:
+        """Get a printable representation.
+
+        Returns
+        -------
+        str
+            Printable representation.
+
+        """
         return str(self.dict)

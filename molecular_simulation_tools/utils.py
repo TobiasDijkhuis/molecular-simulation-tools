@@ -11,6 +11,7 @@ from matplotlib import patches
 from scipy.signal import correlate
 from scipy.spatial import ConvexHull
 from scipy.stats import norm
+from ase.calculators.tip4p import angleHOH, rOH
 
 
 def get_nyquist_frequency(dt: float) -> float:
@@ -672,3 +673,14 @@ def plot_periodic_images(
         ax.plot(image_x, image_y, **plot_kwargs)
 
     return ax
+
+
+def get_tip4p_water() -> Atoms:
+    x = angleHOH * np.pi / 180 / 2
+    pos = [
+        [0, 0, 0],
+        [0, rOH * np.cos(x), rOH * np.sin(x)],
+        [0, rOH * np.cos(x), -rOH * np.sin(x)],
+    ]
+    water = Atoms("OH2", positions=pos)
+    return water
