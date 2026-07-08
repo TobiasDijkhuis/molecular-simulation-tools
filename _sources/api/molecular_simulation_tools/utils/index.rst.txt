@@ -211,29 +211,25 @@ Module Contents
    :raises ValueError: If `level` is less than 0.
 
 
-.. py:function:: plot_periodic_images(x: numpy.ndarray, y: numpy.ndarray, box_size: numpy.ndarray, ax: matplotlib.pyplot.Axes | None = None, plot_kwargs: dict[str, Any] | None = None) -> matplotlib.pyplot.Axes
+.. py:function:: plot_periodic_images(x: numpy.ndarray | list, y: numpy.ndarray | list, box_size: numpy.ndarray, ax: matplotlib.pyplot.Axes | None = None, plot_kwargs: dict[str, Any] | None = None) -> matplotlib.pyplot.Axes
 
    Plot periodic images of the data as well.
 
    :param x: X-data
-   :type x: numpy.ndarray
+   :type x: numpy.ndarray | list
    :param y: Y-data
-   :type y: numpy.ndarray
+   :type y: numpy.ndarray | list
    :param box_size: Size of the box. 3x3 array or 1d array of the diagonal.
    :type box_size: numpy.ndarray
    :param ax: Axes to plot on. If None, uses :func:`matplotlib.pyplot.gca()`.
               Default = None.
    :type ax: matplotlib.pyplot.Axes | None
-   :param plot_kwargs: Keyword arguments passed to :meth:`matplotlib.pyplot.Axes.plot`.
+   :param plot_kwargs: Keyword arguments passed to :meth:`matplotlib.pyplot.axes.Axes.plot`.
                        Default = None.
    :type plot_kwargs: dict[str, Any] | None
 
    :returns: **ax** -- Axes that was plotted on.
    :rtype: matplotlib.pyplot.Axes
-
-   :raises NotImplementedError: If an absolute value `x` or `y` is larger than the box size.
-       This function currently only plots the central image, and the first
-       outer image.
 
 
 .. py:function:: project_on_unit_sphere(vector: numpy.ndarray) -> numpy.ndarray
