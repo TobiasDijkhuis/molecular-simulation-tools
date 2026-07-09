@@ -38,7 +38,7 @@ Module Contents
       :classmethod:
 
 
-      Create the MDrestart object from an Atoms insance.
+      Create the MDrestart object from an Atoms instance.
 
       :param atoms: Atoms instance
       :type atoms: Atoms

@@ -78,16 +78,14 @@
 <span class="kn">from</span> <span class="nn">copy</span> <span class="kn">import</span> <span class="n">deepcopy</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Literal</span>
 
-<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">from</span> <span class="nn">ase</span> <span class="kn">import</span> <span class="n">Atoms</span>
 <span class="kn">from</span> <span class="nn">ase.calculators.calculator</span> <span class="kn">import</span> <span class="n">Calculator</span>
 <span class="kn">from</span> <span class="nn">ase.geometry</span> <span class="kn">import</span> <span class="n">conditional_find_mic</span>
 <span class="kn">from</span> <span class="nn">ase.mep.dimer</span> <span class="kn">import</span> <span class="n">DimerControl</span><span class="p">,</span> <span class="n">MinModeAtoms</span><span class="p">,</span> <span class="n">MinModeTranslate</span>
-<span class="kn">from</span> <span class="nn">ase.mep.neb</span> <span class="kn">import</span> <span class="n">NEB</span><span class="p">,</span> <span class="n">BaseNEB</span><span class="p">,</span> <span class="n">idpp_interpolate</span><span class="p">,</span> <span class="n">interpolate</span>
+<span class="kn">from</span> <span class="nn">ase.mep.neb</span> <span class="kn">import</span> <span class="n">NEB</span><span class="p">,</span> <span class="n">idpp_interpolate</span><span class="p">,</span> <span class="n">interpolate</span>
 <span class="kn">from</span> <span class="nn">ase.optimize.lbfgs</span> <span class="kn">import</span> <span class="n">LBFGS</span>
 <span class="kn">from</span> <span class="nn">ase.optimize.optimize</span> <span class="kn">import</span> <span class="n">DEFAULT_MAX_STEPS</span><span class="p">,</span> <span class="n">Optimizer</span>
-<span class="kn">from</span> <span class="nn">ase.utils.forcecurve</span> <span class="kn">import</span> <span class="n">ForceFit</span><span class="p">,</span> <span class="n">fit_images</span>
 
 <span class="kn">from</span> <span class="nn">molecular_simulation_tools.utils</span> <span class="kn">import</span> <span class="n">check_same_number_of_atoms</span>
 
@@ -510,43 +508,6 @@
             <span class="n">images</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">max_index</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">transition_state</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">images</span><span class="p">,</span> <span class="n">transition_state</span></div>
-
-
-
-<div class="viewcode-block" id="plot_neb">
-<a class="viewcode-back" href="../../api/molecular_simulation_tools/neb/index.html#molecular_simulation_tools.neb.plot_neb">[docs]</a>
-<span class="k">def</span> <span class="nf">plot_neb</span><span class="p">(</span>
-    <span class="n">images</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">Atoms</span><span class="p">]</span> <span class="o">|</span> <span class="n">BaseNEB</span><span class="p">,</span>
-    <span class="n">ax</span><span class="p">:</span> <span class="n">plt</span><span class="o">.</span><span class="n">Axes</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="n">plot_kwargs</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">plt</span><span class="o">.</span><span class="n">Axes</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Plot a NEB calculation.</span>
-
-<span class="sd">    Parameters</span>
-<span class="sd">    ----------</span>
-<span class="sd">    images : list[Atoms] | BaseNEB</span>
-<span class="sd">        Images to plot, or NEB instance to get images from</span>
-<span class="sd">    ax : plt.Axes | None</span>
-<span class="sd">        Axes to plot on, or None to create a new one. Default = None.</span>
-<span class="sd">    plot_kwargs : dict[str, Any] | None</span>
-<span class="sd">        Keyword arguments passed to :meth:`matplotlib.pyplot.Axes.plot`.</span>
-<span class="sd">        Default = None.</span>
-
-<span class="sd">    Returns</span>
-<span class="sd">    -------</span>
-<span class="sd">    ax : plt.Axes</span>
-<span class="sd">        Axes that was plotted on.</span>
-
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">if</span> <span class="n">plot_kwargs</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">plot_kwargs</span> <span class="o">=</span> <span class="p">{}</span>
-    <span class="k">if</span> <span class="n">ax</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">gca</span><span class="p">()</span>
-    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">images</span><span class="p">,</span> <span class="n">BaseNEB</span><span class="p">):</span>
-        <span class="n">images</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">images</span><span class="o">.</span><span class="n">iterimages</span><span class="p">())</span>
-    <span class="n">force_fit</span><span class="p">:</span> <span class="n">ForceFit</span> <span class="o">=</span> <span class="n">fit_images</span><span class="p">(</span><span class="n">images</span><span class="p">)</span>
-    <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">force_fit</span><span class="o">.</span><span class="n">path</span><span class="p">,</span> <span class="n">force_fit</span><span class="o">.</span><span class="n">energies</span><span class="p">,</span> <span class="n">marker</span><span class="o">=</span><span class="s2">&quot;o&quot;</span><span class="p">,</span> <span class="o">**</span><span class="n">plot_kwargs</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">ax</span></div>
 
 </pre></div>
 

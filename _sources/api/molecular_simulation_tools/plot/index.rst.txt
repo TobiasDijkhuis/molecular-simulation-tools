@@ -1,0 +1,73 @@
+molecular_simulation_tools.plot
+===============================
+
+.. py:module:: molecular_simulation_tools.plot
+
+
+Functions
+---------
+
+.. autoapisummary::
+
+   molecular_simulation_tools.plot.plot_neb
+   molecular_simulation_tools.plot.plot_periodic_images
+   molecular_simulation_tools.plot.set_up_periodic_plot
+
+
+Module Contents
+---------------
+
+.. py:function:: plot_neb(images: list[ase.Atoms] | ase.mep.neb.BaseNEB, ax: matplotlib.pyplot.Axes | None = None, plot_kwargs: dict[str, Any] | None = None) -> matplotlib.pyplot.Axes
+
+   Plot a NEB calculation.
+
+   :param images: Images to plot, or NEB instance to get images from
+   :type images: list[Atoms] | BaseNEB
+   :param ax: Axes to plot on, or None to create a new one. Default = None.
+   :type ax: matplotlib.pyplot.Axes | None
+   :param plot_kwargs: Keyword arguments passed to :meth:`matplotlib.pyplot.Axes.plot`.
+                       Default = None.
+   :type plot_kwargs: dict[str, Any] | None
+
+   :returns: **ax** -- Axes that was plotted on.
+   :rtype: matplotlib.pyplot.Axes
+
+
+.. py:function:: plot_periodic_images(x: numpy.ndarray | list, y: numpy.ndarray | list, box_size: numpy.ndarray, ax: matplotlib.pyplot.Axes | None = None, plot_kwargs: dict[str, Any] | None = None) -> matplotlib.pyplot.Axes
+
+   Plot periodic images of the data as well.
+
+   :param x: X-data
+   :type x: numpy.ndarray | list
+   :param y: Y-data
+   :type y: numpy.ndarray | list
+   :param box_size: Size of the box. 3x3 array or 1d array of the diagonal.
+   :type box_size: numpy.ndarray
+   :param ax: Axes to plot on. If None, uses :func:`matplotlib.pyplot.gca()`.
+              Default = None.
+   :type ax: matplotlib.pyplot.Axes | None
+   :param plot_kwargs: Keyword arguments passed to :meth:`matplotlib.pyplot.axes.Axes.plot`.
+                       Default = None.
+   :type plot_kwargs: dict[str, Any] | None
+
+   :returns: **ax** -- Axes that was plotted on.
+   :rtype: matplotlib.pyplot.Axes
+
+
+.. py:function:: set_up_periodic_plot(box_size: numpy.ndarray, ax: matplotlib.pyplot.Axes | None = None, additional_width: float = 0.1) -> matplotlib.pyplot.Axes
+
+   Set up a plot of a periodic box.
+
+   :param box_size: Size of the box. 3x3 array or 1d array of the diagonal.
+   :type box_size: numpy.ndarray
+   :param ax: Axes to plot on. If None, uses :func:`matplotlib.pyplot.gca()`.
+              Default = None.
+   :type ax: matplotlib.pyplot.Axes | None
+   :param additional_width: Additional width (margins) to include around the central image.
+                            Default = 0.1.
+   :type additional_width: float
+
+   :returns: **ax** -- Axes to plot on.
+   :rtype: matplotlib.pyplot.Axes
+
+

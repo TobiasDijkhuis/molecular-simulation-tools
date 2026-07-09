@@ -79,14 +79,12 @@
 <span class="kn">from</span> <span class="nn">random</span> <span class="kn">import</span> <span class="n">random</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span>
 
-<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">from</span> <span class="nn">ase</span> <span class="kn">import</span> <span class="n">Atoms</span>
-<span class="kn">from</span> <span class="nn">matplotlib</span> <span class="kn">import</span> <span class="n">patches</span>
+<span class="kn">from</span> <span class="nn">ase.calculators.tip4p</span> <span class="kn">import</span> <span class="n">angleHOH</span><span class="p">,</span> <span class="n">rOH</span>
 <span class="kn">from</span> <span class="nn">scipy.signal</span> <span class="kn">import</span> <span class="n">correlate</span>
 <span class="kn">from</span> <span class="nn">scipy.spatial</span> <span class="kn">import</span> <span class="n">ConvexHull</span>
 <span class="kn">from</span> <span class="nn">scipy.stats</span> <span class="kn">import</span> <span class="n">norm</span>
-<span class="kn">from</span> <span class="nn">ase.calculators.tip4p</span> <span class="kn">import</span> <span class="n">angleHOH</span><span class="p">,</span> <span class="n">rOH</span>
 
 
 <div class="viewcode-block" id="get_nyquist_frequency">
@@ -700,116 +698,17 @@
 
 
 
-<div class="viewcode-block" id="set_up_periodic_plot">
-<a class="viewcode-back" href="../../api/molecular_simulation_tools/utils/index.html#molecular_simulation_tools.utils.set_up_periodic_plot">[docs]</a>
-<span class="k">def</span> <span class="nf">set_up_periodic_plot</span><span class="p">(</span>
-    <span class="n">box_size</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">ax</span><span class="p">:</span> <span class="n">plt</span><span class="o">.</span><span class="n">Axes</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">additional_width</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.1</span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">plt</span><span class="o">.</span><span class="n">Axes</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Set up a plot of a periodic box.</span>
-
-<span class="sd">    Parameters</span>
-<span class="sd">    ----------</span>
-<span class="sd">    box_size : np.ndarray</span>
-<span class="sd">        Size of the box. 3x3 array or 1d array of the diagonal.</span>
-<span class="sd">    ax : plt.Axes | None</span>
-<span class="sd">        Axes to plot on. If None, uses :func:`matplotlib.pyplot.gca()`.</span>
-<span class="sd">        Default = None.</span>
-<span class="sd">    additional_width : float</span>
-<span class="sd">        Additional width (margins) to include around the central image.</span>
-<span class="sd">        Default = 0.1.</span>
-
-<span class="sd">    Returns</span>
-<span class="sd">    -------</span>
-<span class="sd">    ax : plt.Axes</span>
-<span class="sd">        Axes to plot on.</span>
-
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">if</span> <span class="n">ax</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">gca</span><span class="p">()</span>
-
-    <span class="n">ax</span><span class="o">.</span><span class="n">set_aspect</span><span class="p">(</span><span class="s2">&quot;equal&quot;</span><span class="p">)</span>
-    <span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">&quot;x (Angstrom)&quot;</span><span class="p">)</span>
-    <span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;y (Angstrom)&quot;</span><span class="p">)</span>
-
-    <span class="k">if</span> <span class="n">box_size</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
-        <span class="n">box_size</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">diag</span><span class="p">(</span><span class="n">box_size</span><span class="p">)</span>
-
-    <span class="n">x_extra</span> <span class="o">=</span> <span class="n">box_size</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="n">additional_width</span>
-    <span class="n">y_extra</span> <span class="o">=</span> <span class="n">box_size</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="n">additional_width</span>
-    <span class="n">ax</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">((</span><span class="o">-</span><span class="n">x_extra</span><span class="p">,</span> <span class="n">box_size</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="n">x_extra</span><span class="p">))</span>
-    <span class="n">ax</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">((</span><span class="o">-</span><span class="n">y_extra</span><span class="p">,</span> <span class="n">box_size</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">y_extra</span><span class="p">))</span>
-
-    <span class="n">box</span> <span class="o">=</span> <span class="n">patches</span><span class="o">.</span><span class="n">Rectangle</span><span class="p">(</span>
-        <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="n">box_size</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">box_size</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">edgecolor</span><span class="o">=</span><span class="s2">&quot;k&quot;</span><span class="p">,</span> <span class="n">facecolor</span><span class="o">=</span><span class="s2">&quot;none&quot;</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mf">0.25</span>
-    <span class="p">)</span>
-    <span class="n">ax</span><span class="o">.</span><span class="n">add_patch</span><span class="p">(</span><span class="n">box</span><span class="p">)</span>
-
-    <span class="k">return</span> <span class="n">ax</span></div>
-
-
-
-<div class="viewcode-block" id="plot_periodic_images">
-<a class="viewcode-back" href="../../api/molecular_simulation_tools/utils/index.html#molecular_simulation_tools.utils.plot_periodic_images">[docs]</a>
-<span class="k">def</span> <span class="nf">plot_periodic_images</span><span class="p">(</span>
-    <span class="n">x</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span> <span class="o">|</span> <span class="nb">list</span><span class="p">,</span>
-    <span class="n">y</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span> <span class="o">|</span> <span class="nb">list</span><span class="p">,</span>
-    <span class="n">box_size</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
-    <span class="n">ax</span><span class="p">:</span> <span class="n">plt</span><span class="o">.</span><span class="n">Axes</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="n">plot_kwargs</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">plt</span><span class="o">.</span><span class="n">Axes</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Plot periodic images of the data as well.</span>
-
-<span class="sd">    Parameters</span>
-<span class="sd">    ----------</span>
-<span class="sd">    x : np.ndarray | list</span>
-<span class="sd">        X-data</span>
-<span class="sd">    y : np.ndarray | list</span>
-<span class="sd">        Y-data</span>
-<span class="sd">    box_size : np.ndarray</span>
-<span class="sd">        Size of the box. 3x3 array or 1d array of the diagonal.</span>
-<span class="sd">    ax : plt.Axes | None</span>
-<span class="sd">        Axes to plot on. If None, uses :func:`matplotlib.pyplot.gca()`.</span>
-<span class="sd">        Default = None.</span>
-<span class="sd">    plot_kwargs : dict[str, Any] | None</span>
-<span class="sd">        Keyword arguments passed to :meth:`matplotlib.pyplot.axes.Axes.plot`.</span>
-<span class="sd">        Default = None.</span>
-
-<span class="sd">    Returns</span>
-<span class="sd">    -------</span>
-<span class="sd">    ax : plt.Axes</span>
-<span class="sd">        Axes that was plotted on.</span>
-
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">if</span> <span class="n">plot_kwargs</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">plot_kwargs</span> <span class="o">=</span> <span class="p">{}</span>
-    <span class="k">if</span> <span class="n">box_size</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
-        <span class="n">box_size</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">diag</span><span class="p">(</span><span class="n">box_size</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">ax</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">gca</span><span class="p">()</span>
-    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
-        <span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
-    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
-        <span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">y</span><span class="p">)</span>
-
-    <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">box_size</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="ow">or</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">y</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">box_size</span><span class="p">[</span><span class="mi">1</span><span class="p">]):</span>
-        <span class="c1"># Outside of first periodic image</span>
-        <span class="n">images_to_include</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="o">-</span><span class="mi">2</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="n">images_to_include</span> <span class="o">=</span> <span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
-
-    <span class="n">images</span> <span class="o">=</span> <span class="n">itertools</span><span class="o">.</span><span class="n">product</span><span class="p">(</span><span class="n">images_to_include</span><span class="p">,</span> <span class="n">images_to_include</span><span class="p">)</span>
-    <span class="k">for</span> <span class="n">image</span> <span class="ow">in</span> <span class="n">images</span><span class="p">:</span>
-        <span class="n">image_x</span> <span class="o">=</span> <span class="n">x</span> <span class="o">+</span> <span class="n">image</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="n">box_size</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-        <span class="n">image_y</span> <span class="o">=</span> <span class="n">y</span> <span class="o">+</span> <span class="n">image</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="n">box_size</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
-        <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">image_x</span><span class="p">,</span> <span class="n">image_y</span><span class="p">,</span> <span class="o">**</span><span class="n">plot_kwargs</span><span class="p">)</span>
-
-    <span class="k">return</span> <span class="n">ax</span></div>
-
-
-
 <div class="viewcode-block" id="get_tip4p_water">
 <a class="viewcode-back" href="../../api/molecular_simulation_tools/utils/index.html#molecular_simulation_tools.utils.get_tip4p_water">[docs]</a>
 <span class="k">def</span> <span class="nf">get_tip4p_water</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Atoms</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Get a water molecule to be used in a TIP4P potential.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    water : Atoms</span>
+<span class="sd">        Water molecule</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">x</span> <span class="o">=</span> <span class="n">angleHOH</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">/</span> <span class="mi">180</span> <span class="o">/</span> <span class="mi">2</span>
     <span class="n">pos</span> <span class="o">=</span> <span class="p">[</span>
         <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span>

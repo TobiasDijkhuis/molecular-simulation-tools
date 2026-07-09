@@ -27,11 +27,9 @@ Functions
    molecular_simulation_tools.utils.get_random_unit_vector
    molecular_simulation_tools.utils.get_tip4p_water
    molecular_simulation_tools.utils.icosahedron_unit_sphere
-   molecular_simulation_tools.utils.plot_periodic_images
    molecular_simulation_tools.utils.project_on_unit_sphere
    molecular_simulation_tools.utils.sample_new_point
    molecular_simulation_tools.utils.sample_random_rotation
-   molecular_simulation_tools.utils.set_up_periodic_plot
    molecular_simulation_tools.utils.turn_grid_into_position_vectors
    molecular_simulation_tools.utils.unwrap_trajectory_from_displacement
 
@@ -195,6 +193,12 @@ Module Contents
 
 .. py:function:: get_tip4p_water() -> ase.Atoms
 
+   Get a water molecule to be used in a TIP4P potential.
+
+   :returns: **water** -- Water molecule
+   :rtype: Atoms
+
+
 .. py:function:: icosahedron_unit_sphere(level: int = 0, subdivision: int = 2) -> numpy.ndarray
 
    Get vertices of an icosahedron for even sampling of a unit sphere.
@@ -212,27 +216,6 @@ Module Contents
 
    :raises NotImplementedError: If `subdivision` is not 2
    :raises ValueError: If `level` is less than 0.
-
-
-.. py:function:: plot_periodic_images(x: numpy.ndarray | list, y: numpy.ndarray | list, box_size: numpy.ndarray, ax: matplotlib.pyplot.Axes | None = None, plot_kwargs: dict[str, Any] | None = None) -> matplotlib.pyplot.Axes
-
-   Plot periodic images of the data as well.
-
-   :param x: X-data
-   :type x: numpy.ndarray | list
-   :param y: Y-data
-   :type y: numpy.ndarray | list
-   :param box_size: Size of the box. 3x3 array or 1d array of the diagonal.
-   :type box_size: numpy.ndarray
-   :param ax: Axes to plot on. If None, uses :func:`matplotlib.pyplot.gca()`.
-              Default = None.
-   :type ax: matplotlib.pyplot.Axes | None
-   :param plot_kwargs: Keyword arguments passed to :meth:`matplotlib.pyplot.axes.Axes.plot`.
-                       Default = None.
-   :type plot_kwargs: dict[str, Any] | None
-
-   :returns: **ax** -- Axes that was plotted on.
-   :rtype: matplotlib.pyplot.Axes
 
 
 .. py:function:: project_on_unit_sphere(vector: numpy.ndarray) -> numpy.ndarray
@@ -281,23 +264,6 @@ Module Contents
 
    :returns: * **rotation_axis** (*numpy.ndarray*) -- 3-dimensional rotation axis.
              * **rotation_angle** (*float*) -- Rotation angle in radians.
-
-
-.. py:function:: set_up_periodic_plot(box_size: numpy.ndarray, ax: matplotlib.pyplot.Axes | None = None, additional_width: float = 0.1) -> matplotlib.pyplot.Axes
-
-   Set up a plot of a periodic box.
-
-   :param box_size: Size of the box. 3x3 array or 1d array of the diagonal.
-   :type box_size: numpy.ndarray
-   :param ax: Axes to plot on. If None, uses :func:`matplotlib.pyplot.gca()`.
-              Default = None.
-   :type ax: matplotlib.pyplot.Axes | None
-   :param additional_width: Additional width (margins) to include around the central image.
-                            Default = 0.1.
-   :type additional_width: float
-
-   :returns: **ax** -- Axes to plot on.
-   :rtype: matplotlib.pyplot.Axes
 
 
 .. py:function:: turn_grid_into_position_vectors(grid_matrices: tuple[numpy.ndarray, Ellipsis]) -> numpy.ndarray
