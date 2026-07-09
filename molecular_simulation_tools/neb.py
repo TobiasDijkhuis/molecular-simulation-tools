@@ -3,16 +3,14 @@
 from copy import deepcopy
 from typing import Any, Literal
 
-import matplotlib.pyplot as plt
 import numpy as np
 from ase import Atoms
 from ase.calculators.calculator import Calculator
 from ase.geometry import conditional_find_mic
 from ase.mep.dimer import DimerControl, MinModeAtoms, MinModeTranslate
-from ase.mep.neb import NEB, BaseNEB, idpp_interpolate, interpolate
+from ase.mep.neb import NEB, idpp_interpolate, interpolate
 from ase.optimize.lbfgs import LBFGS
 from ase.optimize.optimize import DEFAULT_MAX_STEPS, Optimizer
-from ase.utils.forcecurve import ForceFit, fit_images
 
 from molecular_simulation_tools.utils import check_same_number_of_atoms
 
@@ -421,37 +419,3 @@ def run_neb_ts(
             images.insert(max_index + 1, transition_state)
 
     return images, transition_state
-
-
-def plot_neb(
-    images: list[Atoms] | BaseNEB,
-    ax: plt.Axes | None = None,
-    plot_kwargs: dict[str, Any] | None = None,
-) -> plt.Axes:
-    """Plot a NEB calculation.
-
-    Parameters
-    ----------
-    images : list[Atoms] | BaseNEB
-        Images to plot, or NEB instance to get images from
-    ax : plt.Axes | None
-        Axes to plot on, or None to create a new one. Default = None.
-    plot_kwargs : dict[str, Any] | None
-        Keyword arguments passed to :meth:`matplotlib.pyplot.Axes.plot`.
-        Default = None.
-
-    Returns
-    -------
-    ax : plt.Axes
-        Axes that was plotted on.
-
-    """
-    if plot_kwargs is None:
-        plot_kwargs = {}
-    if ax is None:
-        ax = plt.gca()
-    if isinstance(images, BaseNEB):
-        images = list(images.iterimages())
-    force_fit: ForceFit = fit_images(images)
-    ax.plot(force_fit.path, force_fit.energies, marker="o", **plot_kwargs)
-    return ax

@@ -171,7 +171,7 @@ class MDrestart:
     def from_atoms(
         cls, atoms: Atoms, current_step: int = 0, current_time: float = 0.0
     ) -> MDrestart:
-        """Create the MDrestart object from an Atoms insance.
+        """Create the MDrestart object from an Atoms instance.
 
         Parameters
         ----------
