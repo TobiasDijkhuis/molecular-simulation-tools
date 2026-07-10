@@ -17,8 +17,11 @@ Functions
    molecular_simulation_tools.utils.check_same_number_of_atoms
    molecular_simulation_tools.utils.combine_overlapping_sets
    molecular_simulation_tools.utils.convert_cartesian_to_spherical
+   molecular_simulation_tools.utils.convert_reaction_to_latex
+   molecular_simulation_tools.utils.convert_species_to_latex
    molecular_simulation_tools.utils.convert_spherical_to_cartesian
    molecular_simulation_tools.utils.correct_distance_for_pbc
+   molecular_simulation_tools.utils.find_all_numbers
    molecular_simulation_tools.utils.get_autocorrelation_function
    molecular_simulation_tools.utils.get_minimum_site_idx_for_binding_sites
    molecular_simulation_tools.utils.get_moving_average
@@ -29,6 +32,7 @@ Functions
    molecular_simulation_tools.utils.icosahedron_unit_sphere
    molecular_simulation_tools.utils.project_on_unit_sphere
    molecular_simulation_tools.utils.sample_new_point
+   molecular_simulation_tools.utils.sample_random_new_atom_location
    molecular_simulation_tools.utils.sample_random_rotation
    molecular_simulation_tools.utils.turn_grid_into_position_vectors
    molecular_simulation_tools.utils.unwrap_trajectory_from_displacement
@@ -80,6 +84,10 @@ Module Contents
    :raises ValueError: If `position` is not a 3D vector, i.e. does not have shape ``(3,)``.
 
 
+.. py:function:: convert_reaction_to_latex(reaction: str | list[str]) -> str | list[str]
+
+.. py:function:: convert_species_to_latex(species: str | list[str]) -> str | list[str]
+
 .. py:function:: convert_spherical_to_cartesian(r: float, theta: float, phi: float) -> numpy.ndarray
 
    Convert spherical coordinates to cartesian coordinates.
@@ -108,6 +116,11 @@ Module Contents
 
    :returns: **distance** -- Corrected distance
    :rtype: numpy.ndarray
+
+
+.. py:function:: find_all_numbers(string: str) -> dict[int, str]
+
+   Find all numbers.
 
 
 .. py:function:: get_autocorrelation_function(x: numpy.ndarray) -> numpy.ndarray
@@ -255,6 +268,8 @@ Module Contents
 
    :raises ValueError: If `minimum_distance` or `initial_spawn_distance` is less or equal to 0
 
+
+.. py:function:: sample_random_new_atom_location(atoms_to_place: ase.Atoms, atoms: ase.Atoms, minimum_distance: float, initial_spawn_distance: float | None = None, rtol: float = 1e-05, atol: float = 1e-08, n: int = 1, max_tries: int = 100) -> ase.Atoms
 
 .. py:function:: sample_random_rotation() -> tuple[numpy.ndarray, float]
 
