@@ -1,6 +1,8 @@
 """Collection of utility functions."""
 
 import itertools
+import re
+import sys
 from random import random
 from typing import Any
 
@@ -326,6 +328,67 @@ def combine_overlapping_sets(list_of_sets: list[set[Any]]) -> list[set[Any]]:
     return non_overlapping_sets[::-1]
 
 
+def sample_random_new_atom_location(
+    atoms_to_place: Atoms,
+    atoms: Atoms,
+    minimum_distance: float,
+    initial_spawn_distance: float | None = None,
+    rtol: float = 1e-5,
+    atol: float = 1e-8,
+    n: int = 1,
+    max_tries: int = 100,
+) -> Atoms:
+    def get_all_distances(matrix_1: np.ndarray, matrix_2: np.ndarray) -> np.ndarray:
+        n_points_1 = np.shape(matrix_1)[0]
+        n_points_2 = np.shape(matrix_2)[0]
+
+        distance_to_points = np.empty(shape=(n_points_1, n_points_2))
+        for point in range(n_points_1):
+            distance_to_points[point, :] = np.linalg.norm(
+                matrix_1[point, :] - matrix_2, axis=1
+            )
+        return distance_to_points
+
+    if n > 1:
+        for _i in range(n):
+            atoms = sample_random_new_atom_location(
+                atoms_to_place,
+                atoms,
+                minimum_distance,
+                initial_spawn_distance=initial_spawn_distance,
+                rtol=rtol,
+                atol=atol,
+                max_tries=max_tries,
+            )
+        return atoms
+
+    try_idx = 0
+    distances = [sys.float_info.min]
+    while try_idx < max_tries and np.min(distances) < minimum_distance:
+        new_point = sample_new_point(
+            atoms.positions,
+            minimum_distance,
+            initial_spawn_distance=initial_spawn_distance,
+            rtol=rtol,
+            atol=atol,
+            n=1,
+        )
+
+        distances = get_all_distances(
+            atoms_to_place.positions + new_point, atoms.positions
+        )
+        try_idx += 1
+
+    if try_idx == max_tries:
+        raise RuntimeError()
+
+    atoms_placed = atoms_to_place.copy()
+    atoms_placed.translate(new_point)
+    atoms = atoms.copy()
+    atoms += atoms_placed
+    return atoms
+
+
 def sample_new_point(
     points: np.ndarray,
     minimum_distance: float,
@@ -589,3 +652,52 @@ def get_tip4p_water() -> Atoms:
     ]
     water = Atoms("OH2", positions=pos)
     return water
+
+
+def find_all_numbers(string: str) -> dict[int, str]:
+    """Find all numbers."""
+    dct = dict((m.start(), m.group()) for m in re.finditer(r"\d+", string))
+    return dct
+
+
+def convert_species_to_latex(
+    species: str | list[str],
+) -> str | list[str]:
+    if isinstance(species, list):
+        formatted_species: list[str] = [
+            convert_species_to_latex(spec) for spec in species
+        ]  # ty: ignore[invalid-assignment]
+        return formatted_species
+    numbers = find_all_numbers(species)
+    to_skip = 0
+    for j, number in numbers.items():
+        species = (
+            species[: j + to_skip]
+            + rf"$_{{{number}}}$"
+            + species[j + to_skip + len(number) :]
+        )
+        to_skip += len(number) + 4
+
+    # Replace all + and - with superscript + and -
+    species = re.sub(r"([^ ])([+-])", r"\1$^{\2}$", species)
+
+    # Correct all strings that have number sign to be correct
+    # i.e. $_{number}^{sign}$
+    # This would otherwise be wrongly spaced, as
+    # $_{number}$$^{sign}$, leading to the sign being placed too far.
+    species = species.replace(r"$$", "")
+
+    return species
+
+
+def convert_reaction_to_latex(
+    reaction: str | list[str],
+) -> str | list[str]:
+    if isinstance(reaction, list):
+        formatted_reactions: list[str] = [
+            convert_reaction_to_latex(react) for react in reaction
+        ]  # ty: ignore[invalid-assignment]
+        return formatted_reactions
+    reaction = reaction.replace("#", r"\#")
+    reaction = reaction.replace("->", r"$\rightarrow$")
+    return convert_species_to_latex(reaction)
