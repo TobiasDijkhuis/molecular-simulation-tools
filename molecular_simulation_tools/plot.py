@@ -1,3 +1,5 @@
+"""Tools for creating plots."""
+
 import itertools
 from typing import Any
 

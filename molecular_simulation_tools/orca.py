@@ -152,6 +152,7 @@ class MDrestart:
             lines = file.readlines()
         dct = {}
         block_name = None
+        block: str
         for line in lines:
             if line.startswith("#"):
                 comment = line
@@ -164,6 +165,7 @@ class MDrestart:
                 dct[block_name] = block.rstrip("\n")
             block_name = line
             block = ""
+
         dct[block_name] = block.rstrip("\n")
         return cls(dct, comment)
 

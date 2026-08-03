@@ -3,6 +3,8 @@
 import itertools
 import re
 import sys
+from collections.abc import Iterator, Sequence
+from itertools import islice
 from random import random
 from typing import Any
 
@@ -338,6 +340,43 @@ def sample_random_new_atom_location(
     n: int = 1,
     max_tries: int = 100,
 ) -> Atoms:
+    """Sample a random new location to place Atoms.
+
+    Parameters
+    ----------
+    atoms_to_place : Atoms
+        Atoms to place. Can be more than one atom (i.e. the geometry is taken
+        into account).
+    atoms : Atoms
+        Atoms to place `atoms_to_place` around.
+    minimum_distance : float
+        Minimum distance for the newly generated
+        point to be from all other points
+    initial_spawn_distance : float | None
+        Initial distance from origin.
+        If None, is the same as minimum_distance. Default = None
+    rtol : float
+        Relative tolerance. Default: 1e-5
+    atol : float
+        Absolute tolerance. Default: 1e-8
+    n : int
+        Number of times to place `atoms_to_place`. Default = 1.
+    max_tries : int
+        Maximum number of tries to make when placing `atoms_to_place`, i.e.
+        random positions to sample.
+
+    Returns
+    -------
+    atoms : Atoms
+        Atoms with `atoms_to_place` placed randomly around `atoms` `n` times.
+
+    Raises
+    ------
+    RuntimeError
+        If the number of tries exceeds `max_tries`.
+
+    """
+
     def get_all_distances(matrix_1: np.ndarray, matrix_2: np.ndarray) -> np.ndarray:
         n_points_1 = np.shape(matrix_1)[0]
         n_points_2 = np.shape(matrix_2)[0]
@@ -655,7 +694,20 @@ def get_tip4p_water() -> Atoms:
 
 
 def find_all_numbers(string: str) -> dict[int, str]:
-    """Find all numbers."""
+    """Find all numbers in a string.
+
+    Parameters
+    ----------
+    string : str
+        String to find numbers for.
+
+    Returns
+    -------
+    dct : dict[int, str]
+        Dictionary with keys the indeces of where a number starts,
+        and values the string that is that number.
+
+    """
     dct = dict((m.start(), m.group()) for m in re.finditer(r"\d+", string))
     return dct
 
@@ -663,6 +715,19 @@ def find_all_numbers(string: str) -> dict[int, str]:
 def convert_species_to_latex(
     species: str | list[str],
 ) -> str | list[str]:
+    """Format a molecular formula as a LaTeX string, with correct sub- and superscripts.
+
+    Parameters
+    ----------
+    species : str | list[str]
+        Molecular formula (or list of formulas) to format.
+
+    Returns
+    -------
+    formatted_species : str | list[str]
+        Molecular formula formatted as LaTeX string.
+
+    """
     if isinstance(species, list):
         formatted_species: list[str] = [
             convert_species_to_latex(spec) for spec in species
@@ -679,20 +744,33 @@ def convert_species_to_latex(
         to_skip += len(number) + 4
 
     # Replace all + and - with superscript + and -
-    species = re.sub(r"([^ ])([+-])", r"\1$^{\2}$", species)
+    formatted_species = re.sub(r"([^ ])([+-])", r"\1$^{\2}$", species)
 
     # Correct all strings that have number sign to be correct
     # i.e. $_{number}^{sign}$
     # This would otherwise be wrongly spaced, as
     # $_{number}$$^{sign}$, leading to the sign being placed too far.
-    species = species.replace(r"$$", "")
+    formatted_species = formatted_species.replace(r"$$", "")
 
-    return species
+    return formatted_species
 
 
 def convert_reaction_to_latex(
     reaction: str | list[str],
 ) -> str | list[str]:
+    """Format a reaction such that it can nicely be formatted in LaTeX.
+
+    Parameters
+    ----------
+    reaction : str | list[str]
+        String of reagents and products.
+
+    Returns
+    -------
+    str | list[str]
+        Nicely formatted reaction
+
+    """
     if isinstance(reaction, list):
         formatted_reactions: list[str] = [
             convert_reaction_to_latex(react) for react in reaction
@@ -701,3 +779,41 @@ def convert_reaction_to_latex(
     reaction = reaction.replace("#", r"\#")
     reaction = reaction.replace("->", r"$\rightarrow$")
     return convert_species_to_latex(reaction)
+
+
+if sys.version_info >= (3, 12):
+    from itertools import batched
+else:
+
+    def batched(iterable: Sequence[Any], chunk_size: int) -> Iterator[tuple[Any]]:
+        """Batch an iterable.
+
+        Parameters
+        ----------
+        iterable : Sequency[Any]
+
+        chunk_size : int
+            Size of each batch
+
+        Yields
+        ------
+        chunk : tuple[Any]
+            Chunks with at most `chunk_size` elements. The last chunk might have
+            fewer elements.
+
+        Raises
+        ------
+        ValueError
+            If `chunk_size` is 0 or less.
+
+        Notes
+        -----
+        If using python 3.12 or higher, :func:`itertools.batched` is used instead.
+
+        """
+        if chunk_size <= 0:
+            msg = f"Batched chunk size needs to be greater than 0, but was {chunk_size}"
+            raise ValueError(msg)
+        iterator = iter(iterable)
+        while chunk := tuple(islice(iterator, chunk_size)):
+            yield chunk
