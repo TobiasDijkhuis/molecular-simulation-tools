@@ -99,70 +99,73 @@
 <h2>Functions<a class="headerlink" href="#functions" title="Link to this heading"></a></h2>
 <table class="autosummary longtable docutils align-default">
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#molecular_simulation_tools.utils.check_same_number_of_atoms" title="molecular_simulation_tools.utils.check_same_number_of_atoms"><code class="xref py py-obj docutils literal notranslate"><span class="pre">check_same_number_of_atoms</span></code></a>(→ None)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#molecular_simulation_tools.utils.batched" title="molecular_simulation_tools.utils.batched"><code class="xref py py-obj docutils literal notranslate"><span class="pre">batched</span></code></a>(→ collections.abc.Iterator[tuple[Any]])</p></td>
+<td><p>Batch an iterable.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#molecular_simulation_tools.utils.check_same_number_of_atoms" title="molecular_simulation_tools.utils.check_same_number_of_atoms"><code class="xref py py-obj docutils literal notranslate"><span class="pre">check_same_number_of_atoms</span></code></a>(→ None)</p></td>
 <td><p>Check that all frames have the same number of atoms.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#molecular_simulation_tools.utils.combine_overlapping_sets" title="molecular_simulation_tools.utils.combine_overlapping_sets"><code class="xref py py-obj docutils literal notranslate"><span class="pre">combine_overlapping_sets</span></code></a>(→ list[set[Any]])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#molecular_simulation_tools.utils.combine_overlapping_sets" title="molecular_simulation_tools.utils.combine_overlapping_sets"><code class="xref py py-obj docutils literal notranslate"><span class="pre">combine_overlapping_sets</span></code></a>(→ list[set[Any]])</p></td>
 <td><p>Combine sets that have overlapping elements.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#molecular_simulation_tools.utils.convert_cartesian_to_spherical" title="molecular_simulation_tools.utils.convert_cartesian_to_spherical"><code class="xref py py-obj docutils literal notranslate"><span class="pre">convert_cartesian_to_spherical</span></code></a>(→ tuple[float, float, ...)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#molecular_simulation_tools.utils.convert_cartesian_to_spherical" title="molecular_simulation_tools.utils.convert_cartesian_to_spherical"><code class="xref py py-obj docutils literal notranslate"><span class="pre">convert_cartesian_to_spherical</span></code></a>(→ tuple[float, float, ...)</p></td>
 <td><p>Convert cartesian coordinates to spherical coordinates.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#molecular_simulation_tools.utils.convert_reaction_to_latex" title="molecular_simulation_tools.utils.convert_reaction_to_latex"><code class="xref py py-obj docutils literal notranslate"><span class="pre">convert_reaction_to_latex</span></code></a>(→ str | list[str])</p></td>
-<td><p></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#molecular_simulation_tools.utils.convert_reaction_to_latex" title="molecular_simulation_tools.utils.convert_reaction_to_latex"><code class="xref py py-obj docutils literal notranslate"><span class="pre">convert_reaction_to_latex</span></code></a>(→ str | list[str])</p></td>
+<td><p>Format a reaction such that it can nicely be formatted in LaTeX.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#molecular_simulation_tools.utils.convert_species_to_latex" title="molecular_simulation_tools.utils.convert_species_to_latex"><code class="xref py py-obj docutils literal notranslate"><span class="pre">convert_species_to_latex</span></code></a>(→ str | list[str])</p></td>
-<td><p></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#molecular_simulation_tools.utils.convert_species_to_latex" title="molecular_simulation_tools.utils.convert_species_to_latex"><code class="xref py py-obj docutils literal notranslate"><span class="pre">convert_species_to_latex</span></code></a>(→ str | list[str])</p></td>
+<td><p>Format a molecular formula as a LaTeX string, with correct sub- and superscripts.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#molecular_simulation_tools.utils.convert_spherical_to_cartesian" title="molecular_simulation_tools.utils.convert_spherical_to_cartesian"><code class="xref py py-obj docutils literal notranslate"><span class="pre">convert_spherical_to_cartesian</span></code></a>(→ numpy.ndarray)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#molecular_simulation_tools.utils.convert_spherical_to_cartesian" title="molecular_simulation_tools.utils.convert_spherical_to_cartesian"><code class="xref py py-obj docutils literal notranslate"><span class="pre">convert_spherical_to_cartesian</span></code></a>(→ numpy.ndarray)</p></td>
 <td><p>Convert spherical coordinates to cartesian coordinates.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#molecular_simulation_tools.utils.correct_distance_for_pbc" title="molecular_simulation_tools.utils.correct_distance_for_pbc"><code class="xref py py-obj docutils literal notranslate"><span class="pre">correct_distance_for_pbc</span></code></a>(→ numpy.ndarray)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#molecular_simulation_tools.utils.correct_distance_for_pbc" title="molecular_simulation_tools.utils.correct_distance_for_pbc"><code class="xref py py-obj docutils literal notranslate"><span class="pre">correct_distance_for_pbc</span></code></a>(→ numpy.ndarray)</p></td>
 <td><p>Correct a distance for periodic boundary conditions.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#molecular_simulation_tools.utils.find_all_numbers" title="molecular_simulation_tools.utils.find_all_numbers"><code class="xref py py-obj docutils literal notranslate"><span class="pre">find_all_numbers</span></code></a>(→ dict[int, str])</p></td>
-<td><p>Find all numbers.</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#molecular_simulation_tools.utils.find_all_numbers" title="molecular_simulation_tools.utils.find_all_numbers"><code class="xref py py-obj docutils literal notranslate"><span class="pre">find_all_numbers</span></code></a>(→ dict[int, str])</p></td>
+<td><p>Find all numbers in a string.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#molecular_simulation_tools.utils.get_autocorrelation_function" title="molecular_simulation_tools.utils.get_autocorrelation_function"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_autocorrelation_function</span></code></a>(→ numpy.ndarray)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#molecular_simulation_tools.utils.get_autocorrelation_function" title="molecular_simulation_tools.utils.get_autocorrelation_function"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_autocorrelation_function</span></code></a>(→ numpy.ndarray)</p></td>
 <td><p>Get the autocorrelation function of x.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#molecular_simulation_tools.utils.get_minimum_site_idx_for_binding_sites" title="molecular_simulation_tools.utils.get_minimum_site_idx_for_binding_sites"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_minimum_site_idx_for_binding_sites</span></code></a>(→ list[int])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#molecular_simulation_tools.utils.get_minimum_site_idx_for_binding_sites" title="molecular_simulation_tools.utils.get_minimum_site_idx_for_binding_sites"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_minimum_site_idx_for_binding_sites</span></code></a>(→ list[int])</p></td>
 <td><p>Get the indices with the minimum energy out of sets of binding sites.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#molecular_simulation_tools.utils.get_moving_average" title="molecular_simulation_tools.utils.get_moving_average"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_moving_average</span></code></a>(→ numpy.ndarray)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#molecular_simulation_tools.utils.get_moving_average" title="molecular_simulation_tools.utils.get_moving_average"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_moving_average</span></code></a>(→ numpy.ndarray)</p></td>
 <td><p>Get the moving average of an array with a certain window size.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#molecular_simulation_tools.utils.get_nyquist_frequency" title="molecular_simulation_tools.utils.get_nyquist_frequency"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_nyquist_frequency</span></code></a>(→ float)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#molecular_simulation_tools.utils.get_nyquist_frequency" title="molecular_simulation_tools.utils.get_nyquist_frequency"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_nyquist_frequency</span></code></a>(→ float)</p></td>
 <td><p>Get the nyquist frequency.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#molecular_simulation_tools.utils.get_permutations_exchange_identical_atoms" title="molecular_simulation_tools.utils.get_permutations_exchange_identical_atoms"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_permutations_exchange_identical_atoms</span></code></a>(...)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#molecular_simulation_tools.utils.get_permutations_exchange_identical_atoms" title="molecular_simulation_tools.utils.get_permutations_exchange_identical_atoms"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_permutations_exchange_identical_atoms</span></code></a>(...)</p></td>
 <td><p>Get all possible permutations of <cite>indices</cite> that exchange identical atoms.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#molecular_simulation_tools.utils.get_random_unit_vector" title="molecular_simulation_tools.utils.get_random_unit_vector"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_random_unit_vector</span></code></a>(→ numpy.ndarray)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#molecular_simulation_tools.utils.get_random_unit_vector" title="molecular_simulation_tools.utils.get_random_unit_vector"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_random_unit_vector</span></code></a>(→ numpy.ndarray)</p></td>
 <td><p>Get a random vector on the unit sphere.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#molecular_simulation_tools.utils.get_tip4p_water" title="molecular_simulation_tools.utils.get_tip4p_water"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_tip4p_water</span></code></a>(→ ase.Atoms)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#molecular_simulation_tools.utils.get_tip4p_water" title="molecular_simulation_tools.utils.get_tip4p_water"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_tip4p_water</span></code></a>(→ ase.Atoms)</p></td>
 <td><p>Get a water molecule to be used in a TIP4P potential.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#molecular_simulation_tools.utils.icosahedron_unit_sphere" title="molecular_simulation_tools.utils.icosahedron_unit_sphere"><code class="xref py py-obj docutils literal notranslate"><span class="pre">icosahedron_unit_sphere</span></code></a>(→ numpy.ndarray)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#molecular_simulation_tools.utils.icosahedron_unit_sphere" title="molecular_simulation_tools.utils.icosahedron_unit_sphere"><code class="xref py py-obj docutils literal notranslate"><span class="pre">icosahedron_unit_sphere</span></code></a>(→ numpy.ndarray)</p></td>
 <td><p>Get vertices of an icosahedron for even sampling of a unit sphere.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#molecular_simulation_tools.utils.project_on_unit_sphere" title="molecular_simulation_tools.utils.project_on_unit_sphere"><code class="xref py py-obj docutils literal notranslate"><span class="pre">project_on_unit_sphere</span></code></a>(→ numpy.ndarray)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#molecular_simulation_tools.utils.project_on_unit_sphere" title="molecular_simulation_tools.utils.project_on_unit_sphere"><code class="xref py py-obj docutils literal notranslate"><span class="pre">project_on_unit_sphere</span></code></a>(→ numpy.ndarray)</p></td>
 <td><p>Project a vector on the unit sphere, by dividing it by its length.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#molecular_simulation_tools.utils.sample_new_point" title="molecular_simulation_tools.utils.sample_new_point"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sample_new_point</span></code></a>(→ numpy.ndarray)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#molecular_simulation_tools.utils.sample_new_point" title="molecular_simulation_tools.utils.sample_new_point"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sample_new_point</span></code></a>(→ numpy.ndarray)</p></td>
 <td><p>Generate a new point in a random direction that is a certain distance from other points.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#molecular_simulation_tools.utils.sample_random_new_atom_location" title="molecular_simulation_tools.utils.sample_random_new_atom_location"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sample_random_new_atom_location</span></code></a>(→ ase.Atoms)</p></td>
-<td><p></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#molecular_simulation_tools.utils.sample_random_new_atom_location" title="molecular_simulation_tools.utils.sample_random_new_atom_location"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sample_random_new_atom_location</span></code></a>(→ ase.Atoms)</p></td>
+<td><p>Sample a random new location to place Atoms.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#molecular_simulation_tools.utils.sample_random_rotation" title="molecular_simulation_tools.utils.sample_random_rotation"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sample_random_rotation</span></code></a>(→ tuple[numpy.ndarray, float])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#molecular_simulation_tools.utils.sample_random_rotation" title="molecular_simulation_tools.utils.sample_random_rotation"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sample_random_rotation</span></code></a>(→ tuple[numpy.ndarray, float])</p></td>
 <td><p>Get a random rotation axis and rotation angle.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#molecular_simulation_tools.utils.turn_grid_into_position_vectors" title="molecular_simulation_tools.utils.turn_grid_into_position_vectors"><code class="xref py py-obj docutils literal notranslate"><span class="pre">turn_grid_into_position_vectors</span></code></a>(→ numpy.ndarray)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#molecular_simulation_tools.utils.turn_grid_into_position_vectors" title="molecular_simulation_tools.utils.turn_grid_into_position_vectors"><code class="xref py py-obj docutils literal notranslate"><span class="pre">turn_grid_into_position_vectors</span></code></a>(→ numpy.ndarray)</p></td>
 <td><p>Turn a grid created by <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.meshgrid.html#numpy.meshgrid" title="(in NumPy v2.5)"><code class="xref py py-func docutils literal notranslate"><span class="pre">numpy.meshgrid()</span></code></a> into position vectors.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#molecular_simulation_tools.utils.unwrap_trajectory_from_displacement" title="molecular_simulation_tools.utils.unwrap_trajectory_from_displacement"><code class="xref py py-obj docutils literal notranslate"><span class="pre">unwrap_trajectory_from_displacement</span></code></a>(→ numpy.ndarray)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#molecular_simulation_tools.utils.unwrap_trajectory_from_displacement" title="molecular_simulation_tools.utils.unwrap_trajectory_from_displacement"><code class="xref py py-obj docutils literal notranslate"><span class="pre">unwrap_trajectory_from_displacement</span></code></a>(→ numpy.ndarray)</p></td>
 <td><p>Unwrap trajectory based on displacement between frames.</p></td>
 </tr>
 </tbody>
@@ -170,6 +173,29 @@
 </section>
 <section id="module-contents">
 <h2>Module Contents<a class="headerlink" href="#module-contents" title="Link to this heading"></a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="molecular_simulation_tools.utils.batched">
+<span class="sig-prename descclassname"><span class="pre">molecular_simulation_tools.utils.</span></span><span class="sig-name descname"><span class="pre">batched</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">iterable</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Sequence" title="(in Python v3.14)"><span class="pre">collections.abc.Sequence</span></a><span class="p"><span class="pre">[</span></span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">chunk_size</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Iterator" title="(in Python v3.14)"><span class="pre">collections.abc.Iterator</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.14)"><span class="pre">tuple</span></a><span class="p"><span class="pre">[</span></span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../../_modules/molecular_simulation_tools/utils.html#batched"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#molecular_simulation_tools.utils.batched" title="Link to this definition"></a></dt>
+<dd><p>Batch an iterable.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>iterable</strong> (<em>Sequency</em><em>[</em><em>Any</em><em>]</em>)</p></li>
+<li><p><strong>chunk_size</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a>) – Size of each batch</p></li>
+</ul>
+</dd>
+<dt class="field-even">Yields<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>chunk</strong> (<em>tuple[Any]</em>) – Chunks with at most <cite>chunk_size</cite> elements. The last chunk might have
+fewer elements.</p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.14)"><strong>ValueError</strong></a> – If <cite>chunk_size</cite> is 0 or less.</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>If using python 3.12 or higher, <a class="reference external" href="https://docs.python.org/3/library/itertools.html#itertools.batched" title="(in Python v3.14)"><code class="xref py py-func docutils literal notranslate"><span class="pre">itertools.batched()</span></code></a> is used instead.</p>
+</dd></dl>
+
 <dl class="py function">
 <dt class="sig sig-object py" id="molecular_simulation_tools.utils.check_same_number_of_atoms">
 <span class="sig-prename descclassname"><span class="pre">molecular_simulation_tools.utils.</span></span><span class="sig-name descname"><span class="pre">check_same_number_of_atoms</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">frames</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><span class="pre">ase.Atoms</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../../../_modules/molecular_simulation_tools/utils.html#check_same_number_of_atoms"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#molecular_simulation_tools.utils.check_same_number_of_atoms" title="Link to this definition"></a></dt>
@@ -232,12 +258,36 @@
 <dl class="py function">
 <dt class="sig sig-object py" id="molecular_simulation_tools.utils.convert_reaction_to_latex">
 <span class="sig-prename descclassname"><span class="pre">molecular_simulation_tools.utils.</span></span><span class="sig-name descname"><span class="pre">convert_reaction_to_latex</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">reaction</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../../_modules/molecular_simulation_tools/utils.html#convert_reaction_to_latex"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#molecular_simulation_tools.utils.convert_reaction_to_latex" title="Link to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Format a reaction such that it can nicely be formatted in LaTeX.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>reaction</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em> | </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><em>list</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em>]</em>) – String of reagents and products.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Nicely formatted reaction</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)">str</a> | <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)">list</a>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)">str</a>]</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="molecular_simulation_tools.utils.convert_species_to_latex">
 <span class="sig-prename descclassname"><span class="pre">molecular_simulation_tools.utils.</span></span><span class="sig-name descname"><span class="pre">convert_species_to_latex</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">species</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../../_modules/molecular_simulation_tools/utils.html#convert_species_to_latex"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#molecular_simulation_tools.utils.convert_species_to_latex" title="Link to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Format a molecular formula as a LaTeX string, with correct sub- and superscripts.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>species</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em> | </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><em>list</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em>]</em>) – Molecular formula (or list of formulas) to format.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>formatted_species</strong> – Molecular formula formatted as LaTeX string.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)">str</a> | <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)">list</a>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)">str</a>]</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="molecular_simulation_tools.utils.convert_spherical_to_cartesian">
@@ -284,7 +334,19 @@
 <dl class="py function">
 <dt class="sig sig-object py" id="molecular_simulation_tools.utils.find_all_numbers">
 <span class="sig-prename descclassname"><span class="pre">molecular_simulation_tools.utils.</span></span><span class="sig-name descname"><span class="pre">find_all_numbers</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">string</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="../orca/index.html#molecular_simulation_tools.orca.MDrestart.dict" title="molecular_simulation_tools.orca.MDrestart.dict"><span class="pre">dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../../_modules/molecular_simulation_tools/utils.html#find_all_numbers"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#molecular_simulation_tools.utils.find_all_numbers" title="Link to this definition"></a></dt>
-<dd><p>Find all numbers.</p>
+<dd><p>Find all numbers in a string.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>string</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – String to find numbers for.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>dct</strong> – Dictionary with keys the indeces of where a number starts,
+and values the string that is that number.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="../orca/index.html#molecular_simulation_tools.orca.MDrestart.dict" title="molecular_simulation_tools.orca.MDrestart.dict">dict</a>[<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)">int</a>, <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)">str</a>]</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py function">
@@ -499,7 +561,35 @@ Shape n*M if multiple points are being generated.</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="molecular_simulation_tools.utils.sample_random_new_atom_location">
 <span class="sig-prename descclassname"><span class="pre">molecular_simulation_tools.utils.</span></span><span class="sig-name descname"><span class="pre">sample_random_new_atom_location</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">atoms_to_place</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ase.Atoms</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">atoms</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ase.Atoms</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">minimum_distance</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">initial_spawn_distance</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rtol</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1e-05</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">atol</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1e-08</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_tries</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">100</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ase.Atoms</span></span></span><a class="reference internal" href="../../../_modules/molecular_simulation_tools/utils.html#sample_random_new_atom_location"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#molecular_simulation_tools.utils.sample_random_new_atom_location" title="Link to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Sample a random new location to place Atoms.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>atoms_to_place</strong> (<em>Atoms</em>) – Atoms to place. Can be more than one atom (i.e. the geometry is taken
+into account).</p></li>
+<li><p><strong>atoms</strong> (<em>Atoms</em>) – Atoms to place <cite>atoms_to_place</cite> around.</p></li>
+<li><p><strong>minimum_distance</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><em>float</em></a>) – Minimum distance for the newly generated
+point to be from all other points</p></li>
+<li><p><strong>initial_spawn_distance</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><em>float</em></a><em> | </em><em>None</em>) – Initial distance from origin.
+If None, is the same as minimum_distance. Default = None</p></li>
+<li><p><strong>rtol</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><em>float</em></a>) – Relative tolerance. Default: 1e-5</p></li>
+<li><p><strong>atol</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><em>float</em></a>) – Absolute tolerance. Default: 1e-8</p></li>
+<li><p><strong>n</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a>) – Number of times to place <cite>atoms_to_place</cite>. Default = 1.</p></li>
+<li><p><strong>max_tries</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a>) – Maximum number of tries to make when placing <cite>atoms_to_place</cite>, i.e.
+random positions to sample.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>atoms</strong> – Atoms with <cite>atoms_to_place</cite> placed randomly around <cite>atoms</cite> <cite>n</cite> times.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Atoms</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#RuntimeError" title="(in Python v3.14)"><strong>RuntimeError</strong></a> – If the number of tries exceeds <cite>max_tries</cite>.</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="molecular_simulation_tools.utils.sample_random_rotation">

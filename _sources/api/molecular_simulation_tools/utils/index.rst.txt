@@ -14,6 +14,7 @@ Functions
 
 .. autoapisummary::
 
+   molecular_simulation_tools.utils.batched
    molecular_simulation_tools.utils.check_same_number_of_atoms
    molecular_simulation_tools.utils.combine_overlapping_sets
    molecular_simulation_tools.utils.convert_cartesian_to_spherical
@@ -40,6 +41,25 @@ Functions
 
 Module Contents
 ---------------
+
+.. py:function:: batched(iterable: collections.abc.Sequence[Any], chunk_size: int) -> collections.abc.Iterator[tuple[Any]]
+
+   Batch an iterable.
+
+   :param iterable:
+   :type iterable: Sequency[Any]
+   :param chunk_size: Size of each batch
+   :type chunk_size: int
+
+   :Yields: **chunk** (*tuple[Any]*) -- Chunks with at most `chunk_size` elements. The last chunk might have
+            fewer elements.
+
+   :raises ValueError: If `chunk_size` is 0 or less.
+
+   .. rubric:: Notes
+
+   If using python 3.12 or higher, :func:`itertools.batched` is used instead.
+
 
 .. py:function:: check_same_number_of_atoms(frames: list[ase.Atoms]) -> None
 
@@ -86,7 +106,25 @@ Module Contents
 
 .. py:function:: convert_reaction_to_latex(reaction: str | list[str]) -> str | list[str]
 
+   Format a reaction such that it can nicely be formatted in LaTeX.
+
+   :param reaction: String of reagents and products.
+   :type reaction: str | list[str]
+
+   :returns: Nicely formatted reaction
+   :rtype: str | list[str]
+
+
 .. py:function:: convert_species_to_latex(species: str | list[str]) -> str | list[str]
+
+   Format a molecular formula as a LaTeX string, with correct sub- and superscripts.
+
+   :param species: Molecular formula (or list of formulas) to format.
+   :type species: str | list[str]
+
+   :returns: **formatted_species** -- Molecular formula formatted as LaTeX string.
+   :rtype: str | list[str]
+
 
 .. py:function:: convert_spherical_to_cartesian(r: float, theta: float, phi: float) -> numpy.ndarray
 
@@ -120,7 +158,14 @@ Module Contents
 
 .. py:function:: find_all_numbers(string: str) -> dict[int, str]
 
-   Find all numbers.
+   Find all numbers in a string.
+
+   :param string: String to find numbers for.
+   :type string: str
+
+   :returns: **dct** -- Dictionary with keys the indeces of where a number starts,
+             and values the string that is that number.
+   :rtype: dict[int, str]
 
 
 .. py:function:: get_autocorrelation_function(x: numpy.ndarray) -> numpy.ndarray
@@ -270,6 +315,35 @@ Module Contents
 
 
 .. py:function:: sample_random_new_atom_location(atoms_to_place: ase.Atoms, atoms: ase.Atoms, minimum_distance: float, initial_spawn_distance: float | None = None, rtol: float = 1e-05, atol: float = 1e-08, n: int = 1, max_tries: int = 100) -> ase.Atoms
+
+   Sample a random new location to place Atoms.
+
+   :param atoms_to_place: Atoms to place. Can be more than one atom (i.e. the geometry is taken
+                          into account).
+   :type atoms_to_place: Atoms
+   :param atoms: Atoms to place `atoms_to_place` around.
+   :type atoms: Atoms
+   :param minimum_distance: Minimum distance for the newly generated
+                            point to be from all other points
+   :type minimum_distance: float
+   :param initial_spawn_distance: Initial distance from origin.
+                                  If None, is the same as minimum_distance. Default = None
+   :type initial_spawn_distance: float | None
+   :param rtol: Relative tolerance. Default: 1e-5
+   :type rtol: float
+   :param atol: Absolute tolerance. Default: 1e-8
+   :type atol: float
+   :param n: Number of times to place `atoms_to_place`. Default = 1.
+   :type n: int
+   :param max_tries: Maximum number of tries to make when placing `atoms_to_place`, i.e.
+                     random positions to sample.
+   :type max_tries: int
+
+   :returns: **atoms** -- Atoms with `atoms_to_place` placed randomly around `atoms` `n` times.
+   :rtype: Atoms
+
+   :raises RuntimeError: If the number of tries exceeds `max_tries`.
+
 
 .. py:function:: sample_random_rotation() -> tuple[numpy.ndarray, float]
 

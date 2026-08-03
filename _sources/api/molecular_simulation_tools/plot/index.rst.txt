@@ -3,6 +3,11 @@ molecular_simulation_tools.plot
 
 .. py:module:: molecular_simulation_tools.plot
 
+.. autoapi-nested-parse::
+
+   Tools for creating plots.
+
+
 
 Functions
 ---------

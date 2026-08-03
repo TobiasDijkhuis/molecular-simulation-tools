@@ -78,6 +78,8 @@
 <span class="kn">import</span> <span class="nn">itertools</span>
 <span class="kn">import</span> <span class="nn">re</span>
 <span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">from</span> <span class="nn">collections.abc</span> <span class="kn">import</span> <span class="n">Iterator</span><span class="p">,</span> <span class="n">Sequence</span>
+<span class="kn">from</span> <span class="nn">itertools</span> <span class="kn">import</span> <span class="n">islice</span>
 <span class="kn">from</span> <span class="nn">random</span> <span class="kn">import</span> <span class="n">random</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span>
 
@@ -454,6 +456,43 @@
     <span class="n">n</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
     <span class="n">max_tries</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">100</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Atoms</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Sample a random new location to place Atoms.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    atoms_to_place : Atoms</span>
+<span class="sd">        Atoms to place. Can be more than one atom (i.e. the geometry is taken</span>
+<span class="sd">        into account).</span>
+<span class="sd">    atoms : Atoms</span>
+<span class="sd">        Atoms to place `atoms_to_place` around.</span>
+<span class="sd">    minimum_distance : float</span>
+<span class="sd">        Minimum distance for the newly generated</span>
+<span class="sd">        point to be from all other points</span>
+<span class="sd">    initial_spawn_distance : float | None</span>
+<span class="sd">        Initial distance from origin.</span>
+<span class="sd">        If None, is the same as minimum_distance. Default = None</span>
+<span class="sd">    rtol : float</span>
+<span class="sd">        Relative tolerance. Default: 1e-5</span>
+<span class="sd">    atol : float</span>
+<span class="sd">        Absolute tolerance. Default: 1e-8</span>
+<span class="sd">    n : int</span>
+<span class="sd">        Number of times to place `atoms_to_place`. Default = 1.</span>
+<span class="sd">    max_tries : int</span>
+<span class="sd">        Maximum number of tries to make when placing `atoms_to_place`, i.e.</span>
+<span class="sd">        random positions to sample.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    atoms : Atoms</span>
+<span class="sd">        Atoms with `atoms_to_place` placed randomly around `atoms` `n` times.</span>
+
+<span class="sd">    Raises</span>
+<span class="sd">    ------</span>
+<span class="sd">    RuntimeError</span>
+<span class="sd">        If the number of tries exceeds `max_tries`.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
     <span class="k">def</span> <span class="nf">get_all_distances</span><span class="p">(</span><span class="n">matrix_1</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">matrix_2</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
         <span class="n">n_points_1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">shape</span><span class="p">(</span><span class="n">matrix_1</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
         <span class="n">n_points_2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">shape</span><span class="p">(</span><span class="n">matrix_2</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
@@ -789,7 +828,20 @@
 <div class="viewcode-block" id="find_all_numbers">
 <a class="viewcode-back" href="../../api/molecular_simulation_tools/utils/index.html#molecular_simulation_tools.utils.find_all_numbers">[docs]</a>
 <span class="k">def</span> <span class="nf">find_all_numbers</span><span class="p">(</span><span class="n">string</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Find all numbers.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Find all numbers in a string.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    string : str</span>
+<span class="sd">        String to find numbers for.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    dct : dict[int, str]</span>
+<span class="sd">        Dictionary with keys the indeces of where a number starts,</span>
+<span class="sd">        and values the string that is that number.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">dct</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">((</span><span class="n">m</span><span class="o">.</span><span class="n">start</span><span class="p">(),</span> <span class="n">m</span><span class="o">.</span><span class="n">group</span><span class="p">())</span> <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="n">re</span><span class="o">.</span><span class="n">finditer</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;\d+&quot;</span><span class="p">,</span> <span class="n">string</span><span class="p">))</span>
     <span class="k">return</span> <span class="n">dct</span></div>
 
@@ -800,6 +852,19 @@
 <span class="k">def</span> <span class="nf">convert_species_to_latex</span><span class="p">(</span>
     <span class="n">species</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span> <span class="o">|</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Format a molecular formula as a LaTeX string, with correct sub- and superscripts.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    species : str | list[str]</span>
+<span class="sd">        Molecular formula (or list of formulas) to format.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    formatted_species : str | list[str]</span>
+<span class="sd">        Molecular formula formatted as LaTeX string.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">species</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
         <span class="n">formatted_species</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span>
             <span class="n">convert_species_to_latex</span><span class="p">(</span><span class="n">spec</span><span class="p">)</span> <span class="k">for</span> <span class="n">spec</span> <span class="ow">in</span> <span class="n">species</span>
@@ -816,15 +881,15 @@
         <span class="n">to_skip</span> <span class="o">+=</span> <span class="nb">len</span><span class="p">(</span><span class="n">number</span><span class="p">)</span> <span class="o">+</span> <span class="mi">4</span>
 
     <span class="c1"># Replace all + and - with superscript + and -</span>
-    <span class="n">species</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;([^ ])([+-])&quot;</span><span class="p">,</span> <span class="sa">r</span><span class="s2">&quot;\1$^{\2}$&quot;</span><span class="p">,</span> <span class="n">species</span><span class="p">)</span>
+    <span class="n">formatted_species</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;([^ ])([+-])&quot;</span><span class="p">,</span> <span class="sa">r</span><span class="s2">&quot;\1$^{\2}$&quot;</span><span class="p">,</span> <span class="n">species</span><span class="p">)</span>
 
     <span class="c1"># Correct all strings that have number sign to be correct</span>
     <span class="c1"># i.e. $_{number}^{sign}$</span>
     <span class="c1"># This would otherwise be wrongly spaced, as</span>
     <span class="c1"># $_{number}$$^{sign}$, leading to the sign being placed too far.</span>
-    <span class="n">species</span> <span class="o">=</span> <span class="n">species</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;$$&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
+    <span class="n">formatted_species</span> <span class="o">=</span> <span class="n">formatted_species</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;$$&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
 
-    <span class="k">return</span> <span class="n">species</span></div>
+    <span class="k">return</span> <span class="n">formatted_species</span></div>
 
 
 
@@ -833,6 +898,19 @@
 <span class="k">def</span> <span class="nf">convert_reaction_to_latex</span><span class="p">(</span>
     <span class="n">reaction</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span> <span class="o">|</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Format a reaction such that it can nicely be formatted in LaTeX.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    reaction : str | list[str]</span>
+<span class="sd">        String of reagents and products.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    str | list[str]</span>
+<span class="sd">        Nicely formatted reaction</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">reaction</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
         <span class="n">formatted_reactions</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span>
             <span class="n">convert_reaction_to_latex</span><span class="p">(</span><span class="n">react</span><span class="p">)</span> <span class="k">for</span> <span class="n">react</span> <span class="ow">in</span> <span class="n">reaction</span>
@@ -841,6 +919,47 @@
     <span class="n">reaction</span> <span class="o">=</span> <span class="n">reaction</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;#&quot;</span><span class="p">,</span> <span class="sa">r</span><span class="s2">&quot;\#&quot;</span><span class="p">)</span>
     <span class="n">reaction</span> <span class="o">=</span> <span class="n">reaction</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;-&gt;&quot;</span><span class="p">,</span> <span class="sa">r</span><span class="s2">&quot;$\rightarrow$&quot;</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">convert_species_to_latex</span><span class="p">(</span><span class="n">reaction</span><span class="p">)</span></div>
+
+
+
+<span class="k">if</span> <span class="n">sys</span><span class="o">.</span><span class="n">version_info</span> <span class="o">&gt;=</span> <span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">12</span><span class="p">):</span>
+    <span class="kn">from</span> <span class="nn">itertools</span> <span class="kn">import</span> <span class="n">batched</span>
+<span class="k">else</span><span class="p">:</span>
+
+<div class="viewcode-block" id="batched">
+<a class="viewcode-back" href="../../api/molecular_simulation_tools/utils/index.html#molecular_simulation_tools.utils.batched">[docs]</a>
+    <span class="k">def</span> <span class="nf">batched</span><span class="p">(</span><span class="n">iterable</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">Any</span><span class="p">],</span> <span class="n">chunk_size</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Iterator</span><span class="p">[</span><span class="nb">tuple</span><span class="p">[</span><span class="n">Any</span><span class="p">]]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Batch an iterable.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        iterable : Sequency[Any]</span>
+
+<span class="sd">        chunk_size : int</span>
+<span class="sd">            Size of each batch</span>
+
+<span class="sd">        Yields</span>
+<span class="sd">        ------</span>
+<span class="sd">        chunk : tuple[Any]</span>
+<span class="sd">            Chunks with at most `chunk_size` elements. The last chunk might have</span>
+<span class="sd">            fewer elements.</span>
+
+<span class="sd">        Raises</span>
+<span class="sd">        ------</span>
+<span class="sd">        ValueError</span>
+<span class="sd">            If `chunk_size` is 0 or less.</span>
+
+<span class="sd">        Notes</span>
+<span class="sd">        -----</span>
+<span class="sd">        If using python 3.12 or higher, :func:`itertools.batched` is used instead.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">chunk_size</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Batched chunk size needs to be greater than 0, but was </span><span class="si">{</span><span class="n">chunk_size</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+        <span class="n">iterator</span> <span class="o">=</span> <span class="nb">iter</span><span class="p">(</span><span class="n">iterable</span><span class="p">)</span>
+        <span class="k">while</span> <span class="n">chunk</span> <span class="o">:=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">islice</span><span class="p">(</span><span class="n">iterator</span><span class="p">,</span> <span class="n">chunk_size</span><span class="p">)):</span>
+            <span class="k">yield</span> <span class="n">chunk</span></div>
 
 </pre></div>
 
