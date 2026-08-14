@@ -6,11 +6,12 @@ import sys
 from collections.abc import Iterator, Sequence
 from itertools import islice
 from random import random
-from typing import Any
+from typing import Any, TypeVar
 
 import numpy as np
 from ase import Atoms
 from ase.calculators.tip4p import angleHOH, rOH
+from ase.neighborlist import build_neighbor_list
 from scipy.signal import correlate
 from scipy.spatial import ConvexHull
 from scipy.stats import norm
@@ -363,7 +364,7 @@ def sample_random_new_atom_location(
         Number of times to place `atoms_to_place`. Default = 1.
     max_tries : int
         Maximum number of tries to make when placing `atoms_to_place`, i.e.
-        random positions to sample.
+        random positions to sample. Default = 100.
 
     Returns
     -------
@@ -693,6 +694,40 @@ def get_tip4p_water() -> Atoms:
     return water
 
 
+def get_water_molecule_in_box(repeat: int | tuple[int, int, int] = 1) -> Atoms:
+    """Set up water box at 20 deg C density.
+
+    Parameters
+    ----------
+    repeat : int | tuple[int, int, int]
+        How many times to repeat the box. If an integer, repeat the same
+        times in all dimensions. Default = 1.
+
+    Returns
+    -------
+    atoms : Atoms
+        Water molecule obtained with :func:`get_tip4p_water` in box with
+        dimensions of those at 20 degrees C density.
+
+    """
+    water_molecule_axis_length = ((18.01528 / 6.022140857e23) / (0.9982 / 1e24)) ** (
+        1 / 3.0
+    )
+    water_molecule = get_tip4p_water()
+    atoms = water_molecule.copy()
+    atoms.set_cell(
+        (
+            water_molecule_axis_length,
+            water_molecule_axis_length,
+            water_molecule_axis_length,
+        )
+    )
+    atoms.center()
+    atoms = atoms.repeat(repeat)
+    atoms.set_pbc(True)
+    return atoms
+
+
 def find_all_numbers(string: str) -> dict[int, str]:
     """Find all numbers in a string.
 
@@ -781,23 +816,25 @@ def convert_reaction_to_latex(
     return convert_species_to_latex(reaction)
 
 
+_T = TypeVar("_T")
+
 if sys.version_info >= (3, 12):
     from itertools import batched
 else:
 
-    def batched(iterable: Sequence[Any], chunk_size: int) -> Iterator[tuple[Any]]:
+    def batched(iterable: Sequence[_T], chunk_size: int) -> Iterator[tuple[_T]]:
         """Batch an iterable.
 
         Parameters
         ----------
-        iterable : Sequency[Any]
-
+        iterable : Sequence[_T]
+            Iterable to chunk
         chunk_size : int
             Size of each batch
 
         Yields
         ------
-        chunk : tuple[Any]
+        chunk : tuple[_T]
             Chunks with at most `chunk_size` elements. The last chunk might have
             fewer elements.
 
@@ -817,3 +854,129 @@ else:
         iterator = iter(iterable)
         while chunk := tuple(islice(iterator, chunk_size)):
             yield chunk
+
+
+def verify_is_water_molecule(
+    indices: list[int], symbols: np.typing.NDArray[np.bytes_]
+) -> None:
+    """Verify that the indices and symbols correspond to a water molecule.
+
+    Parameters
+    ----------
+    indices : list[int]
+        List of indices that should correspond to water
+    symbols : np.typing.NDArray[np.bytes_]
+        Symbols of the entire structure
+
+    Raises
+    ------
+    ValueError
+        If the length of `indices` is not 3, or it does not correspond to ``"OH2"`` in that order.
+
+    """
+    if len(indices) != 3:
+        msg = f"Expected number of neighbors of O to be 3 (including O itself), but got {len(indices)} (with symbols '{symbols[indices]}')"
+        raise ValueError(msg)
+    if not all(symbols[indices] == "OH2"):
+        msg = f"Expected symbols 'OH2', got '{symbols[indices]}'"
+        raise ValueError(msg)
+
+
+def unwrap_bulk_water(
+    water_bulk: Atoms, cutoffs: list | np.ndarray | None = None
+) -> Atoms:
+    water_bulk = water_bulk.copy()
+
+    positions = water_bulk.get_positions(wrap=True)
+    neighbor_list = build_neighbor_list(
+        water_bulk, self_interaction=True, cutoffs=cutoffs, bothways=True
+    )
+    unwrapped_positions = np.empty((len(water_bulk), 3))
+    for atom_idx in range(0, len(water_bulk), 3):
+        oxygen_atom_position = positions[atom_idx, :]
+
+        indices, _offsets = neighbor_list.get_neighbors(atom_idx)
+
+        unwrapped_positions[atom_idx, :] = oxygen_atom_position
+        for neighboring_atom in indices:
+            if neighboring_atom == atom_idx:
+                continue
+            z_displacement = positions[neighboring_atom, 2] - oxygen_atom_position[2]
+
+            corrected_position = positions[neighboring_atom, :]
+            if np.abs(z_displacement) >= water_bulk.cell[2, 2] / 2.0:
+                corrected_position[2] -= water_bulk.cell[2, 2] * np.sign(z_displacement)
+            unwrapped_positions[neighboring_atom, :] = corrected_position
+    water_bulk.set_positions(unwrapped_positions)
+    return water_bulk
+
+
+def add_vacuum_to_unwrapped_water_bulk(
+    unwrapped_water_bulk: Atoms,
+    vacuum_height: int | float,
+) -> Atoms:
+    """Add a vacuum to unwrapped water bulk.
+
+    Parameters
+    ----------
+    unwrapped_water_bulk : Atoms
+        Unwrapped water bulk produced by :func:`unwrap_bulk_water`.
+    vacuum_height : int | float
+        Height of vacuum to add
+
+    Returns
+    -------
+    water_surface : Atoms
+        Water surface
+
+    """
+    water_surface = unwrapped_water_bulk.copy()
+    water_surface.cell[2, 2] += vacuum_height
+    return water_surface
+
+
+def create_water_surface_from_bulk(
+    water_bulk: Atoms,
+    vacuum_height: int | float,
+    verify_molecules: bool = True,
+    cutoffs: list | np.ndarray | None = None,
+) -> Atoms:
+    """Create a water surface from a water bulk structure.
+
+    Parameters
+    ----------
+    water_bulk : Atoms
+        Water bulk structure
+    vacuum_height : int | float
+        Height of vacuum to add
+    verify_molecules : bool
+        Whether to verify that each formed molecule has the correct neighbors
+        to be considered a water molecule using :func:`verify_is_water_molecule`.
+        Default = True.
+    cutoffs : list | np.ndarray | None
+        Cutoffs to build the neighbor list. Only used when `verify_molecules` is True.
+        Default = None.
+
+    Returns
+    -------
+    water_surface : Atoms
+        Water surface
+
+    """
+    unwrapped_water_bulk = unwrap_bulk_water(water_bulk, cutoffs=cutoffs)
+
+    water_surface = add_vacuum_to_unwrapped_water_bulk(
+        unwrapped_water_bulk,
+        vacuum_height,
+    )
+
+    if not verify_molecules:
+        return water_surface
+
+    neighbor_list = build_neighbor_list(
+        water_surface, self_interaction=True, cutoffs=cutoffs, bothways=True
+    )
+    for atom_idx in range(0, len(water_surface), 3):
+        indices, _offsets = neighbor_list.get_neighbors(atom_idx)
+        verify_is_water_molecule(indices, water_surface.symbols)
+    return water_surface

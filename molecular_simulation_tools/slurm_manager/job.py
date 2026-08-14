@@ -79,7 +79,7 @@ class SlurmJob:
 
         command_split = command.split()
         if not Path(command_split[1]).is_file():
-            msg = f"Command {command} does not contain file a file {command_split[1]}"
+            msg = f"Command '{command}' second argument '{command_split[1]}' is not a file."
             raise ValueError(msg)
 
         submission_script_path = Path(directory) / command_split[1]
@@ -140,7 +140,7 @@ class SlurmJob:
 
         Returns
         -------
-        bool:
+        bool
             Whether the current status of the job is "COMPLETED"
 
         """
@@ -166,7 +166,8 @@ class SlurmJob:
         Parameters
         ----------
         sleep_interval : float
-            Time between checking the state in seconds.
+            How long to sleep (in seconds) between checking whether the job is done.
+            Default = 0.5.
 
         """
         # wait until the calculation is done.
@@ -193,7 +194,7 @@ class SlurmJob:
 
         Returns
         -------
-        str :
+        str
             Stringified job id.
 
         """
