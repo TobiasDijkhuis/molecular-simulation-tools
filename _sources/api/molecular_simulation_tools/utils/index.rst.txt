@@ -14,6 +14,7 @@ Functions
 
 .. autoapisummary::
 
+   molecular_simulation_tools.utils.add_vacuum_to_unwrapped_water_bulk
    molecular_simulation_tools.utils.batched
    molecular_simulation_tools.utils.check_same_number_of_atoms
    molecular_simulation_tools.utils.combine_overlapping_sets
@@ -22,6 +23,7 @@ Functions
    molecular_simulation_tools.utils.convert_species_to_latex
    molecular_simulation_tools.utils.convert_spherical_to_cartesian
    molecular_simulation_tools.utils.correct_distance_for_pbc
+   molecular_simulation_tools.utils.create_water_surface_from_bulk
    molecular_simulation_tools.utils.find_all_numbers
    molecular_simulation_tools.utils.get_autocorrelation_function
    molecular_simulation_tools.utils.get_minimum_site_idx_for_binding_sites
@@ -30,28 +32,44 @@ Functions
    molecular_simulation_tools.utils.get_permutations_exchange_identical_atoms
    molecular_simulation_tools.utils.get_random_unit_vector
    molecular_simulation_tools.utils.get_tip4p_water
+   molecular_simulation_tools.utils.get_water_molecule_in_box
    molecular_simulation_tools.utils.icosahedron_unit_sphere
    molecular_simulation_tools.utils.project_on_unit_sphere
    molecular_simulation_tools.utils.sample_new_point
    molecular_simulation_tools.utils.sample_random_new_atom_location
    molecular_simulation_tools.utils.sample_random_rotation
    molecular_simulation_tools.utils.turn_grid_into_position_vectors
+   molecular_simulation_tools.utils.unwrap_bulk_water
    molecular_simulation_tools.utils.unwrap_trajectory_from_displacement
+   molecular_simulation_tools.utils.verify_is_water_molecule
 
 
 Module Contents
 ---------------
 
-.. py:function:: batched(iterable: collections.abc.Sequence[Any], chunk_size: int) -> collections.abc.Iterator[tuple[Any]]
+.. py:function:: add_vacuum_to_unwrapped_water_bulk(unwrapped_water_bulk: ase.Atoms, vacuum_height: int | float) -> ase.Atoms
+
+   Add a vacuum to unwrapped water bulk.
+
+   :param unwrapped_water_bulk: Unwrapped water bulk produced by :func:`unwrap_bulk_water`.
+   :type unwrapped_water_bulk: Atoms
+   :param vacuum_height: Height of vacuum to add
+   :type vacuum_height: int | float
+
+   :returns: **water_surface** -- Water surface
+   :rtype: Atoms
+
+
+.. py:function:: batched(iterable: collections.abc.Sequence[_T], chunk_size: int) -> collections.abc.Iterator[tuple[_T]]
 
    Batch an iterable.
 
-   :param iterable:
-   :type iterable: Sequency[Any]
+   :param iterable: Iterable to chunk
+   :type iterable: Sequence[_T]
    :param chunk_size: Size of each batch
    :type chunk_size: int
 
-   :Yields: **chunk** (*tuple[Any]*) -- Chunks with at most `chunk_size` elements. The last chunk might have
+   :Yields: **chunk** (*tuple[_T]*) -- Chunks with at most `chunk_size` elements. The last chunk might have
             fewer elements.
 
    :raises ValueError: If `chunk_size` is 0 or less.
@@ -156,6 +174,26 @@ Module Contents
    :rtype: numpy.ndarray
 
 
+.. py:function:: create_water_surface_from_bulk(water_bulk: ase.Atoms, vacuum_height: int | float, verify_molecules: bool = True, cutoffs: list | numpy.ndarray | None = None) -> ase.Atoms
+
+   Create a water surface from a water bulk structure.
+
+   :param water_bulk: Water bulk structure
+   :type water_bulk: Atoms
+   :param vacuum_height: Height of vacuum to add
+   :type vacuum_height: int | float
+   :param verify_molecules: Whether to verify that each formed molecule has the correct neighbors
+                            to be considered a water molecule using :func:`verify_is_water_molecule`.
+                            Default = True.
+   :type verify_molecules: bool
+   :param cutoffs: Cutoffs to build the neighbor list. Only used when `verify_molecules` is True.
+                   Default = None.
+   :type cutoffs: list | numpy.ndarray | None
+
+   :returns: **water_surface** -- Water surface
+   :rtype: Atoms
+
+
 .. py:function:: find_all_numbers(string: str) -> dict[int, str]
 
    Find all numbers in a string.
@@ -257,6 +295,19 @@ Module Contents
    :rtype: Atoms
 
 
+.. py:function:: get_water_molecule_in_box(repeat: int | tuple[int, int, int] = 1) -> ase.Atoms
+
+   Set up water box at 20 deg C density.
+
+   :param repeat: How many times to repeat the box. If an integer, repeat the same
+                  times in all dimensions. Default = 1.
+   :type repeat: int | tuple[int, int, int]
+
+   :returns: **atoms** -- Water molecule obtained with :func:`get_tip4p_water` in box with
+             dimensions of those at 20 degrees C density.
+   :rtype: Atoms
+
+
 .. py:function:: icosahedron_unit_sphere(level: int = 0, subdivision: int = 2) -> numpy.ndarray
 
    Get vertices of an icosahedron for even sampling of a unit sphere.
@@ -336,7 +387,7 @@ Module Contents
    :param n: Number of times to place `atoms_to_place`. Default = 1.
    :type n: int
    :param max_tries: Maximum number of tries to make when placing `atoms_to_place`, i.e.
-                     random positions to sample.
+                     random positions to sample. Default = 100.
    :type max_tries: int
 
    :returns: **atoms** -- Atoms with `atoms_to_place` placed randomly around `atoms` `n` times.
@@ -368,6 +419,8 @@ Module Contents
    :rtype: numpy.ndarray
 
 
+.. py:function:: unwrap_bulk_water(water_bulk: ase.Atoms, cutoffs: list | numpy.ndarray | None = None) -> ase.Atoms
+
 .. py:function:: unwrap_trajectory_from_displacement(positions: numpy.ndarray, cell: numpy.ndarray) -> numpy.ndarray
 
    Unwrap trajectory based on displacement between frames.
@@ -379,5 +432,17 @@ Module Contents
 
    :returns: **unwrapped_positions** -- Unwrapped positions.
    :rtype: numpy.ndarray
+
+
+.. py:function:: verify_is_water_molecule(indices: list[int], symbols: numpy.typing.NDArray[numpy.bytes_]) -> None
+
+   Verify that the indices and symbols correspond to a water molecule.
+
+   :param indices: List of indices that should correspond to water
+   :type indices: list[int]
+   :param symbols: Symbols of the entire structure
+   :type symbols: numpy.typing.NDArray[numpy.bytes_]
+
+   :raises ValueError: If the length of `indices` is not 3, or it does not correspond to ``"OH2"`` in that order.
 
 

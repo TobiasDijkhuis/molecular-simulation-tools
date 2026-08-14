@@ -1,17 +1,17 @@
 {
-    "api/index": 0.013,
-    "api/molecular_simulation_tools/connectivity/index": 0.028,
-    "api/molecular_simulation_tools/geometry/index": 0.204,
-    "api/molecular_simulation_tools/index": 0.002,
-    "api/molecular_simulation_tools/io/index": 0.008,
+    "api/index": 0.014,
+    "api/molecular_simulation_tools/connectivity/index": 0.027,
+    "api/molecular_simulation_tools/geometry/index": 0.089,
+    "api/molecular_simulation_tools/index": 0.003,
+    "api/molecular_simulation_tools/io/index": 0.009,
     "api/molecular_simulation_tools/neb/index": 0.054,
     "api/molecular_simulation_tools/orca/index": 0.027,
     "api/molecular_simulation_tools/plot/index": 0.023,
     "api/molecular_simulation_tools/properties/index": 0.03,
-    "api/molecular_simulation_tools/slurm_manager/index": 0.004,
-    "api/molecular_simulation_tools/slurm_manager/job/index": 0.019,
+    "api/molecular_simulation_tools/slurm_manager/index": 0.005,
+    "api/molecular_simulation_tools/slurm_manager/job/index": 0.018,
     "api/molecular_simulation_tools/slurm_manager/manager/index": 0.018,
-    "api/molecular_simulation_tools/slurm_manager/utils/index": 0.01,
-    "api/molecular_simulation_tools/utils/index": 0.101,
-    "index": 0.002
+    "api/molecular_simulation_tools/slurm_manager/utils/index": 0.011,
+    "api/molecular_simulation_tools/utils/index": 0.295,
+    "index": 0.003
 }

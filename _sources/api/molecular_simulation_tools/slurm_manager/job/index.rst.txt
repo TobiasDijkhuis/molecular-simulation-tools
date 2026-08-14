@@ -95,7 +95,8 @@ Module Contents
 
       Wait until the job is done.
 
-      :param sleep_interval: Time between checking the state in seconds.
+      :param sleep_interval: How long to sleep (in seconds) between checking whether the job is done.
+                             Default = 0.5.
       :type sleep_interval: float
 
 

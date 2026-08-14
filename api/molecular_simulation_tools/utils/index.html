@@ -99,29 +99,35 @@
 <h2>Functions<a class="headerlink" href="#functions" title="Link to this heading"></a></h2>
 <table class="autosummary longtable docutils align-default">
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#molecular_simulation_tools.utils.batched" title="molecular_simulation_tools.utils.batched"><code class="xref py py-obj docutils literal notranslate"><span class="pre">batched</span></code></a>(→ collections.abc.Iterator[tuple[Any]])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#molecular_simulation_tools.utils.add_vacuum_to_unwrapped_water_bulk" title="molecular_simulation_tools.utils.add_vacuum_to_unwrapped_water_bulk"><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_vacuum_to_unwrapped_water_bulk</span></code></a>(→ ase.Atoms)</p></td>
+<td><p>Add a vacuum to unwrapped water bulk.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#molecular_simulation_tools.utils.batched" title="molecular_simulation_tools.utils.batched"><code class="xref py py-obj docutils literal notranslate"><span class="pre">batched</span></code></a>(→ collections.abc.Iterator[tuple[_T]])</p></td>
 <td><p>Batch an iterable.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#molecular_simulation_tools.utils.check_same_number_of_atoms" title="molecular_simulation_tools.utils.check_same_number_of_atoms"><code class="xref py py-obj docutils literal notranslate"><span class="pre">check_same_number_of_atoms</span></code></a>(→ None)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#molecular_simulation_tools.utils.check_same_number_of_atoms" title="molecular_simulation_tools.utils.check_same_number_of_atoms"><code class="xref py py-obj docutils literal notranslate"><span class="pre">check_same_number_of_atoms</span></code></a>(→ None)</p></td>
 <td><p>Check that all frames have the same number of atoms.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#molecular_simulation_tools.utils.combine_overlapping_sets" title="molecular_simulation_tools.utils.combine_overlapping_sets"><code class="xref py py-obj docutils literal notranslate"><span class="pre">combine_overlapping_sets</span></code></a>(→ list[set[Any]])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#molecular_simulation_tools.utils.combine_overlapping_sets" title="molecular_simulation_tools.utils.combine_overlapping_sets"><code class="xref py py-obj docutils literal notranslate"><span class="pre">combine_overlapping_sets</span></code></a>(→ list[set[Any]])</p></td>
 <td><p>Combine sets that have overlapping elements.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#molecular_simulation_tools.utils.convert_cartesian_to_spherical" title="molecular_simulation_tools.utils.convert_cartesian_to_spherical"><code class="xref py py-obj docutils literal notranslate"><span class="pre">convert_cartesian_to_spherical</span></code></a>(→ tuple[float, float, ...)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#molecular_simulation_tools.utils.convert_cartesian_to_spherical" title="molecular_simulation_tools.utils.convert_cartesian_to_spherical"><code class="xref py py-obj docutils literal notranslate"><span class="pre">convert_cartesian_to_spherical</span></code></a>(→ tuple[float, float, ...)</p></td>
 <td><p>Convert cartesian coordinates to spherical coordinates.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#molecular_simulation_tools.utils.convert_reaction_to_latex" title="molecular_simulation_tools.utils.convert_reaction_to_latex"><code class="xref py py-obj docutils literal notranslate"><span class="pre">convert_reaction_to_latex</span></code></a>(→ str | list[str])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#molecular_simulation_tools.utils.convert_reaction_to_latex" title="molecular_simulation_tools.utils.convert_reaction_to_latex"><code class="xref py py-obj docutils literal notranslate"><span class="pre">convert_reaction_to_latex</span></code></a>(→ str | list[str])</p></td>
 <td><p>Format a reaction such that it can nicely be formatted in LaTeX.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#molecular_simulation_tools.utils.convert_species_to_latex" title="molecular_simulation_tools.utils.convert_species_to_latex"><code class="xref py py-obj docutils literal notranslate"><span class="pre">convert_species_to_latex</span></code></a>(→ str | list[str])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#molecular_simulation_tools.utils.convert_species_to_latex" title="molecular_simulation_tools.utils.convert_species_to_latex"><code class="xref py py-obj docutils literal notranslate"><span class="pre">convert_species_to_latex</span></code></a>(→ str | list[str])</p></td>
 <td><p>Format a molecular formula as a LaTeX string, with correct sub- and superscripts.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#molecular_simulation_tools.utils.convert_spherical_to_cartesian" title="molecular_simulation_tools.utils.convert_spherical_to_cartesian"><code class="xref py py-obj docutils literal notranslate"><span class="pre">convert_spherical_to_cartesian</span></code></a>(→ numpy.ndarray)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#molecular_simulation_tools.utils.convert_spherical_to_cartesian" title="molecular_simulation_tools.utils.convert_spherical_to_cartesian"><code class="xref py py-obj docutils literal notranslate"><span class="pre">convert_spherical_to_cartesian</span></code></a>(→ numpy.ndarray)</p></td>
 <td><p>Convert spherical coordinates to cartesian coordinates.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#molecular_simulation_tools.utils.correct_distance_for_pbc" title="molecular_simulation_tools.utils.correct_distance_for_pbc"><code class="xref py py-obj docutils literal notranslate"><span class="pre">correct_distance_for_pbc</span></code></a>(→ numpy.ndarray)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#molecular_simulation_tools.utils.correct_distance_for_pbc" title="molecular_simulation_tools.utils.correct_distance_for_pbc"><code class="xref py py-obj docutils literal notranslate"><span class="pre">correct_distance_for_pbc</span></code></a>(→ numpy.ndarray)</p></td>
 <td><p>Correct a distance for periodic boundary conditions.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#molecular_simulation_tools.utils.create_water_surface_from_bulk" title="molecular_simulation_tools.utils.create_water_surface_from_bulk"><code class="xref py py-obj docutils literal notranslate"><span class="pre">create_water_surface_from_bulk</span></code></a>(→ ase.Atoms)</p></td>
+<td><p>Create a water surface from a water bulk structure.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#molecular_simulation_tools.utils.find_all_numbers" title="molecular_simulation_tools.utils.find_all_numbers"><code class="xref py py-obj docutils literal notranslate"><span class="pre">find_all_numbers</span></code></a>(→ dict[int, str])</p></td>
 <td><p>Find all numbers in a string.</p></td>
@@ -147,26 +153,35 @@
 <tr class="row-even"><td><p><a class="reference internal" href="#molecular_simulation_tools.utils.get_tip4p_water" title="molecular_simulation_tools.utils.get_tip4p_water"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_tip4p_water</span></code></a>(→ ase.Atoms)</p></td>
 <td><p>Get a water molecule to be used in a TIP4P potential.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#molecular_simulation_tools.utils.icosahedron_unit_sphere" title="molecular_simulation_tools.utils.icosahedron_unit_sphere"><code class="xref py py-obj docutils literal notranslate"><span class="pre">icosahedron_unit_sphere</span></code></a>(→ numpy.ndarray)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#molecular_simulation_tools.utils.get_water_molecule_in_box" title="molecular_simulation_tools.utils.get_water_molecule_in_box"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_water_molecule_in_box</span></code></a>(→ ase.Atoms)</p></td>
+<td><p>Set up water box at 20 deg C density.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#molecular_simulation_tools.utils.icosahedron_unit_sphere" title="molecular_simulation_tools.utils.icosahedron_unit_sphere"><code class="xref py py-obj docutils literal notranslate"><span class="pre">icosahedron_unit_sphere</span></code></a>(→ numpy.ndarray)</p></td>
 <td><p>Get vertices of an icosahedron for even sampling of a unit sphere.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#molecular_simulation_tools.utils.project_on_unit_sphere" title="molecular_simulation_tools.utils.project_on_unit_sphere"><code class="xref py py-obj docutils literal notranslate"><span class="pre">project_on_unit_sphere</span></code></a>(→ numpy.ndarray)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#molecular_simulation_tools.utils.project_on_unit_sphere" title="molecular_simulation_tools.utils.project_on_unit_sphere"><code class="xref py py-obj docutils literal notranslate"><span class="pre">project_on_unit_sphere</span></code></a>(→ numpy.ndarray)</p></td>
 <td><p>Project a vector on the unit sphere, by dividing it by its length.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#molecular_simulation_tools.utils.sample_new_point" title="molecular_simulation_tools.utils.sample_new_point"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sample_new_point</span></code></a>(→ numpy.ndarray)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#molecular_simulation_tools.utils.sample_new_point" title="molecular_simulation_tools.utils.sample_new_point"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sample_new_point</span></code></a>(→ numpy.ndarray)</p></td>
 <td><p>Generate a new point in a random direction that is a certain distance from other points.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#molecular_simulation_tools.utils.sample_random_new_atom_location" title="molecular_simulation_tools.utils.sample_random_new_atom_location"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sample_random_new_atom_location</span></code></a>(→ ase.Atoms)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#molecular_simulation_tools.utils.sample_random_new_atom_location" title="molecular_simulation_tools.utils.sample_random_new_atom_location"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sample_random_new_atom_location</span></code></a>(→ ase.Atoms)</p></td>
 <td><p>Sample a random new location to place Atoms.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#molecular_simulation_tools.utils.sample_random_rotation" title="molecular_simulation_tools.utils.sample_random_rotation"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sample_random_rotation</span></code></a>(→ tuple[numpy.ndarray, float])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#molecular_simulation_tools.utils.sample_random_rotation" title="molecular_simulation_tools.utils.sample_random_rotation"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sample_random_rotation</span></code></a>(→ tuple[numpy.ndarray, float])</p></td>
 <td><p>Get a random rotation axis and rotation angle.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#molecular_simulation_tools.utils.turn_grid_into_position_vectors" title="molecular_simulation_tools.utils.turn_grid_into_position_vectors"><code class="xref py py-obj docutils literal notranslate"><span class="pre">turn_grid_into_position_vectors</span></code></a>(→ numpy.ndarray)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#molecular_simulation_tools.utils.turn_grid_into_position_vectors" title="molecular_simulation_tools.utils.turn_grid_into_position_vectors"><code class="xref py py-obj docutils literal notranslate"><span class="pre">turn_grid_into_position_vectors</span></code></a>(→ numpy.ndarray)</p></td>
 <td><p>Turn a grid created by <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.meshgrid.html#numpy.meshgrid" title="(in NumPy v2.5)"><code class="xref py py-func docutils literal notranslate"><span class="pre">numpy.meshgrid()</span></code></a> into position vectors.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#molecular_simulation_tools.utils.unwrap_bulk_water" title="molecular_simulation_tools.utils.unwrap_bulk_water"><code class="xref py py-obj docutils literal notranslate"><span class="pre">unwrap_bulk_water</span></code></a>(→ ase.Atoms)</p></td>
+<td><p></p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#molecular_simulation_tools.utils.unwrap_trajectory_from_displacement" title="molecular_simulation_tools.utils.unwrap_trajectory_from_displacement"><code class="xref py py-obj docutils literal notranslate"><span class="pre">unwrap_trajectory_from_displacement</span></code></a>(→ numpy.ndarray)</p></td>
 <td><p>Unwrap trajectory based on displacement between frames.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#molecular_simulation_tools.utils.verify_is_water_molecule" title="molecular_simulation_tools.utils.verify_is_water_molecule"><code class="xref py py-obj docutils literal notranslate"><span class="pre">verify_is_water_molecule</span></code></a>(→ None)</p></td>
+<td><p>Verify that the indices and symbols correspond to a water molecule.</p></td>
 </tr>
 </tbody>
 </table>
@@ -174,18 +189,38 @@
 <section id="module-contents">
 <h2>Module Contents<a class="headerlink" href="#module-contents" title="Link to this heading"></a></h2>
 <dl class="py function">
+<dt class="sig sig-object py" id="molecular_simulation_tools.utils.add_vacuum_to_unwrapped_water_bulk">
+<span class="sig-prename descclassname"><span class="pre">molecular_simulation_tools.utils.</span></span><span class="sig-name descname"><span class="pre">add_vacuum_to_unwrapped_water_bulk</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">unwrapped_water_bulk</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ase.Atoms</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vacuum_height</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ase.Atoms</span></span></span><a class="reference internal" href="../../../_modules/molecular_simulation_tools/utils.html#add_vacuum_to_unwrapped_water_bulk"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#molecular_simulation_tools.utils.add_vacuum_to_unwrapped_water_bulk" title="Link to this definition"></a></dt>
+<dd><p>Add a vacuum to unwrapped water bulk.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>unwrapped_water_bulk</strong> (<em>Atoms</em>) – Unwrapped water bulk produced by <a class="reference internal" href="#molecular_simulation_tools.utils.unwrap_bulk_water" title="molecular_simulation_tools.utils.unwrap_bulk_water"><code class="xref py py-func docutils literal notranslate"><span class="pre">unwrap_bulk_water()</span></code></a>.</p></li>
+<li><p><strong>vacuum_height</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a><em> | </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><em>float</em></a>) – Height of vacuum to add</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>water_surface</strong> – Water surface</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Atoms</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
 <dt class="sig sig-object py" id="molecular_simulation_tools.utils.batched">
-<span class="sig-prename descclassname"><span class="pre">molecular_simulation_tools.utils.</span></span><span class="sig-name descname"><span class="pre">batched</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">iterable</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Sequence" title="(in Python v3.14)"><span class="pre">collections.abc.Sequence</span></a><span class="p"><span class="pre">[</span></span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">chunk_size</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Iterator" title="(in Python v3.14)"><span class="pre">collections.abc.Iterator</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.14)"><span class="pre">tuple</span></a><span class="p"><span class="pre">[</span></span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../../_modules/molecular_simulation_tools/utils.html#batched"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#molecular_simulation_tools.utils.batched" title="Link to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">molecular_simulation_tools.utils.</span></span><span class="sig-name descname"><span class="pre">batched</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">iterable</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Sequence" title="(in Python v3.14)"><span class="pre">collections.abc.Sequence</span></a><span class="p"><span class="pre">[</span></span><span class="pre">_T</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">chunk_size</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Iterator" title="(in Python v3.14)"><span class="pre">collections.abc.Iterator</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.14)"><span class="pre">tuple</span></a><span class="p"><span class="pre">[</span></span><span class="pre">_T</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../../_modules/molecular_simulation_tools/utils.html#batched"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#molecular_simulation_tools.utils.batched" title="Link to this definition"></a></dt>
 <dd><p>Batch an iterable.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>iterable</strong> (<em>Sequency</em><em>[</em><em>Any</em><em>]</em>)</p></li>
+<li><p><strong>iterable</strong> (<em>Sequence</em><em>[</em><em>_T</em><em>]</em>) – Iterable to chunk</p></li>
 <li><p><strong>chunk_size</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a>) – Size of each batch</p></li>
 </ul>
 </dd>
 <dt class="field-even">Yields<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>chunk</strong> (<em>tuple[Any]</em>) – Chunks with at most <cite>chunk_size</cite> elements. The last chunk might have
+<dd class="field-even"><p><strong>chunk</strong> (<em>tuple[_T]</em>) – Chunks with at most <cite>chunk_size</cite> elements. The last chunk might have
 fewer elements.</p>
 </dd>
 <dt class="field-odd">Raises<span class="colon">:</span></dt>
@@ -327,6 +362,31 @@ fewer elements.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.5)">numpy.ndarray</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="molecular_simulation_tools.utils.create_water_surface_from_bulk">
+<span class="sig-prename descclassname"><span class="pre">molecular_simulation_tools.utils.</span></span><span class="sig-name descname"><span class="pre">create_water_surface_from_bulk</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">water_bulk</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ase.Atoms</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vacuum_height</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">verify_molecules</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cutoffs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><span class="pre">list</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.5)"><span class="pre">numpy.ndarray</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ase.Atoms</span></span></span><a class="reference internal" href="../../../_modules/molecular_simulation_tools/utils.html#create_water_surface_from_bulk"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#molecular_simulation_tools.utils.create_water_surface_from_bulk" title="Link to this definition"></a></dt>
+<dd><p>Create a water surface from a water bulk structure.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>water_bulk</strong> (<em>Atoms</em>) – Water bulk structure</p></li>
+<li><p><strong>vacuum_height</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a><em> | </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><em>float</em></a>) – Height of vacuum to add</p></li>
+<li><p><strong>verify_molecules</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><em>bool</em></a>) – Whether to verify that each formed molecule has the correct neighbors
+to be considered a water molecule using <a class="reference internal" href="#molecular_simulation_tools.utils.verify_is_water_molecule" title="molecular_simulation_tools.utils.verify_is_water_molecule"><code class="xref py py-func docutils literal notranslate"><span class="pre">verify_is_water_molecule()</span></code></a>.
+Default = True.</p></li>
+<li><p><strong>cutoffs</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><em>list</em></a><em> | </em><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.5)"><em>numpy.ndarray</em></a><em> | </em><em>None</em>) – Cutoffs to build the neighbor list. Only used when <cite>verify_molecules</cite> is True.
+Default = None.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>water_surface</strong> – Water surface</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Atoms</p>
 </dd>
 </dl>
 </dd></dl>
@@ -483,6 +543,25 @@ If None, do all atoms. Default = None.</p></li>
 </dd></dl>
 
 <dl class="py function">
+<dt class="sig sig-object py" id="molecular_simulation_tools.utils.get_water_molecule_in_box">
+<span class="sig-prename descclassname"><span class="pre">molecular_simulation_tools.utils.</span></span><span class="sig-name descname"><span class="pre">get_water_molecule_in_box</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">repeat</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.14)"><span class="pre">tuple</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ase.Atoms</span></span></span><a class="reference internal" href="../../../_modules/molecular_simulation_tools/utils.html#get_water_molecule_in_box"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#molecular_simulation_tools.utils.get_water_molecule_in_box" title="Link to this definition"></a></dt>
+<dd><p>Set up water box at 20 deg C density.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>repeat</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a><em> | </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.14)"><em>tuple</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a><em>]</em>) – How many times to repeat the box. If an integer, repeat the same
+times in all dimensions. Default = 1.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>atoms</strong> – Water molecule obtained with <a class="reference internal" href="#molecular_simulation_tools.utils.get_tip4p_water" title="molecular_simulation_tools.utils.get_tip4p_water"><code class="xref py py-func docutils literal notranslate"><span class="pre">get_tip4p_water()</span></code></a> in box with
+dimensions of those at 20 degrees C density.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Atoms</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
 <dt class="sig sig-object py" id="molecular_simulation_tools.utils.icosahedron_unit_sphere">
 <span class="sig-prename descclassname"><span class="pre">molecular_simulation_tools.utils.</span></span><span class="sig-name descname"><span class="pre">icosahedron_unit_sphere</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">level</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">subdivision</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">2</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.5)"><span class="pre">numpy.ndarray</span></a></span></span><a class="reference internal" href="../../../_modules/molecular_simulation_tools/utils.html#icosahedron_unit_sphere"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#molecular_simulation_tools.utils.icosahedron_unit_sphere" title="Link to this definition"></a></dt>
 <dd><p>Get vertices of an icosahedron for even sampling of a unit sphere.</p>
@@ -576,7 +655,7 @@ If None, is the same as minimum_distance. Default = None</p></li>
 <li><p><strong>atol</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><em>float</em></a>) – Absolute tolerance. Default: 1e-8</p></li>
 <li><p><strong>n</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a>) – Number of times to place <cite>atoms_to_place</cite>. Default = 1.</p></li>
 <li><p><strong>max_tries</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a>) – Maximum number of tries to make when placing <cite>atoms_to_place</cite>, i.e.
-random positions to sample.</p></li>
+random positions to sample. Default = 100.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -626,6 +705,11 @@ random positions to sample.</p></li>
 </dd></dl>
 
 <dl class="py function">
+<dt class="sig sig-object py" id="molecular_simulation_tools.utils.unwrap_bulk_water">
+<span class="sig-prename descclassname"><span class="pre">molecular_simulation_tools.utils.</span></span><span class="sig-name descname"><span class="pre">unwrap_bulk_water</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">water_bulk</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ase.Atoms</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cutoffs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><span class="pre">list</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.5)"><span class="pre">numpy.ndarray</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ase.Atoms</span></span></span><a class="reference internal" href="../../../_modules/molecular_simulation_tools/utils.html#unwrap_bulk_water"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#molecular_simulation_tools.utils.unwrap_bulk_water" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
 <dt class="sig sig-object py" id="molecular_simulation_tools.utils.unwrap_trajectory_from_displacement">
 <span class="sig-prename descclassname"><span class="pre">molecular_simulation_tools.utils.</span></span><span class="sig-name descname"><span class="pre">unwrap_trajectory_from_displacement</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">positions</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.5)"><span class="pre">numpy.ndarray</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">cell</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.5)"><span class="pre">numpy.ndarray</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.5)"><span class="pre">numpy.ndarray</span></a></span></span><a class="reference internal" href="../../../_modules/molecular_simulation_tools/utils.html#unwrap_trajectory_from_displacement"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#molecular_simulation_tools.utils.unwrap_trajectory_from_displacement" title="Link to this definition"></a></dt>
 <dd><p>Unwrap trajectory based on displacement between frames.</p>
@@ -641,6 +725,23 @@ random positions to sample.</p></li>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.5)">numpy.ndarray</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="molecular_simulation_tools.utils.verify_is_water_molecule">
+<span class="sig-prename descclassname"><span class="pre">molecular_simulation_tools.utils.</span></span><span class="sig-name descname"><span class="pre">verify_is_water_molecule</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">indices</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">symbols</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">numpy.typing.NDArray</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://numpy.org/doc/stable/reference/arrays.scalars.html#numpy.bytes_" title="(in NumPy v2.5)"><span class="pre">numpy.bytes_</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../../../_modules/molecular_simulation_tools/utils.html#verify_is_water_molecule"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#molecular_simulation_tools.utils.verify_is_water_molecule" title="Link to this definition"></a></dt>
+<dd><p>Verify that the indices and symbols correspond to a water molecule.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>indices</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><em>list</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a><em>]</em>) – List of indices that should correspond to water</p></li>
+<li><p><strong>symbols</strong> (numpy.typing.NDArray[<a href="#id1"><span class="problematic" id="id2">numpy.bytes_</span></a>]) – Symbols of the entire structure</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.14)"><strong>ValueError</strong></a> – If the length of <cite>indices</cite> is not 3, or it does not correspond to <code class="docutils literal notranslate"><span class="pre">&quot;OH2&quot;</span></code> in that order.</p>
 </dd>
 </dl>
 </dd></dl>
