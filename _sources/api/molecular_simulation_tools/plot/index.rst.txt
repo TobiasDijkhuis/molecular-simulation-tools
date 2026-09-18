@@ -14,7 +14,9 @@ Functions
 
 .. autoapisummary::
 
+   molecular_simulation_tools.plot.create_secondary_energy_axis
    molecular_simulation_tools.plot.plot_neb
+   molecular_simulation_tools.plot.plot_neb_from_images
    molecular_simulation_tools.plot.plot_periodic_images
    molecular_simulation_tools.plot.set_up_periodic_plot
 
@@ -22,7 +24,11 @@ Functions
 Module Contents
 ---------------
 
-.. py:function:: plot_neb(images: list[ase.Atoms] | ase.mep.neb.BaseNEB, ax: matplotlib.pyplot.Axes | None = None, plot_kwargs: dict[str, Any] | None = None) -> matplotlib.pyplot.Axes
+.. py:function:: create_secondary_energy_axis(ax: matplotlib.pyplot.Axes) -> tuple[matplotlib.pyplot.Axes, matplotlib.axes._secondary_axes.SecondaryAxis]
+
+.. py:function:: plot_neb(path: numpy.ndarray, energies: numpy.ndarray, ax: matplotlib.pyplot.Axes | None = None, plot_kwargs: dict[str, Any] | None = None, *, mark_transition: bool = False, include_secondary_axis: bool = True) -> matplotlib.pyplot.Axes
+
+.. py:function:: plot_neb_from_images(images: list[ase.Atoms] | ase.mep.neb.BaseNEB, ax: matplotlib.pyplot.Axes | None = None, plot_kwargs: dict[str, Any] | None = None, *, mark_transition: bool = True) -> matplotlib.pyplot.Axes
 
    Plot a NEB calculation.
 

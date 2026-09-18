@@ -75,6 +75,8 @@
   <h1>Source code for molecular_simulation_tools.connectivity</h1><div class="highlight"><pre>
 <span></span><span class="sd">&quot;&quot;&quot;Tools to identify molecules.&quot;&quot;&quot;</span>
 
+<span class="kn">from</span> <span class="nn">collections.abc</span> <span class="kn">import</span> <span class="n">Iterable</span>
+
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">from</span> <span class="nn">ase</span> <span class="kn">import</span> <span class="n">Atoms</span>
 <span class="kn">from</span> <span class="nn">ase.neighborlist</span> <span class="kn">import</span> <span class="n">build_neighbor_list</span><span class="p">,</span> <span class="n">natural_cutoffs</span>
@@ -114,6 +116,8 @@
     <span class="n">nl</span> <span class="o">=</span> <span class="n">build_neighbor_list</span><span class="p">(</span><span class="n">atoms</span><span class="p">,</span> <span class="n">self_interaction</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">cutoffs</span><span class="o">=</span><span class="n">cutoffs</span><span class="p">)</span>
     <span class="n">cm</span> <span class="o">=</span> <span class="n">nl</span><span class="o">.</span><span class="n">get_connectivity_matrix</span><span class="p">(</span><span class="n">sparse</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
     <span class="n">graph</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">from_numpy_array</span><span class="p">(</span><span class="n">cm</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">atom</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">atoms</span><span class="p">):</span>
+        <span class="n">graph</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="s2">&quot;element&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">atom</span><span class="o">.</span><span class="n">symbol</span>
     <span class="k">return</span> <span class="n">graph</span>
 
 
@@ -236,6 +240,88 @@
     <span class="n">indices</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">indices</span><span class="p">,</span> <span class="n">where_to_insert</span><span class="p">,</span> <span class="n">to_add_list</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">indices</span></div>
+
+
+
+<div class="viewcode-block" id="get_permutations_exchange_identical_atoms_groups">
+<a class="viewcode-back" href="../../api/molecular_simulation_tools/connectivity/index.html#molecular_simulation_tools.connectivity.get_permutations_exchange_identical_atoms_groups">[docs]</a>
+<span class="k">def</span> <span class="nf">get_permutations_exchange_identical_atoms_groups</span><span class="p">(</span>
+    <span class="n">atoms</span><span class="p">:</span> <span class="n">Atoms</span><span class="p">,</span>
+    <span class="n">indices</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="o">...</span><span class="p">],</span> <span class="o">...</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; # Methanol geometry from CCCBDB</span>
+<span class="sd">    &gt;&gt;&gt; methanol_positions = [</span>
+<span class="sd">    ...     [-0.0503, 0.6658, 0.0000],   # C</span>
+<span class="sd">    ...     [-1.0807, 1.0417, 0.0000],   # H</span>
+<span class="sd">    ...     [0.4650, 1.0417, 0.8924],    # H</span>
+<span class="sd">    ...     [0.4650, 1.0417, -0.8924],   # H</span>
+<span class="sd">    ...     [-0.0503, -0.7585, 0.0000],  # O</span>
+<span class="sd">    ...     [0.8544, -1.0677, 0.0000],   # H</span>
+<span class="sd">    ... ]</span>
+<span class="sd">    &gt;&gt;&gt; methanol = Atoms(symbols=&quot;CH3OH&quot;, positions=methanol_positions)</span>
+<span class="sd">    &gt;&gt;&gt; permutations = get_permutations_exchange_identical_atoms_groups(methanol)</span>
+<span class="sd">    &gt;&gt;&gt; # Should have 6 permutations, only methyl radicals swapping</span>
+<span class="sd">    &gt;&gt;&gt; len(permutations)</span>
+<span class="sd">    6</span>
+<span class="sd">    &gt;&gt;&gt; for permutation in sorted(permutations):</span>
+<span class="sd">    ...     print(permutation)</span>
+<span class="sd">    (0, 1, 2, 3, 4, 5)</span>
+<span class="sd">    (0, 1, 3, 2, 4, 5)</span>
+<span class="sd">    (0, 2, 1, 3, 4, 5)</span>
+<span class="sd">    (0, 2, 3, 1, 4, 5)</span>
+<span class="sd">    (0, 3, 1, 2, 4, 5)</span>
+<span class="sd">    (0, 3, 2, 1, 4, 5)</span>
+
+<span class="sd">    &gt;&gt;&gt; # Only calculate permutations of a subset</span>
+<span class="sd">    &gt;&gt;&gt; permutations = get_permutations_exchange_identical_atoms_groups(methanol, [0, 1, 2, 5])</span>
+<span class="sd">    &gt;&gt;&gt; # Should have 2 permutations, only two of the methyl hydrogens</span>
+<span class="sd">    &gt;&gt;&gt; len(permutations)</span>
+<span class="sd">    2</span>
+<span class="sd">    &gt;&gt;&gt; for permutation in sorted(permutations):</span>
+<span class="sd">    ...     print(permutation)</span>
+<span class="sd">    (0, 1, 2, 3, 4, 5)</span>
+<span class="sd">    (0, 2, 1, 3, 4, 5)</span>
+
+<span class="sd">    &gt;&gt;&gt; ethanol_positions = [</span>
+<span class="sd">    ...     [1.1879, -0.3829, 0.0000],   # C</span>
+<span class="sd">    ...     [2.0985, 0.2306, 0.0000],    # H</span>
+<span class="sd">    ...     [1.1184, -1.0093, 0.8869],   # H</span>
+<span class="sd">    ...     [1.1184, -1.0093, -0.8869],  # H</span>
+<span class="sd">    ...     [0.0000, 0.5526, 0.0000],    # C</span>
+<span class="sd">    ...     [-0.0227, 1.1812, 0.8852],   # H</span>
+<span class="sd">    ...     [-0.0227, 1.1812, -0.8852],  # H</span>
+<span class="sd">    ...     [-1.1867, -0.2472, 0.0000],  # O</span>
+<span class="sd">    ...     [-1.9237, 0.3850, 0.0000],   # H</span>
+<span class="sd">    ... ]</span>
+<span class="sd">    &gt;&gt;&gt; ethanol = Atoms(&quot;CH3CH2OH&quot;, positions=ethanol_positions)</span>
+<span class="sd">    &gt;&gt;&gt; permutations = get_permutations_exchange_identical_atoms_groups(ethanol)</span>
+<span class="sd">    &gt;&gt;&gt; # Should have 12 combinations: 3*2*1 for the CH3 hydrogens, and 2*1 for the CH2 hydrogens</span>
+<span class="sd">    &gt;&gt;&gt; # So 6*2 = 12 in total.</span>
+<span class="sd">    &gt;&gt;&gt; len(permutations)</span>
+<span class="sd">    12</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">graph</span> <span class="o">=</span> <span class="n">_atoms_to_graph</span><span class="p">(</span><span class="n">atoms</span><span class="p">)</span>
+    <span class="c1"># nm = nx.algorithms.isomorphism.categorical_node_match(&quot;element&quot;, None)</span>
+    <span class="c1"># GM = nx.algorithms.isomorphism.GraphMatcher(graph, graph, node_match=nm)</span>
+    <span class="c1"># mappings: Iterator[dict[int, int]] = GM.isomorphisms_iter()</span>
+    <span class="n">mappings</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">algorithms</span><span class="o">.</span><span class="n">isomorphism</span><span class="o">.</span><span class="n">vf2pp_all_isomorphisms</span><span class="p">(</span>
+        <span class="n">graph</span><span class="p">,</span> <span class="n">graph</span><span class="p">,</span> <span class="n">node_label</span><span class="o">=</span><span class="s2">&quot;element&quot;</span>
+    <span class="p">)</span>
+    <span class="n">permutations</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">mapping</span> <span class="ow">in</span> <span class="n">mappings</span><span class="p">:</span>
+        <span class="c1"># If a subset of indices should be permuted, check that all other indices map to themselves</span>
+        <span class="k">if</span> <span class="n">indices</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">all</span><span class="p">(</span>
+            <span class="n">mapping</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">==</span> <span class="n">i</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">graph</span><span class="o">.</span><span class="n">nodes</span> <span class="k">if</span> <span class="n">i</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">indices</span>
+        <span class="p">):</span>
+            <span class="k">continue</span>
+        <span class="n">perm</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">mapping</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">atoms</span><span class="p">)))</span>
+        <span class="n">permutations</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">perm</span><span class="p">)</span>
+    <span class="k">return</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">perm</span> <span class="k">for</span> <span class="n">perm</span> <span class="ow">in</span> <span class="n">permutations</span><span class="p">)</span></div>
 
 </pre></div>
 

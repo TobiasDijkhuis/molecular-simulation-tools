@@ -1,0 +1,365 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>molecular_simulation_tools.eon &mdash; molecular-simulation-tools  documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/graphviz.css?v=4ae1632d" />
+
+  
+      <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="../../../_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
+      <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
+      <script src="../../../_static/copybutton.js?v=f281be69"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+    <link rel="next" title="molecular_simulation_tools.geometry" href="../geometry/index.html" />
+    <link rel="prev" title="molecular_simulation_tools.connectivity" href="../connectivity/index.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            molecular-simulation-tools
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../../index.html">API Reference</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="../index.html">molecular_simulation_tools</a><ul class="current">
+<li class="toctree-l3 current"><a class="reference internal" href="../index.html#submodules">Submodules</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="../connectivity/index.html">molecular_simulation_tools.connectivity</a></li>
+<li class="toctree-l4 current"><a class="current reference internal" href="#">molecular_simulation_tools.eon</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../geometry/index.html">molecular_simulation_tools.geometry</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../io/index.html">molecular_simulation_tools.io</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../neb/index.html">molecular_simulation_tools.neb</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../orca/index.html">molecular_simulation_tools.orca</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../plot/index.html">molecular_simulation_tools.plot</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../properties/index.html">molecular_simulation_tools.properties</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../slurm_manager/index.html">molecular_simulation_tools.slurm_manager</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../utils/index.html">molecular_simulation_tools.utils</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">molecular-simulation-tools</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">API Reference</a></li>
+          <li class="breadcrumb-item"><a href="../index.html">molecular_simulation_tools</a></li>
+      <li class="breadcrumb-item active">molecular_simulation_tools.eon</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-molecular_simulation_tools.eon">
+<span id="molecular-simulation-tools-eon"></span><h1>molecular_simulation_tools.eon<a class="headerlink" href="#module-molecular_simulation_tools.eon" title="Link to this heading"></a></h1>
+<section id="attributes">
+<h2>Attributes<a class="headerlink" href="#attributes" title="Link to this heading"></a></h2>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#molecular_simulation_tools.eon.EON_ASE_CALC_INTERFACE" title="molecular_simulation_tools.eon.EON_ASE_CALC_INTERFACE"><code class="xref py py-obj docutils literal notranslate"><span class="pre">EON_ASE_CALC_INTERFACE</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#molecular_simulation_tools.eon.EON_ASE_DUMMY_CALC_INTERFACE" title="molecular_simulation_tools.eon.EON_ASE_DUMMY_CALC_INTERFACE"><code class="xref py py-obj docutils literal notranslate"><span class="pre">EON_ASE_DUMMY_CALC_INTERFACE</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#molecular_simulation_tools.eon.EON_JOB_REQUIRED_KEYS" title="molecular_simulation_tools.eon.EON_JOB_REQUIRED_KEYS"><code class="xref py py-obj docutils literal notranslate"><span class="pre">EON_JOB_REQUIRED_KEYS</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#molecular_simulation_tools.eon.EON_LOG_FILEPATH" title="molecular_simulation_tools.eon.EON_LOG_FILEPATH"><code class="xref py py-obj docutils literal notranslate"><span class="pre">EON_LOG_FILEPATH</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#molecular_simulation_tools.eon.RE_NEB_CONVERGED" title="molecular_simulation_tools.eon.RE_NEB_CONVERGED"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RE_NEB_CONVERGED</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#molecular_simulation_tools.eon.RE_NEB_FAILED" title="molecular_simulation_tools.eon.RE_NEB_FAILED"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RE_NEB_FAILED</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#molecular_simulation_tools.eon.RE_POTENTIAL_CALLS" title="molecular_simulation_tools.eon.RE_POTENTIAL_CALLS"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RE_POTENTIAL_CALLS</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="classes">
+<h2>Classes<a class="headerlink" href="#classes" title="Link to this heading"></a></h2>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#molecular_simulation_tools.eon.NEBInfo" title="molecular_simulation_tools.eon.NEBInfo"><code class="xref py py-obj docutils literal notranslate"><span class="pre">NEBInfo</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#molecular_simulation_tools.eon.NEBStatus" title="molecular_simulation_tools.eon.NEBStatus"><code class="xref py py-obj docutils literal notranslate"><span class="pre">NEBStatus</span></code></a></p></td>
+<td><p>Enum where members are also (and must be) strings</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="functions">
+<h2>Functions<a class="headerlink" href="#functions" title="Link to this heading"></a></h2>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#molecular_simulation_tools.eon.get_calc_string" title="molecular_simulation_tools.eon.get_calc_string"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_calc_string</span></code></a>(→ str)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#molecular_simulation_tools.eon.get_status_from_line" title="molecular_simulation_tools.eon.get_status_from_line"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_status_from_line</span></code></a>(→ NEBStatus | None)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#molecular_simulation_tools.eon.read_con_info" title="molecular_simulation_tools.eon.read_con_info"><code class="xref py py-obj docutils literal notranslate"><span class="pre">read_con_info</span></code></a>(→ list[dict[str, Any]])</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#molecular_simulation_tools.eon.read_con_with_info" title="molecular_simulation_tools.eon.read_con_with_info"><code class="xref py py-obj docutils literal notranslate"><span class="pre">read_con_with_info</span></code></a>(→ tuple[list[ase.Atoms], ...)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#molecular_simulation_tools.eon.read_eon_quill_log" title="molecular_simulation_tools.eon.read_eon_quill_log"><code class="xref py py-obj docutils literal notranslate"><span class="pre">read_eon_quill_log</span></code></a>(→ NEBInfo)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#molecular_simulation_tools.eon.read_neb_data" title="molecular_simulation_tools.eon.read_neb_data"><code class="xref py py-obj docutils literal notranslate"><span class="pre">read_neb_data</span></code></a>(→ dict[str, numpy.ndarray])</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#molecular_simulation_tools.eon.run_eon_job" title="molecular_simulation_tools.eon.run_eon_job"><code class="xref py py-obj docutils literal notranslate"><span class="pre">run_eon_job</span></code></a>(→ subprocess.CompletedProcess)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#molecular_simulation_tools.eon.write_calc_string" title="molecular_simulation_tools.eon.write_calc_string"><code class="xref py py-obj docutils literal notranslate"><span class="pre">write_calc_string</span></code></a>(→ None)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#molecular_simulation_tools.eon.write_eon_job" title="molecular_simulation_tools.eon.write_eon_job"><code class="xref py py-obj docutils literal notranslate"><span class="pre">write_eon_job</span></code></a>(→ None)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#molecular_simulation_tools.eon.write_eon_structure" title="molecular_simulation_tools.eon.write_eon_structure"><code class="xref py py-obj docutils literal notranslate"><span class="pre">write_eon_structure</span></code></a>(→ None)</p></td>
+<td><p></p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="module-contents">
+<h2>Module Contents<a class="headerlink" href="#module-contents" title="Link to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="molecular_simulation_tools.eon.NEBInfo">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">molecular_simulation_tools.eon.</span></span><span class="sig-name descname"><span class="pre">NEBInfo</span></span><a class="reference internal" href="../../../_modules/molecular_simulation_tools/eon.html#NEBInfo"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#molecular_simulation_tools.eon.NEBInfo" title="Link to this definition"></a></dt>
+<dd><dl class="py method">
+<dt class="sig sig-object py" id="molecular_simulation_tools.eon.NEBInfo.converged">
+<span class="sig-name descname"><span class="pre">converged</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#bool" title="(in Python v3.14)"><span class="pre">bool</span></a></span></span><a class="reference internal" href="../../../_modules/molecular_simulation_tools/eon.html#NEBInfo.converged"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#molecular_simulation_tools.eon.NEBInfo.converged" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="molecular_simulation_tools.eon.NEBInfo.force_convergence">
+<span class="sig-name descname"><span class="pre">force_convergence</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.5)"><span class="pre">numpy.ndarray</span></a></span><a class="reference internal" href="../../../_modules/molecular_simulation_tools/eon.html#NEBInfo.force_convergence"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#molecular_simulation_tools.eon.NEBInfo.force_convergence" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="molecular_simulation_tools.eon.NEBInfo.num_evaluations">
+<span class="sig-name descname"><span class="pre">num_evaluations</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a></span><a class="reference internal" href="../../../_modules/molecular_simulation_tools/eon.html#NEBInfo.num_evaluations"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#molecular_simulation_tools.eon.NEBInfo.num_evaluations" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="molecular_simulation_tools.eon.NEBInfo.num_iterations">
+<span class="sig-name descname"><span class="pre">num_iterations</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a></span><a class="reference internal" href="../../../_modules/molecular_simulation_tools/eon.html#NEBInfo.num_iterations"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#molecular_simulation_tools.eon.NEBInfo.num_iterations" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="molecular_simulation_tools.eon.NEBInfo.status">
+<span class="sig-name descname"><span class="pre">status</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#molecular_simulation_tools.eon.NEBStatus" title="molecular_simulation_tools.eon.NEBStatus"><span class="pre">NEBStatus</span></a></span><a class="reference internal" href="../../../_modules/molecular_simulation_tools/eon.html#NEBInfo.status"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#molecular_simulation_tools.eon.NEBInfo.status" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="molecular_simulation_tools.eon.NEBStatus">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">molecular_simulation_tools.eon.</span></span><span class="sig-name descname"><span class="pre">NEBStatus</span></span><a class="reference internal" href="../../../_modules/molecular_simulation_tools/eon.html#NEBStatus"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#molecular_simulation_tools.eon.NEBStatus" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/enum.html#enum.StrEnum" title="(in Python v3.14)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">enum.StrEnum</span></code></a></p>
+<p>Enum where members are also (and must be) strings</p>
+<p>Initialize self.  See help(type(self)) for accurate signature.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="molecular_simulation_tools.eon.NEBStatus.CONVERGED">
+<span class="sig-name descname"><span class="pre">CONVERGED</span></span><a class="reference internal" href="../../../_modules/molecular_simulation_tools/eon.html#NEBStatus.CONVERGED"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#molecular_simulation_tools.eon.NEBStatus.CONVERGED" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="molecular_simulation_tools.eon.NEBStatus.RUNNING">
+<span class="sig-name descname"><span class="pre">RUNNING</span></span><a class="reference internal" href="../../../_modules/molecular_simulation_tools/eon.html#NEBStatus.RUNNING"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#molecular_simulation_tools.eon.NEBStatus.RUNNING" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="molecular_simulation_tools.eon.NEBStatus.TOO_MANY_ITERATIONS">
+<span class="sig-name descname"><span class="pre">TOO_MANY_ITERATIONS</span></span><a class="reference internal" href="../../../_modules/molecular_simulation_tools/eon.html#NEBStatus.TOO_MANY_ITERATIONS"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#molecular_simulation_tools.eon.NEBStatus.TOO_MANY_ITERATIONS" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="molecular_simulation_tools.eon.NEBStatus.UNKNOWN">
+<span class="sig-name descname"><span class="pre">UNKNOWN</span></span><a class="reference internal" href="../../../_modules/molecular_simulation_tools/eon.html#NEBStatus.UNKNOWN"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#molecular_simulation_tools.eon.NEBStatus.UNKNOWN" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="molecular_simulation_tools.eon.get_calc_string">
+<span class="sig-prename descclassname"><span class="pre">molecular_simulation_tools.eon.</span></span><span class="sig-name descname"><span class="pre">get_calc_string</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ase_calc</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Callable" title="(in Python v3.14)"><span class="pre">collections.abc.Callable</span></a><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">ase.calculators.calculator.Calculator</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span></span><a class="reference internal" href="../../../_modules/molecular_simulation_tools/eon.html#get_calc_string"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#molecular_simulation_tools.eon.get_calc_string" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="molecular_simulation_tools.eon.get_status_from_line">
+<span class="sig-prename descclassname"><span class="pre">molecular_simulation_tools.eon.</span></span><span class="sig-name descname"><span class="pre">get_status_from_line</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">line</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#molecular_simulation_tools.eon.NEBStatus" title="molecular_simulation_tools.eon.NEBStatus"><span class="pre">NEBStatus</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../../../_modules/molecular_simulation_tools/eon.html#get_status_from_line"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#molecular_simulation_tools.eon.get_status_from_line" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="molecular_simulation_tools.eon.read_con_info">
+<span class="sig-prename descclassname"><span class="pre">molecular_simulation_tools.eon.</span></span><span class="sig-name descname"><span class="pre">read_con_info</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/pathlib.html#pathlib.Path" title="(in Python v3.14)"><span class="pre">pathlib.Path</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#list" title="(in Python v3.14)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><a class="reference internal" href="../orca/index.html#molecular_simulation_tools.orca.MDrestart.dict" title="molecular_simulation_tools.orca.MDrestart.dict"><span class="pre">dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../../_modules/molecular_simulation_tools/eon.html#read_con_info"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#molecular_simulation_tools.eon.read_con_info" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="molecular_simulation_tools.eon.read_con_with_info">
+<span class="sig-prename descclassname"><span class="pre">molecular_simulation_tools.eon.</span></span><span class="sig-name descname"><span class="pre">read_con_with_info</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/pathlib.html#pathlib.Path" title="(in Python v3.14)"><span class="pre">pathlib.Path</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#tuple" title="(in Python v3.14)"><span class="pre">tuple</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#list" title="(in Python v3.14)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><span class="pre">ase.Atoms</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#list" title="(in Python v3.14)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><a class="reference internal" href="../orca/index.html#molecular_simulation_tools.orca.MDrestart.dict" title="molecular_simulation_tools.orca.MDrestart.dict"><span class="pre">dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../../_modules/molecular_simulation_tools/eon.html#read_con_with_info"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#molecular_simulation_tools.eon.read_con_with_info" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="molecular_simulation_tools.eon.read_eon_quill_log">
+<span class="sig-prename descclassname"><span class="pre">molecular_simulation_tools.eon.</span></span><span class="sig-name descname"><span class="pre">read_eon_quill_log</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/pathlib.html#pathlib.Path" title="(in Python v3.14)"><span class="pre">pathlib.Path</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#molecular_simulation_tools.eon.NEBInfo" title="molecular_simulation_tools.eon.NEBInfo"><span class="pre">NEBInfo</span></a></span></span><a class="reference internal" href="../../../_modules/molecular_simulation_tools/eon.html#read_eon_quill_log"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#molecular_simulation_tools.eon.read_eon_quill_log" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="molecular_simulation_tools.eon.read_neb_data">
+<span class="sig-prename descclassname"><span class="pre">molecular_simulation_tools.eon.</span></span><span class="sig-name descname"><span class="pre">read_neb_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filepath</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/pathlib.html#pathlib.Path" title="(in Python v3.14)"><span class="pre">pathlib.Path</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="../orca/index.html#molecular_simulation_tools.orca.MDrestart.dict" title="molecular_simulation_tools.orca.MDrestart.dict"><span class="pre">dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.5)"><span class="pre">numpy.ndarray</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../../_modules/molecular_simulation_tools/eon.html#read_neb_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#molecular_simulation_tools.eon.read_neb_data" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="molecular_simulation_tools.eon.run_eon_job">
+<span class="sig-prename descclassname"><span class="pre">molecular_simulation_tools.eon.</span></span><span class="sig-name descname"><span class="pre">run_eon_job</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/pathlib.html#pathlib.Path" title="(in Python v3.14)"><span class="pre">pathlib.Path</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/subprocess.html#subprocess.CompletedProcess" title="(in Python v3.14)"><span class="pre">subprocess.CompletedProcess</span></a></span></span><a class="reference internal" href="../../../_modules/molecular_simulation_tools/eon.html#run_eon_job"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#molecular_simulation_tools.eon.run_eon_job" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="molecular_simulation_tools.eon.write_calc_string">
+<span class="sig-prename descclassname"><span class="pre">molecular_simulation_tools.eon.</span></span><span class="sig-name descname"><span class="pre">write_calc_string</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">string</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/pathlib.html#pathlib.Path" title="(in Python v3.14)"><span class="pre">pathlib.Path</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../../../_modules/molecular_simulation_tools/eon.html#write_calc_string"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#molecular_simulation_tools.eon.write_calc_string" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="molecular_simulation_tools.eon.write_eon_job">
+<span class="sig-prename descclassname"><span class="pre">molecular_simulation_tools.eon.</span></span><span class="sig-name descname"><span class="pre">write_eon_job</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dct</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../orca/index.html#molecular_simulation_tools.orca.MDrestart.dict" title="molecular_simulation_tools.orca.MDrestart.dict"><span class="pre">dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/pathlib.html#pathlib.Path" title="(in Python v3.14)"><span class="pre">pathlib.Path</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../../../_modules/molecular_simulation_tools/eon.html#write_eon_job"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#molecular_simulation_tools.eon.write_eon_job" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="molecular_simulation_tools.eon.write_eon_structure">
+<span class="sig-prename descclassname"><span class="pre">molecular_simulation_tools.eon.</span></span><span class="sig-name descname"><span class="pre">write_eon_structure</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">atoms</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ase.Atoms</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#list" title="(in Python v3.14)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><span class="pre">ase.Atoms</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/pathlib.html#pathlib.Path" title="(in Python v3.14)"><span class="pre">pathlib.Path</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../../../_modules/molecular_simulation_tools/eon.html#write_eon_structure"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#molecular_simulation_tools.eon.write_eon_structure" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="molecular_simulation_tools.eon.EON_ASE_CALC_INTERFACE">
+<span class="sig-prename descclassname"><span class="pre">molecular_simulation_tools.eon.</span></span><span class="sig-name descname"><span class="pre">EON_ASE_CALC_INTERFACE</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">Multiline-String</span></span><a class="reference internal" href="../../../_modules/molecular_simulation_tools/eon.html#EON_ASE_CALC_INTERFACE"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#molecular_simulation_tools.eon.EON_ASE_CALC_INTERFACE" title="Link to this definition"></a></dt>
+<dd><details><summary>Show Value</summary><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="sd">&quot;&quot;&quot;def _calculate(R, atomicNrs, box, calc):  # ruff: ignore[missing-type-function-argument, invalid-argument-name]</span>
+<span class="sd">    system = Atoms(symbols=atomicNrs, positions=R, pbc=True, cell=box)</span>
+<span class="sd">    system.calc = calc</span>
+<span class="sd">    forces = system.get_forces()</span>
+<span class="sd">    energy = system.get_potential_energy()</span>
+<span class="sd">    return energy, forces</span>
+<span class="sd">&quot;&quot;&quot;</span>
+</pre></div>
+</div>
+</details></dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="molecular_simulation_tools.eon.EON_ASE_DUMMY_CALC_INTERFACE">
+<span class="sig-prename descclassname"><span class="pre">molecular_simulation_tools.eon.</span></span><span class="sig-name descname"><span class="pre">EON_ASE_DUMMY_CALC_INTERFACE</span></span><a class="reference internal" href="../../../_modules/molecular_simulation_tools/eon.html#EON_ASE_DUMMY_CALC_INTERFACE"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#molecular_simulation_tools.eon.EON_ASE_DUMMY_CALC_INTERFACE" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="molecular_simulation_tools.eon.EON_JOB_REQUIRED_KEYS">
+<span class="sig-prename descclassname"><span class="pre">molecular_simulation_tools.eon.</span></span><span class="sig-name descname"><span class="pre">EON_JOB_REQUIRED_KEYS</span></span><a class="reference internal" href="../../../_modules/molecular_simulation_tools/eon.html#EON_JOB_REQUIRED_KEYS"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#molecular_simulation_tools.eon.EON_JOB_REQUIRED_KEYS" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="molecular_simulation_tools.eon.EON_LOG_FILEPATH">
+<span class="sig-prename descclassname"><span class="pre">molecular_simulation_tools.eon.</span></span><span class="sig-name descname"><span class="pre">EON_LOG_FILEPATH</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'client_quill.log'</span></span><a class="reference internal" href="../../../_modules/molecular_simulation_tools/eon.html#EON_LOG_FILEPATH"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#molecular_simulation_tools.eon.EON_LOG_FILEPATH" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="molecular_simulation_tools.eon.RE_NEB_CONVERGED">
+<span class="sig-prename descclassname"><span class="pre">molecular_simulation_tools.eon.</span></span><span class="sig-name descname"><span class="pre">RE_NEB_CONVERGED</span></span><a class="reference internal" href="../../../_modules/molecular_simulation_tools/eon.html#RE_NEB_CONVERGED"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#molecular_simulation_tools.eon.RE_NEB_CONVERGED" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="molecular_simulation_tools.eon.RE_NEB_FAILED">
+<span class="sig-prename descclassname"><span class="pre">molecular_simulation_tools.eon.</span></span><span class="sig-name descname"><span class="pre">RE_NEB_FAILED</span></span><a class="reference internal" href="../../../_modules/molecular_simulation_tools/eon.html#RE_NEB_FAILED"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#molecular_simulation_tools.eon.RE_NEB_FAILED" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="molecular_simulation_tools.eon.RE_POTENTIAL_CALLS">
+<span class="sig-prename descclassname"><span class="pre">molecular_simulation_tools.eon.</span></span><span class="sig-name descname"><span class="pre">RE_POTENTIAL_CALLS</span></span><a class="reference internal" href="../../../_modules/molecular_simulation_tools/eon.html#RE_POTENTIAL_CALLS"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#molecular_simulation_tools.eon.RE_POTENTIAL_CALLS" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="../connectivity/index.html" class="btn btn-neutral float-left" title="molecular_simulation_tools.connectivity" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../geometry/index.html" class="btn btn-neutral float-right" title="molecular_simulation_tools.geometry" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2026, Tobias Dijkhuis.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

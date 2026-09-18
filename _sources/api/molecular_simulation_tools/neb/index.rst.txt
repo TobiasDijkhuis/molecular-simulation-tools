@@ -72,7 +72,7 @@ Module Contents
        attribute of the images.
 
 
-.. py:function:: run_energy_weighted_neb(images: list[ase.Atoms], calc: ase.calculators.calculator.Calculator, fmax: float = 0.05, optimizer: type[ase.optimize.optimize.Optimizer] = LBFGS, steps: int = DEFAULT_MAX_STEPS, interpolate: Literal['linear', 'idpp'] | None = None, neb_kwargs: dict[str, Any] | None = None, optimizer_kwargs: dict[str, Any] | None = None, climb: bool = False, idpp_subset_indices: list[int] | numpy.ndarray | None = None) -> ase.mep.neb.NEB
+.. py:function:: run_energy_weighted_neb(images: list[ase.Atoms], calc: ase.calculators.calculator.Calculator, fmax: float = 0.05, optimizer: type[ase.optimize.optimize.Optimizer] = LBFGS, steps: int = DEFAULT_MAX_STEPS, interpolate: Literal['linear', 'idpp'] | None = None, neb_kwargs: dict[str, Any] | None = None, optimizer_kwargs: dict[str, Any] | None = None, climb: bool = False, idpp_subset_indices: list[int] | numpy.ndarray | None = None, initial_path_verifier: collections.abc.Callable[[list[ase.Atoms]], bool] | None = None) -> ase.mep.neb.NEB
 
    Do an energy-weighted climbing image nudged elastic band (EW-CI-NEB) calculation.
 
@@ -126,7 +126,7 @@ Module Contents
    :param calc: Calculator that can calculate the potential energy and forces of the images.
    :type calc: Calculator
    :param max_displacement: Maximum displacement of the NEB along the minimum mode in Angstrom.
-                            Default = 0.02.
+                            Default = 0.01.
    :type max_displacement: float
    :param fmax_ts: Maximum force component criterion on the transition state in eV/Angstrom.
                    Default = 0.05.

@@ -237,7 +237,7 @@
 <a class="viewcode-back" href="../../api/molecular_simulation_tools/geometry/index.html#molecular_simulation_tools.geometry.cut_out_trajectory_within_radius">[docs]</a>
 <span class="k">def</span> <span class="nf">cut_out_trajectory_within_radius</span><span class="p">(</span>
     <span class="n">frames</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">Atoms</span><span class="p">],</span>
-    <span class="n">centers</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]</span> <span class="o">|</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+    <span class="n">centers</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]</span> <span class="o">|</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span> <span class="o">|</span> <span class="nb">int</span><span class="p">,</span>
     <span class="n">radius</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
     <span class="n">keep_molecules_intact</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
     <span class="n">allowed_molecules</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="nb">set</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -249,9 +249,9 @@
 <span class="sd">    ----------</span>
 <span class="sd">    frames : list[Atoms]</span>
 <span class="sd">        Trajectory to cut out.</span>
-<span class="sd">    centers : list[np.ndarray] | np.ndarray</span>
+<span class="sd">    centers : list[np.ndarray] | np.ndarray | int</span>
 <span class="sd">        Center of sphere to be cut. If a list of arrays, the center changes between</span>
-<span class="sd">        frames.</span>
+<span class="sd">        frames. If an integer, the index of the atom that is the center of the sphere.</span>
 <span class="sd">    radius : float</span>
 <span class="sd">        Radius of sphere to be cut in Angstrom.</span>
 <span class="sd">    keep_molecules_intact : bool</span>
@@ -288,6 +288,8 @@
             <span class="k">if</span> <span class="n">centers</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">frames</span><span class="p">):</span>
                 <span class="k">raise</span> <span class="ne">ValueError</span>
             <span class="n">centers</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">centers</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">centers</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
+        <span class="n">centers</span> <span class="o">=</span> <span class="p">[</span><span class="n">frame</span><span class="o">.</span><span class="n">positions</span><span class="p">[</span><span class="n">centers</span><span class="p">,</span> <span class="p">:]</span> <span class="k">for</span> <span class="n">frame</span> <span class="ow">in</span> <span class="n">frames</span><span class="p">]</span>
 
     <span class="n">all_indices</span><span class="p">:</span> <span class="nb">set</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
     <span class="k">for</span> <span class="n">frame</span><span class="p">,</span> <span class="n">center</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">frames</span><span class="p">,</span> <span class="n">centers</span><span class="p">,</span> <span class="n">strict</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>

@@ -16,6 +16,7 @@ Functions
 
    molecular_simulation_tools.utils.add_vacuum_to_unwrapped_water_bulk
    molecular_simulation_tools.utils.batched
+   molecular_simulation_tools.utils.capitalize_each_word
    molecular_simulation_tools.utils.check_same_number_of_atoms
    molecular_simulation_tools.utils.combine_overlapping_sets
    molecular_simulation_tools.utils.convert_cartesian_to_spherical
@@ -26,6 +27,7 @@ Functions
    molecular_simulation_tools.utils.create_water_surface_from_bulk
    molecular_simulation_tools.utils.find_all_numbers
    molecular_simulation_tools.utils.get_autocorrelation_function
+   molecular_simulation_tools.utils.get_directory
    molecular_simulation_tools.utils.get_minimum_site_idx_for_binding_sites
    molecular_simulation_tools.utils.get_moving_average
    molecular_simulation_tools.utils.get_nyquist_frequency
@@ -38,6 +40,7 @@ Functions
    molecular_simulation_tools.utils.sample_new_point
    molecular_simulation_tools.utils.sample_random_new_atom_location
    molecular_simulation_tools.utils.sample_random_rotation
+   molecular_simulation_tools.utils.set_current_directory
    molecular_simulation_tools.utils.turn_grid_into_position_vectors
    molecular_simulation_tools.utils.unwrap_bulk_water
    molecular_simulation_tools.utils.unwrap_trajectory_from_displacement
@@ -60,7 +63,7 @@ Module Contents
    :rtype: Atoms
 
 
-.. py:function:: batched(iterable: collections.abc.Sequence[_T], chunk_size: int) -> collections.abc.Iterator[tuple[_T]]
+.. py:function:: batched(iterable: collections.abc.Sequence[_T], chunk_size: int) -> collections.abc.Iterator[tuple[_T, ...]]
 
    Batch an iterable.
 
@@ -69,7 +72,7 @@ Module Contents
    :param chunk_size: Size of each batch
    :type chunk_size: int
 
-   :Yields: **chunk** (*tuple[_T]*) -- Chunks with at most `chunk_size` elements. The last chunk might have
+   :Yields: **chunk** (*tuple[_T, ...]*) -- Chunks with at most `chunk_size` elements. The last chunk might have
             fewer elements.
 
    :raises ValueError: If `chunk_size` is 0 or less.
@@ -78,6 +81,8 @@ Module Contents
 
    If using python 3.12 or higher, :func:`itertools.batched` is used instead.
 
+
+.. py:function:: capitalize_each_word(string: str) -> str
 
 .. py:function:: check_same_number_of_atoms(frames: list[ase.Atoms]) -> None
 
@@ -217,6 +222,8 @@ Module Contents
    :rtype: numpy.ndarray
 
 
+.. py:function:: get_directory(path: str | pathlib.Path) -> pathlib.Path
+
 .. py:function:: get_minimum_site_idx_for_binding_sites(binding_site_sets: list[set[int]], energies: list[float] | numpy.ndarray) -> list[int]
 
    Get the indices with the minimum energy out of sets of binding sites.
@@ -259,7 +266,7 @@ Module Contents
    :rtype: float
 
 
-.. py:function:: get_permutations_exchange_identical_atoms(atoms: ase.Atoms, indices: list[int] | None = None) -> list[list[int]]
+.. py:function:: get_permutations_exchange_identical_atoms(atoms: ase.Atoms, indices: collections.abc.Sequence[int] | None = None) -> tuple[tuple[int, ...], ...]
 
    Get all possible permutations of `indices` that exchange identical atoms.
 
@@ -267,10 +274,10 @@ Module Contents
    :type atoms: Atoms
    :param indices: Indices of atoms to take into account in the permuting.
                    If None, do all atoms. Default = None.
-   :type indices: list[int] | None
+   :type indices: Sequence[int] | None
 
-   :returns: List of possible correct permutations that exchange identical atoms.
-   :rtype: list[list[int]]
+   :returns: Tuple of possible correct permutations that exchange identical atoms.
+   :rtype: tuple[tuple[int, ...], ...]
 
 
 .. py:function:: get_random_unit_vector(n: int = 1) -> numpy.ndarray
@@ -406,7 +413,9 @@ Module Contents
              * **rotation_angle** (*float*) -- Rotation angle in radians.
 
 
-.. py:function:: turn_grid_into_position_vectors(grid_matrices: tuple[numpy.ndarray, Ellipsis]) -> numpy.ndarray
+.. py:function:: set_current_directory(directory: str | pathlib.Path) -> collections.abc.Generator[None]
+
+.. py:function:: turn_grid_into_position_vectors(grid_matrices: tuple[numpy.ndarray, ...]) -> numpy.ndarray
 
    Turn a grid created by :func:`numpy.meshgrid` into position vectors.
 

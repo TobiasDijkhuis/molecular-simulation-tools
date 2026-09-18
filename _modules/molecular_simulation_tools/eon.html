@@ -1,0 +1,456 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>molecular_simulation_tools.eon &mdash; molecular-simulation-tools  documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
+      <link rel="stylesheet" type="text/css" href="../../_static/graphviz.css?v=4ae1632d" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
+      <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
+      <script src="../../_static/copybutton.js?v=f281be69"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            molecular-simulation-tools
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../api/index.html">API Reference</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">molecular-simulation-tools</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">molecular_simulation_tools.eon</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for molecular_simulation_tools.eon</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">annotations</span>
+
+<span class="kn">import</span> <span class="nn">configparser</span>
+<span class="kn">import</span> <span class="nn">csv</span>
+<span class="kn">import</span> <span class="nn">inspect</span>
+<span class="kn">import</span> <span class="nn">re</span>
+<span class="kn">import</span> <span class="nn">subprocess</span>
+<span class="kn">import</span> <span class="nn">warnings</span>
+<span class="kn">from</span> <span class="nn">collections.abc</span> <span class="kn">import</span> <span class="n">Callable</span>
+<span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span>
+<span class="kn">from</span> <span class="nn">enum</span> <span class="kn">import</span> <span class="n">StrEnum</span><span class="p">,</span> <span class="n">auto</span><span class="p">,</span> <span class="n">unique</span>
+<span class="kn">from</span> <span class="nn">json</span> <span class="kn">import</span> <span class="n">loads</span>
+<span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
+<span class="kn">from</span> <span class="nn">textwrap</span> <span class="kn">import</span> <span class="n">dedent</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">get_type_hints</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">ase</span> <span class="kn">import</span> <span class="n">Atoms</span>
+<span class="kn">from</span> <span class="nn">ase.calculators.calculator</span> <span class="kn">import</span> <span class="n">Calculator</span>
+<span class="kn">from</span> <span class="nn">ase.calculators.singlepoint</span> <span class="kn">import</span> <span class="n">SinglePointCalculator</span>
+<span class="kn">from</span> <span class="nn">ase.io.eon</span> <span class="kn">import</span> <span class="n">read_eon</span><span class="p">,</span> <span class="n">write_eon</span>
+
+<span class="kn">from</span> <span class="nn">molecular_simulation_tools.utils</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">capitalize_each_word</span><span class="p">,</span>
+    <span class="n">get_directory</span><span class="p">,</span>
+    <span class="n">set_current_directory</span><span class="p">,</span>
+<span class="p">)</span>
+
+<div class="viewcode-block" id="EON_JOB_REQUIRED_KEYS">
+<a class="viewcode-back" href="../../api/molecular_simulation_tools/eon/index.html#molecular_simulation_tools.eon.EON_JOB_REQUIRED_KEYS">[docs]</a>
+<span class="n">EON_JOB_REQUIRED_KEYS</span> <span class="o">=</span> <span class="nb">frozenset</span><span class="p">({</span><span class="s2">&quot;Main&quot;</span><span class="p">,</span> <span class="s2">&quot;Potential&quot;</span><span class="p">})</span></div>
+
+
+<div class="viewcode-block" id="EON_ASE_CALC_INTERFACE">
+<a class="viewcode-back" href="../../api/molecular_simulation_tools/eon/index.html#molecular_simulation_tools.eon.EON_ASE_CALC_INTERFACE">[docs]</a>
+<span class="n">EON_ASE_CALC_INTERFACE</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;def _calculate(R, atomicNrs, box, calc):  # ruff: ignore[missing-type-function-argument, invalid-argument-name]</span>
+<span class="s2">    system = Atoms(symbols=atomicNrs, positions=R, pbc=True, cell=box)</span>
+<span class="s2">    system.calc = calc</span>
+<span class="s2">    forces = system.get_forces()</span>
+<span class="s2">    energy = system.get_potential_energy()</span>
+<span class="s2">    return energy, forces</span>
+<span class="s2">&quot;&quot;&quot;</span></div>
+
+
+<div class="viewcode-block" id="EON_ASE_DUMMY_CALC_INTERFACE">
+<a class="viewcode-back" href="../../api/molecular_simulation_tools/eon/index.html#molecular_simulation_tools.eon.EON_ASE_DUMMY_CALC_INTERFACE">[docs]</a>
+<span class="n">EON_ASE_DUMMY_CALC_INTERFACE</span> <span class="o">=</span> <span class="n">dedent</span><span class="p">(</span><span class="s2">&quot;&quot;&quot;    import numpy as np</span>
+<span class="s2">    from ase import Atoms</span>
+<span class="s2">    from ase.calculators.calculator import Calculator, all_changes</span>
+<span class="s2">    </span>
+<span class="s2">    </span>
+<span class="s2">    class DummyCalculator(Calculator):</span>
+<span class="s2">        implemented_properties = [</span>
+<span class="s2">            &quot;energy&quot;,</span>
+<span class="s2">            &quot;forces&quot;,</span>
+<span class="s2">        ]</span>
+<span class="s2">    </span>
+<span class="s2">        def __init__(self, **kwargs):</span>
+<span class="s2">            Calculator.__init__(self, **kwargs)</span>
+<span class="s2">    </span>
+<span class="s2">        def calculate(  # ty: ignore[invalid-method-override]</span>
+<span class="s2">            self,</span>
+<span class="s2">            atoms: Atoms,</span>
+<span class="s2">            properties: list[str] = [&quot;energy&quot;],</span>
+<span class="s2">            system_changes: list[str] = all_changes,</span>
+<span class="s2">        ) -&gt; None:</span>
+<span class="s2">            Calculator.calculate(self, atoms, properties, system_changes)</span>
+<span class="s2">            self.results[&quot;energy&quot;] = 0</span>
+<span class="s2">            self.results[&quot;forces&quot;] = np.zeros_like(atoms.positions)</span>
+<span class="s2">    </span>
+<span class="s2">    </span>
+<span class="s2">    def ase_calc() -&gt; DummyCalculator:</span>
+<span class="s2">        return DummyCalculator()&quot;&quot;&quot;</span><span class="p">)</span></div>
+
+
+
+<span class="k">def</span> <span class="nf">_verify_calc_function</span><span class="p">(</span><span class="n">ase_calc</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[],</span> <span class="n">Calculator</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">inspect</span><span class="o">.</span><span class="n">isfunction</span><span class="p">(</span><span class="n">ase_calc</span><span class="p">):</span>
+        <span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;The ase_calc function is not a function.&quot;</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+
+    <span class="n">sig</span> <span class="o">=</span> <span class="n">inspect</span><span class="o">.</span><span class="n">signature</span><span class="p">(</span><span class="n">ase_calc</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">sig</span><span class="o">.</span><span class="n">parameters</span><span class="p">:</span>
+        <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;The ase_calc function should not take any parameters, but found </span><span class="si">{</span><span class="n">sig</span><span class="o">.</span><span class="n">parameters</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">ase_calc</span><span class="o">.</span><span class="vm">__name__</span> <span class="o">!=</span> <span class="s2">&quot;ase_calc&quot;</span><span class="p">:</span>
+        <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;ase_calc function should be called &#39;ase_calc&#39;, but was called &#39;</span><span class="si">{</span><span class="n">ase_calc</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">&#39;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NameError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+
+    <span class="n">hints</span> <span class="o">=</span> <span class="n">get_type_hints</span><span class="p">(</span><span class="n">ase_calc</span><span class="p">)</span>
+    <span class="n">return_annotation</span> <span class="o">=</span> <span class="n">hints</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;return&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">return_annotation</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Could not infer the return type of </span><span class="si">{</span><span class="n">ase_calc</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">. Add return type annotation&quot;</span>
+        <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="ne">SyntaxWarning</span><span class="p">,</span> <span class="n">stacklevel</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="k">return</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">issubclass</span><span class="p">(</span><span class="n">return_annotation</span><span class="p">,</span> <span class="n">Calculator</span><span class="p">):</span>
+        <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Returned class by </span><span class="si">{</span><span class="n">ase_calc</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2"> is not a subclass of ASE Calculator.&quot;</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="get_calc_string">
+<a class="viewcode-back" href="../../api/molecular_simulation_tools/eon/index.html#molecular_simulation_tools.eon.get_calc_string">[docs]</a>
+<span class="k">def</span> <span class="nf">get_calc_string</span><span class="p">(</span><span class="n">ase_calc</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[],</span> <span class="n">Calculator</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="n">_verify_calc_function</span><span class="p">(</span><span class="n">ase_calc</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">inspect</span><span class="o">.</span><span class="n">getsource</span><span class="p">(</span><span class="n">ase_calc</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="write_calc_string">
+<a class="viewcode-back" href="../../api/molecular_simulation_tools/eon/index.html#molecular_simulation_tools.eon.write_calc_string">[docs]</a>
+<span class="k">def</span> <span class="nf">write_calc_string</span><span class="p">(</span><span class="n">string</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">Path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">if</span> <span class="s2">&quot;from ase import Atoms&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">string</span><span class="p">:</span>
+        <span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;Atoms was not imported in setup. Add &#39;from ase import Atoms&#39;.&quot;</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="s2">&quot;def ase_calc&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">string</span><span class="p">:</span>
+        <span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;&#39;def ase_calc&#39; was not found in string, so EON would not be able to initialize the calculator.&quot;</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+    <span class="n">Path</span><span class="p">(</span><span class="n">path</span><span class="p">)</span><span class="o">.</span><span class="n">write_text</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n\n\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">((</span><span class="n">string</span><span class="o">.</span><span class="n">strip</span><span class="p">(),</span> <span class="n">EON_ASE_CALC_INTERFACE</span><span class="p">)))</span></div>
+
+
+
+<div class="viewcode-block" id="write_eon_structure">
+<a class="viewcode-back" href="../../api/molecular_simulation_tools/eon/index.html#molecular_simulation_tools.eon.write_eon_structure">[docs]</a>
+<span class="k">def</span> <span class="nf">write_eon_structure</span><span class="p">(</span><span class="n">atoms</span><span class="p">:</span> <span class="n">Atoms</span> <span class="o">|</span> <span class="nb">list</span><span class="p">[</span><span class="n">Atoms</span><span class="p">],</span> <span class="n">path</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">Path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">atoms</span><span class="p">,</span> <span class="n">Atoms</span><span class="p">):</span>
+        <span class="n">atoms</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">Atoms</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">atoms</span><span class="p">]</span>
+    <span class="n">path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">path</span><span class="o">.</span><span class="n">is_file</span><span class="p">():</span>
+        <span class="n">path</span><span class="o">.</span><span class="n">unlink</span><span class="p">()</span>
+
+    <span class="k">with</span> <span class="n">path</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
+        <span class="n">write_eon</span><span class="p">(</span><span class="n">file</span><span class="p">,</span> <span class="n">atoms</span><span class="p">)</span></div>
+
+
+
+<span class="k">def</span> <span class="nf">_check_and_convert_eon_dict</span><span class="p">(</span><span class="n">dct</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]])</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+    <span class="n">checked_dct</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">dct</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="k">for</span> <span class="n">subkey</span><span class="p">,</span> <span class="n">subvalue</span> <span class="ow">in</span> <span class="n">value</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">subvalue</span><span class="p">,</span> <span class="nb">bool</span><span class="p">):</span>
+                <span class="n">value</span><span class="p">[</span><span class="n">subkey</span><span class="p">]</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">subvalue</span><span class="p">)</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+        <span class="n">checked_dct</span><span class="p">[</span><span class="n">capitalize_each_word</span><span class="p">(</span><span class="n">key</span><span class="p">)]</span> <span class="o">=</span> <span class="n">value</span>
+
+    <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">EON_JOB_REQUIRED_KEYS</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">checked_dct</span><span class="p">:</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Missing key &#39;</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2">&#39; in checked_dct. Available keys: </span><span class="si">{</span><span class="n">checked_dct</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">checked_dct</span>
+
+
+<div class="viewcode-block" id="write_eon_job">
+<a class="viewcode-back" href="../../api/molecular_simulation_tools/eon/index.html#molecular_simulation_tools.eon.write_eon_job">[docs]</a>
+<span class="k">def</span> <span class="nf">write_eon_job</span><span class="p">(</span><span class="n">dct</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span> <span class="n">path</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">Path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="n">dct</span> <span class="o">=</span> <span class="n">_check_and_convert_eon_dict</span><span class="p">(</span><span class="n">dct</span><span class="p">)</span>
+    <span class="n">parser</span> <span class="o">=</span> <span class="n">configparser</span><span class="o">.</span><span class="n">ConfigParser</span><span class="p">()</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">dct</span><span class="p">)</span>
+    <span class="k">with</span> <span class="n">Path</span><span class="p">(</span><span class="n">path</span><span class="p">)</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
+        <span class="n">parser</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">file</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="read_con_info">
+<a class="viewcode-back" href="../../api/molecular_simulation_tools/eon/index.html#molecular_simulation_tools.eon.read_con_info">[docs]</a>
+<span class="k">def</span> <span class="nf">read_con_info</span><span class="p">(</span><span class="n">path</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">Path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]:</span>
+    <span class="n">info_dicts</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">with</span> <span class="n">Path</span><span class="p">(</span><span class="n">path</span><span class="p">)</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">file</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">line</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;{&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="n">line</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">&quot;}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">):</span>
+                <span class="n">info_dicts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">loads</span><span class="p">(</span><span class="n">line</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">info_dicts</span></div>
+
+
+
+<div class="viewcode-block" id="read_con_with_info">
+<a class="viewcode-back" href="../../api/molecular_simulation_tools/eon/index.html#molecular_simulation_tools.eon.read_con_with_info">[docs]</a>
+<span class="k">def</span> <span class="nf">read_con_with_info</span><span class="p">(</span><span class="n">path</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">Path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="n">Atoms</span><span class="p">],</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]]:</span>
+    <span class="n">atoms</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">Atoms</span><span class="p">]</span> <span class="o">=</span> <span class="n">read_eon</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+    <span class="n">info_dicts</span> <span class="o">=</span> <span class="n">read_con_info</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">atom</span><span class="p">,</span> <span class="n">info_dict</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">atoms</span><span class="p">,</span> <span class="n">info_dicts</span><span class="p">,</span> <span class="n">strict</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="k">if</span> <span class="s2">&quot;energy&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">info_dict</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span>
+        <span class="n">atom</span><span class="o">.</span><span class="n">calc</span> <span class="o">=</span> <span class="n">SinglePointCalculator</span><span class="p">(</span><span class="n">atom</span><span class="p">,</span> <span class="n">energy</span><span class="o">=</span><span class="n">info_dict</span><span class="p">[</span><span class="s2">&quot;energy&quot;</span><span class="p">])</span>
+    <span class="k">return</span> <span class="n">atoms</span><span class="p">,</span> <span class="n">info_dicts</span></div>
+
+
+
+<div class="viewcode-block" id="read_neb_data">
+<a class="viewcode-back" href="../../api/molecular_simulation_tools/eon/index.html#molecular_simulation_tools.eon.read_neb_data">[docs]</a>
+<span class="k">def</span> <span class="nf">read_neb_data</span><span class="p">(</span><span class="n">filepath</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">Path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]:</span>
+    <span class="k">with</span> <span class="n">Path</span><span class="p">(</span><span class="n">filepath</span><span class="p">)</span><span class="o">.</span><span class="n">open</span><span class="p">()</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
+        <span class="n">reader</span> <span class="o">=</span> <span class="n">csv</span><span class="o">.</span><span class="n">reader</span><span class="p">(</span><span class="n">file</span><span class="p">,</span> <span class="n">delimiter</span><span class="o">=</span><span class="s2">&quot; &quot;</span><span class="p">,</span> <span class="n">skipinitialspace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+        <span class="n">dct</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">list</span><span class="p">[</span><span class="nb">float</span><span class="p">]]</span> <span class="o">=</span> <span class="p">{</span><span class="n">key</span><span class="p">:</span> <span class="p">[]</span> <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="nb">next</span><span class="p">(</span><span class="n">reader</span><span class="p">)}</span>
+        <span class="n">keys</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">dct</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+        <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">reader</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">col</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">row</span><span class="p">):</span>
+                <span class="k">if</span> <span class="n">col</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="n">dct</span><span class="p">[</span><span class="n">keys</span><span class="p">[</span><span class="n">col</span><span class="p">]]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">value</span><span class="p">))</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">dct</span><span class="p">[</span><span class="n">keys</span><span class="p">[</span><span class="n">col</span><span class="p">]]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">value</span><span class="p">))</span>
+    <span class="k">return</span> <span class="p">{</span><span class="n">key</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">value</span><span class="p">)</span> <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">dct</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span></div>
+
+
+
+<div class="viewcode-block" id="RE_NEB_CONVERGED">
+<a class="viewcode-back" href="../../api/molecular_simulation_tools/eon/index.html#molecular_simulation_tools.eon.RE_NEB_CONVERGED">[docs]</a>
+<span class="n">RE_NEB_CONVERGED</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;^NEB converged&quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="RE_NEB_FAILED">
+<a class="viewcode-back" href="../../api/molecular_simulation_tools/eon/index.html#molecular_simulation_tools.eon.RE_NEB_FAILED">[docs]</a>
+<span class="n">RE_NEB_FAILED</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;^Nudged elastic band, too many iterations.&quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="RE_POTENTIAL_CALLS">
+<a class="viewcode-back" href="../../api/molecular_simulation_tools/eon/index.html#molecular_simulation_tools.eon.RE_POTENTIAL_CALLS">[docs]</a>
+<span class="n">RE_POTENTIAL_CALLS</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;called potential ([0-9]+) times&quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="EON_LOG_FILEPATH">
+<a class="viewcode-back" href="../../api/molecular_simulation_tools/eon/index.html#molecular_simulation_tools.eon.EON_LOG_FILEPATH">[docs]</a>
+<span class="n">EON_LOG_FILEPATH</span> <span class="o">=</span> <span class="s2">&quot;client_quill.log&quot;</span></div>
+
+
+
+<span class="nd">@unique</span>
+<div class="viewcode-block" id="NEBStatus">
+<a class="viewcode-back" href="../../api/molecular_simulation_tools/eon/index.html#molecular_simulation_tools.eon.NEBStatus">[docs]</a>
+<span class="k">class</span> <span class="nc">NEBStatus</span><span class="p">(</span><span class="n">StrEnum</span><span class="p">):</span>
+<div class="viewcode-block" id="NEBStatus.CONVERGED">
+<a class="viewcode-back" href="../../api/molecular_simulation_tools/eon/index.html#molecular_simulation_tools.eon.NEBStatus.CONVERGED">[docs]</a>
+    <span class="n">CONVERGED</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="NEBStatus.TOO_MANY_ITERATIONS">
+<a class="viewcode-back" href="../../api/molecular_simulation_tools/eon/index.html#molecular_simulation_tools.eon.NEBStatus.TOO_MANY_ITERATIONS">[docs]</a>
+    <span class="n">TOO_MANY_ITERATIONS</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="NEBStatus.RUNNING">
+<a class="viewcode-back" href="../../api/molecular_simulation_tools/eon/index.html#molecular_simulation_tools.eon.NEBStatus.RUNNING">[docs]</a>
+    <span class="n">RUNNING</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="NEBStatus.UNKNOWN">
+<a class="viewcode-back" href="../../api/molecular_simulation_tools/eon/index.html#molecular_simulation_tools.eon.NEBStatus.UNKNOWN">[docs]</a>
+    <span class="n">UNKNOWN</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span></div>
+</div>
+
+
+
+<span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">kw_only</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<div class="viewcode-block" id="NEBInfo">
+<a class="viewcode-back" href="../../api/molecular_simulation_tools/eon/index.html#molecular_simulation_tools.eon.NEBInfo">[docs]</a>
+<span class="k">class</span> <span class="nc">NEBInfo</span><span class="p">:</span>
+<div class="viewcode-block" id="NEBInfo.status">
+<a class="viewcode-back" href="../../api/molecular_simulation_tools/eon/index.html#molecular_simulation_tools.eon.NEBInfo.status">[docs]</a>
+    <span class="n">status</span><span class="p">:</span> <span class="n">NEBStatus</span></div>
+
+<div class="viewcode-block" id="NEBInfo.num_evaluations">
+<a class="viewcode-back" href="../../api/molecular_simulation_tools/eon/index.html#molecular_simulation_tools.eon.NEBInfo.num_evaluations">[docs]</a>
+    <span class="n">num_evaluations</span><span class="p">:</span> <span class="nb">int</span></div>
+
+<div class="viewcode-block" id="NEBInfo.num_iterations">
+<a class="viewcode-back" href="../../api/molecular_simulation_tools/eon/index.html#molecular_simulation_tools.eon.NEBInfo.num_iterations">[docs]</a>
+    <span class="n">num_iterations</span><span class="p">:</span> <span class="nb">int</span></div>
+
+<div class="viewcode-block" id="NEBInfo.force_convergence">
+<a class="viewcode-back" href="../../api/molecular_simulation_tools/eon/index.html#molecular_simulation_tools.eon.NEBInfo.force_convergence">[docs]</a>
+    <span class="n">force_convergence</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span></div>
+
+
+<div class="viewcode-block" id="NEBInfo.converged">
+<a class="viewcode-back" href="../../api/molecular_simulation_tools/eon/index.html#molecular_simulation_tools.eon.NEBInfo.converged">[docs]</a>
+    <span class="k">def</span> <span class="nf">converged</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">status</span> <span class="o">==</span> <span class="n">NEBStatus</span><span class="o">.</span><span class="n">CONVERGED</span></div>
+</div>
+
+
+
+<span class="k">def</span> <span class="nf">_read_iteration_info_from_lines</span><span class="p">(</span><span class="n">lines</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]:</span>
+    <span class="n">end_idx</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="k">for</span> <span class="n">line_nr</span><span class="p">,</span> <span class="n">line</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">lines</span><span class="p">):</span>
+        <span class="k">if</span> <span class="s2">&quot;iteration    step size&quot;</span> <span class="ow">in</span> <span class="n">line</span><span class="p">:</span>
+            <span class="n">start_idx</span> <span class="o">=</span> <span class="n">line_nr</span> <span class="o">+</span> <span class="mi">2</span>
+        <span class="k">elif</span> <span class="n">get_status_from_line</span><span class="p">(</span><span class="n">line</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">end_idx</span> <span class="o">=</span> <span class="n">line_nr</span>
+
+    <span class="n">iteration_lines</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">lines</span><span class="p">[</span><span class="n">start_idx</span><span class="p">:</span><span class="n">end_idx</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">line</span> <span class="ow">and</span> <span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">isnumeric</span><span class="p">()</span>
+    <span class="p">]</span>
+    <span class="n">force_convergence</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span>
+        <span class="p">[</span><span class="nb">float</span><span class="p">(</span><span class="n">split_line</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span> <span class="k">for</span> <span class="n">split_line</span> <span class="ow">in</span> <span class="n">iteration_lines</span><span class="p">]</span>
+    <span class="p">)</span>
+    <span class="n">num_iterations</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">iteration_lines</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">num_iterations</span><span class="p">,</span> <span class="n">force_convergence</span>
+
+
+<div class="viewcode-block" id="get_status_from_line">
+<a class="viewcode-back" href="../../api/molecular_simulation_tools/eon/index.html#molecular_simulation_tools.eon.get_status_from_line">[docs]</a>
+<span class="k">def</span> <span class="nf">get_status_from_line</span><span class="p">(</span><span class="n">line</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">NEBStatus</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="n">m</span> <span class="o">=</span> <span class="n">RE_NEB_CONVERGED</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">m</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">NEBStatus</span><span class="o">.</span><span class="n">CONVERGED</span>
+    <span class="n">m</span> <span class="o">=</span> <span class="n">RE_NEB_FAILED</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">m</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">NEBStatus</span><span class="o">.</span><span class="n">TOO_MANY_ITERATIONS</span></div>
+
+
+
+<div class="viewcode-block" id="read_eon_quill_log">
+<a class="viewcode-back" href="../../api/molecular_simulation_tools/eon/index.html#molecular_simulation_tools.eon.read_eon_quill_log">[docs]</a>
+<span class="k">def</span> <span class="nf">read_eon_quill_log</span><span class="p">(</span><span class="n">path</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">Path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">NEBInfo</span><span class="p">:</span>
+    <span class="n">num_potential_evaluations</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">status</span> <span class="o">=</span> <span class="n">NEBStatus</span><span class="o">.</span><span class="n">UNKNOWN</span>
+
+    <span class="n">lines</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">path</span><span class="p">)</span><span class="o">.</span><span class="n">read_text</span><span class="p">()</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">lines</span><span class="p">:</span>
+        <span class="n">m</span> <span class="o">=</span> <span class="n">RE_POTENTIAL_CALLS</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">m</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">num_potential_evaluations</span> <span class="o">+=</span> <span class="nb">int</span><span class="p">(</span><span class="n">m</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">1</span><span class="p">))</span>
+            <span class="k">continue</span>
+
+        <span class="k">if</span> <span class="n">status</span> <span class="o">!=</span> <span class="n">NEBStatus</span><span class="o">.</span><span class="n">UNKNOWN</span><span class="p">:</span>
+            <span class="k">continue</span>
+        <span class="n">new_status</span> <span class="o">=</span> <span class="n">get_status_from_line</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">new_status</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">status</span> <span class="o">=</span> <span class="n">new_status</span>
+
+    <span class="n">num_iterations</span><span class="p">,</span> <span class="n">force_convergence</span> <span class="o">=</span> <span class="n">_read_iteration_info_from_lines</span><span class="p">(</span><span class="n">lines</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">NEBInfo</span><span class="p">(</span>
+        <span class="n">num_evaluations</span><span class="o">=</span><span class="n">num_potential_evaluations</span><span class="p">,</span>
+        <span class="n">status</span><span class="o">=</span><span class="n">status</span><span class="p">,</span>
+        <span class="n">num_iterations</span><span class="o">=</span><span class="n">num_iterations</span><span class="p">,</span>
+        <span class="n">force_convergence</span><span class="o">=</span><span class="n">force_convergence</span><span class="p">,</span>
+    <span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="run_eon_job">
+<a class="viewcode-back" href="../../api/molecular_simulation_tools/eon/index.html#molecular_simulation_tools.eon.run_eon_job">[docs]</a>
+<span class="k">def</span> <span class="nf">run_eon_job</span><span class="p">(</span><span class="n">path</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">Path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">subprocess</span><span class="o">.</span><span class="n">CompletedProcess</span><span class="p">:</span>
+    <span class="k">with</span> <span class="n">set_current_directory</span><span class="p">(</span><span class="n">get_directory</span><span class="p">(</span><span class="n">path</span><span class="p">)):</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="n">subprocess</span><span class="o">.</span><span class="n">run</span><span class="p">(</span>
+            <span class="p">[</span><span class="s2">&quot;eonclient&quot;</span><span class="p">],</span>
+            <span class="n">capture_output</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+            <span class="n">text</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+            <span class="n">check</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="p">)</span>
+    <span class="k">return</span> <span class="n">result</span></div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2026, Tobias Dijkhuis.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -124,15 +124,15 @@ Module Contents
    :raises RuntimeError: If a non-allowed molecule is within `radius` of `center`.
 
 
-.. py:function:: cut_out_trajectory_within_radius(frames: list[ase.Atoms], centers: list[numpy.ndarray] | numpy.ndarray, radius: float, keep_molecules_intact: bool = True, allowed_molecules: list[str] | set[str] | None = None, cutoffs: dict[str, float] | None = None) -> list[ase.Atoms]
+.. py:function:: cut_out_trajectory_within_radius(frames: list[ase.Atoms], centers: list[numpy.ndarray] | numpy.ndarray | int, radius: float, keep_molecules_intact: bool = True, allowed_molecules: list[str] | set[str] | None = None, cutoffs: dict[str, float] | None = None) -> list[ase.Atoms]
 
    Cut out atoms from a trajectory, keeping the same atoms in all frames.
 
    :param frames: Trajectory to cut out.
    :type frames: list[Atoms]
    :param centers: Center of sphere to be cut. If a list of arrays, the center changes between
-                   frames.
-   :type centers: list[numpy.ndarray] | numpy.ndarray
+                   frames. If an integer, the index of the atom that is the center of the sphere.
+   :type centers: list[numpy.ndarray] | numpy.ndarray | int
    :param radius: Radius of sphere to be cut in Angstrom.
    :type radius: float
    :param keep_molecules_intact: Identify molecules using :func:`identify_molecules`, and keep each molecule

@@ -16,6 +16,7 @@ Submodules
    :maxdepth: 1
 
    /api/molecular_simulation_tools/connectivity/index
+   /api/molecular_simulation_tools/eon/index
    /api/molecular_simulation_tools/geometry/index
    /api/molecular_simulation_tools/io/index
    /api/molecular_simulation_tools/neb/index

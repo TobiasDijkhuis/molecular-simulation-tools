@@ -1,0 +1,149 @@
+molecular_simulation_tools.eon
+==============================
+
+.. py:module:: molecular_simulation_tools.eon
+
+
+Attributes
+----------
+
+.. autoapisummary::
+
+   molecular_simulation_tools.eon.EON_ASE_CALC_INTERFACE
+   molecular_simulation_tools.eon.EON_ASE_DUMMY_CALC_INTERFACE
+   molecular_simulation_tools.eon.EON_JOB_REQUIRED_KEYS
+   molecular_simulation_tools.eon.EON_LOG_FILEPATH
+   molecular_simulation_tools.eon.RE_NEB_CONVERGED
+   molecular_simulation_tools.eon.RE_NEB_FAILED
+   molecular_simulation_tools.eon.RE_POTENTIAL_CALLS
+
+
+Classes
+-------
+
+.. autoapisummary::
+
+   molecular_simulation_tools.eon.NEBInfo
+   molecular_simulation_tools.eon.NEBStatus
+
+
+Functions
+---------
+
+.. autoapisummary::
+
+   molecular_simulation_tools.eon.get_calc_string
+   molecular_simulation_tools.eon.get_status_from_line
+   molecular_simulation_tools.eon.read_con_info
+   molecular_simulation_tools.eon.read_con_with_info
+   molecular_simulation_tools.eon.read_eon_quill_log
+   molecular_simulation_tools.eon.read_neb_data
+   molecular_simulation_tools.eon.run_eon_job
+   molecular_simulation_tools.eon.write_calc_string
+   molecular_simulation_tools.eon.write_eon_job
+   molecular_simulation_tools.eon.write_eon_structure
+
+
+Module Contents
+---------------
+
+.. py:class:: NEBInfo
+
+   .. py:method:: converged() -> bool
+
+
+   .. py:attribute:: force_convergence
+      :type:  numpy.ndarray
+
+
+   .. py:attribute:: num_evaluations
+      :type:  int
+
+
+   .. py:attribute:: num_iterations
+      :type:  int
+
+
+   .. py:attribute:: status
+      :type:  NEBStatus
+
+
+.. py:class:: NEBStatus
+
+   Bases: :py:obj:`enum.StrEnum`
+
+
+   Enum where members are also (and must be) strings
+
+   Initialize self.  See help(type(self)) for accurate signature.
+
+
+   .. py:attribute:: CONVERGED
+
+
+   .. py:attribute:: RUNNING
+
+
+   .. py:attribute:: TOO_MANY_ITERATIONS
+
+
+   .. py:attribute:: UNKNOWN
+
+
+.. py:function:: get_calc_string(ase_calc: collections.abc.Callable[[], ase.calculators.calculator.Calculator]) -> str
+
+.. py:function:: get_status_from_line(line: str) -> NEBStatus | None
+
+.. py:function:: read_con_info(path: str | pathlib.Path) -> list[dict[str, Any]]
+
+.. py:function:: read_con_with_info(path: str | pathlib.Path) -> tuple[list[ase.Atoms], list[dict[str, Any]]]
+
+.. py:function:: read_eon_quill_log(path: str | pathlib.Path) -> NEBInfo
+
+.. py:function:: read_neb_data(filepath: str | pathlib.Path) -> dict[str, numpy.ndarray]
+
+.. py:function:: run_eon_job(path: str | pathlib.Path) -> subprocess.CompletedProcess
+
+.. py:function:: write_calc_string(string: str, path: str | pathlib.Path) -> None
+
+.. py:function:: write_eon_job(dct: dict[str, Any], path: str | pathlib.Path) -> None
+
+.. py:function:: write_eon_structure(atoms: ase.Atoms | list[ase.Atoms], path: str | pathlib.Path) -> None
+
+.. py:data:: EON_ASE_CALC_INTERFACE
+   :value: Multiline-String
+
+   .. raw:: html
+
+      <details><summary>Show Value</summary>
+
+   .. code-block:: python
+
+      """def _calculate(R, atomicNrs, box, calc):  # ruff: ignore[missing-type-function-argument, invalid-argument-name]
+          system = Atoms(symbols=atomicNrs, positions=R, pbc=True, cell=box)
+          system.calc = calc
+          forces = system.get_forces()
+          energy = system.get_potential_energy()
+          return energy, forces
+      """
+
+   .. raw:: html
+
+      </details>
+
+
+
+.. py:data:: EON_ASE_DUMMY_CALC_INTERFACE
+
+.. py:data:: EON_JOB_REQUIRED_KEYS
+
+.. py:data:: EON_LOG_FILEPATH
+   :value: 'client_quill.log'
+
+
+.. py:data:: RE_NEB_CONVERGED
+
+.. py:data:: RE_NEB_FAILED
+
+.. py:data:: RE_POTENTIAL_CALLS
+

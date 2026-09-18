@@ -73,6 +73,10 @@ Module Contents
 
       Wait until all jobs are done.
 
+      :param sleep_interval: How long to sleep (in seconds) between checking whether all jobs are done.
+                             Default = 0.5.
+      :type sleep_interval: float
+
       :raises RuntimeError: If this instance has no jobs.
 
 
