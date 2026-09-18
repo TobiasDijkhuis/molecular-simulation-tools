@@ -1,10 +1,13 @@
 """Collection of utility functions."""
 
+import contextlib
 import itertools
+import os
 import re
 import sys
-from collections.abc import Iterator, Sequence
+from collections.abc import Generator, Iterator, Sequence
 from itertools import islice
+from pathlib import Path
 from random import random
 from typing import Any, TypeVar
 
@@ -168,7 +171,7 @@ def convert_cartesian_to_spherical(position: np.ndarray) -> tuple[float, float, 
     """
     if not position.shape == (3,):
         raise ValueError()
-    r: float = np.linalg.norm(position)  # type: ignore[assignment, ty:invalid-assignment]
+    r: float = np.linalg.norm(position)  # type: ignore[assignment]
     theta = np.arccos(position[2] / r)
     phi = np.atan2(position[1], position[0])
     return r, theta, phi
@@ -255,34 +258,34 @@ def check_same_number_of_atoms(frames: list[Atoms]) -> None:
 
 def get_permutations_exchange_identical_atoms(
     atoms: Atoms,
-    indices: list[int] | None = None,
-) -> list[list[int]]:
+    indices: Sequence[int] | None = None,
+) -> tuple[tuple[int, ...], ...]:
     """Get all possible permutations of `indices` that exchange identical atoms.
 
     Parameters
     ----------
     atoms : Atoms
         Atoms to permute.
-    indices : list[int] | None
+    indices : Sequence[int] | None
         Indices of atoms to take into account in the permuting.
         If None, do all atoms. Default = None.
 
     Returns
     -------
-    list[list[int]]
-        List of possible correct permutations that exchange identical atoms.
+    tuple[tuple[int, ...], ...]
+        Tuple of possible correct permutations that exchange identical atoms.
 
     """
     if indices is None:
         indices = list(range(len(atoms)))
     permutations = [
-        list(permutation) for permutation in itertools.permutations(indices)
+        tuple(permutation) for permutation in itertools.permutations(indices)
     ]
-    return [
+    return tuple(
         permutation
         for permutation in permutations
         if np.all(atoms.numbers[permutation] == atoms.numbers[indices])
-    ]
+    )
 
 
 def combine_overlapping_sets(list_of_sets: list[set[Any]]) -> list[set[Any]]:
@@ -822,7 +825,7 @@ if sys.version_info >= (3, 12):
     from itertools import batched
 else:
 
-    def batched(iterable: Sequence[_T], chunk_size: int) -> Iterator[tuple[_T]]:
+    def batched(iterable: Sequence[_T], chunk_size: int) -> Iterator[tuple[_T, ...]]:
         """Batch an iterable.
 
         Parameters
@@ -834,7 +837,7 @@ else:
 
         Yields
         ------
-        chunk : tuple[_T]
+        chunk : tuple[_T, ...]
             Chunks with at most `chunk_size` elements. The last chunk might have
             fewer elements.
 
@@ -980,3 +983,28 @@ def create_water_surface_from_bulk(
         indices, _offsets = neighbor_list.get_neighbors(atom_idx)
         verify_is_water_molecule(indices, water_surface.symbols)
     return water_surface
+
+
+def capitalize_each_word(string: str) -> str:
+    return " ".join(word.capitalize() for word in string.split())
+
+
+def get_directory(path: str | Path) -> Path:
+    path = Path(path)
+
+    if path.is_dir():
+        return path
+    elif path.is_file():
+        return path.parent
+    else:
+        raise FileNotFoundError
+
+
+@contextlib.contextmanager
+def set_current_directory(directory: str | Path) -> Generator[None]:
+    wd = Path.cwd()
+    os.chdir(directory)
+    try:
+        yield
+    finally:
+        os.chdir(wd)

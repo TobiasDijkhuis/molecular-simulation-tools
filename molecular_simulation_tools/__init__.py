@@ -2,6 +2,7 @@
 
 from . import (
     connectivity,
+    eon,
     geometry,
     io,
     neb,

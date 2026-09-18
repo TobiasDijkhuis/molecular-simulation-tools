@@ -21,9 +21,9 @@ maintainers = [
 license = {text = "GNU GPLv3"}
 description = "A collection of tools for molecular simulations."
 readme = "README.md"
-requires-python = ">=3.10,<3.14"
+requires-python = ">=3.11,<3.14"
 dependencies = [
-    "ase", "numpy",
+    "ase", "numpy", "znh5md", "networkx", "matplotlib", "pytest"
 ]
 
 [project.urls]

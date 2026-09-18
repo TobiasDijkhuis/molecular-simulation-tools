@@ -1,16 +1,19 @@
 """Collection of tools to run NEB calculations."""
 
+from collections.abc import Callable
 from copy import deepcopy
 from typing import Any, Literal
 
 import numpy as np
 from ase import Atoms
 from ase.calculators.calculator import Calculator
+from ase.constraints.fix_atoms import FixAtoms
 from ase.geometry import conditional_find_mic
 from ase.mep.dimer import DimerControl, MinModeAtoms, MinModeTranslate
 from ase.mep.neb import NEB, idpp_interpolate, interpolate
 from ase.optimize.lbfgs import LBFGS
 from ase.optimize.optimize import DEFAULT_MAX_STEPS, Optimizer
+from ase.visualize import view
 
 from molecular_simulation_tools.utils import check_same_number_of_atoms
 
@@ -134,6 +137,7 @@ def run_energy_weighted_neb(
     optimizer_kwargs: dict[str, Any] | None = None,
     climb: bool = False,
     idpp_subset_indices: list[int] | np.ndarray | None = None,
+    initial_path_verifier: Callable[[list[Atoms]], bool] | None = None,
 ) -> NEB:
     """Do an energy-weighted climbing image nudged elastic band (EW-CI-NEB) calculation.
 
@@ -191,6 +195,7 @@ def run_energy_weighted_neb(
         msg = "climb should be specified directly to 'run_energy_weighted_neb', not in 'neb_kwargs'."
         raise ValueError(msg)
 
+    print(f"First NEB, {neb_kwargs}")
     neb = NEB(
         images,
         **neb_kwargs,
@@ -206,6 +211,13 @@ def run_energy_weighted_neb(
             )
         else:
             neb.images = idpp_interpolate_subset(neb.images, idpp_subset_indices)
+
+    view(neb.images)
+
+    if initial_path_verifier is not None and not initial_path_verifier(neb.images):
+        print("INITIAL PATH NOT VALID ACCORDING TO INITIAL PATH VERIFIER")
+        print("RETURNING NEB WITH INITIAL PATH")
+        return neb
 
     for image in neb.images:
         image.calc = calc
@@ -224,6 +236,7 @@ def run_energy_weighted_neb(
     for image in images:
         image.calc = calc
 
+    print(f"CI NEB, {neb_kwargs}")
     neb = NEB(images, climb=True, **neb_kwargs)
 
     with optimizer(neb, **optimizer_kwargs) as opt:  # ty: ignore[invalid-argument-type]
@@ -320,7 +333,7 @@ def run_neb_ts(
         Calculator that can calculate the potential energy and forces of the images.
     max_displacement : float
         Maximum displacement of the NEB along the minimum mode in Angstrom.
-        Default = 0.02.
+        Default = 0.01.
     fmax_ts : float
         Maximum force component criterion on the transition state in eV/Angstrom.
         Default = 0.05.
@@ -375,17 +388,35 @@ def run_neb_ts(
     dr = np.vstack(dr)
     displacement_vector = dr * max_displacement / np.max(lengths)
 
+    if images[0].constraints:
+        if not isinstance(images[0].constraints[0], FixAtoms):
+            raise NotImplementedError
+        mask = (
+            np.isin(
+                np.arange(len(images[0])),
+                images[0].constraints[0].index,
+                invert=True,
+                assume_unique=True,
+            )
+        ).astype(int)
+        displacement_vector *= mask[:, None]
+        mask = mask.tolist()
+    else:
+        mask = None
     # Set up the dimer
-    mask = [False] * (len(images[0]) - 4) + [True] * 4
     with DimerControl(
-        initial_eigenmode_method="displacement",
-        displacement_method="vector",
+        initial_eigenmode_method="gauss",
+        displacement_method="gauss",
         logfile=None,
         mask=mask,
+        gauss_std=0.05,
+        use_central_forces=False,
+        dimer_separation=0.001,
     ) as d_control:
         d_atoms = MinModeAtoms(ts_guess, d_control)
 
-        d_atoms.displace(displacement_vector=displacement_vector)
+        d_atoms.displace()
+        # d_atoms.displace(displacement_vector=displacement_vector)
 
         # Converge to a saddle point
         with MinModeTranslate(d_atoms, trajectory="ts_opt.traj") as dim_rlx:

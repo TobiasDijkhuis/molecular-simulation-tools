@@ -26,6 +26,12 @@ class SlurmJobManager:
     def wait(self, sleep_interval: float = 0.5) -> None:
         """Wait until all jobs are done.
 
+        Parameters
+        ----------
+        sleep_interval : float
+            How long to sleep (in seconds) between checking whether all jobs are done.
+            Default = 0.5.
+
         Raises
         ------
         RuntimeError

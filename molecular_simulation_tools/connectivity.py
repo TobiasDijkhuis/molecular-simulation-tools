@@ -1,5 +1,7 @@
 """Tools to identify molecules."""
 
+from collections.abc import Iterable
+
 import numpy as np
 from ase import Atoms
 from ase.neighborlist import build_neighbor_list, natural_cutoffs
@@ -39,6 +41,8 @@ def _atoms_to_graph(
     nl = build_neighbor_list(atoms, self_interaction=False, cutoffs=cutoffs)
     cm = nl.get_connectivity_matrix(sparse=False)
     graph = nx.from_numpy_array(cm)
+    for i, atom in enumerate(atoms):
+        graph.nodes[i]["element"] = atom.symbol
     return graph
 
 
@@ -153,3 +157,82 @@ def complete_intact_molecules(
     indices = np.insert(indices, where_to_insert, to_add_list)
 
     return indices
+
+
+def get_permutations_exchange_identical_atoms_groups(
+    atoms: Atoms,
+    indices: Iterable[int] | None = None,
+) -> tuple[tuple[int, ...], ...]:
+    """
+
+    Examples
+    --------
+    >>> # Methanol geometry from CCCBDB
+    >>> methanol_positions = [
+    ...     [-0.0503, 0.6658, 0.0000],   # C
+    ...     [-1.0807, 1.0417, 0.0000],   # H
+    ...     [0.4650, 1.0417, 0.8924],    # H
+    ...     [0.4650, 1.0417, -0.8924],   # H
+    ...     [-0.0503, -0.7585, 0.0000],  # O
+    ...     [0.8544, -1.0677, 0.0000],   # H
+    ... ]
+    >>> methanol = Atoms(symbols="CH3OH", positions=methanol_positions)
+    >>> permutations = get_permutations_exchange_identical_atoms_groups(methanol)
+    >>> # Should have 6 permutations, only methyl radicals swapping
+    >>> len(permutations)
+    6
+    >>> for permutation in sorted(permutations):
+    ...     print(permutation)
+    (0, 1, 2, 3, 4, 5)
+    (0, 1, 3, 2, 4, 5)
+    (0, 2, 1, 3, 4, 5)
+    (0, 2, 3, 1, 4, 5)
+    (0, 3, 1, 2, 4, 5)
+    (0, 3, 2, 1, 4, 5)
+
+    >>> # Only calculate permutations of a subset
+    >>> permutations = get_permutations_exchange_identical_atoms_groups(methanol, [0, 1, 2, 5])
+    >>> # Should have 2 permutations, only two of the methyl hydrogens
+    >>> len(permutations)
+    2
+    >>> for permutation in sorted(permutations):
+    ...     print(permutation)
+    (0, 1, 2, 3, 4, 5)
+    (0, 2, 1, 3, 4, 5)
+
+    >>> ethanol_positions = [
+    ...     [1.1879, -0.3829, 0.0000],   # C
+    ...     [2.0985, 0.2306, 0.0000],    # H
+    ...     [1.1184, -1.0093, 0.8869],   # H
+    ...     [1.1184, -1.0093, -0.8869],  # H
+    ...     [0.0000, 0.5526, 0.0000],    # C
+    ...     [-0.0227, 1.1812, 0.8852],   # H
+    ...     [-0.0227, 1.1812, -0.8852],  # H
+    ...     [-1.1867, -0.2472, 0.0000],  # O
+    ...     [-1.9237, 0.3850, 0.0000],   # H
+    ... ]
+    >>> ethanol = Atoms("CH3CH2OH", positions=ethanol_positions)
+    >>> permutations = get_permutations_exchange_identical_atoms_groups(ethanol)
+    >>> # Should have 12 combinations: 3*2*1 for the CH3 hydrogens, and 2*1 for the CH2 hydrogens
+    >>> # So 6*2 = 12 in total.
+    >>> len(permutations)
+    12
+
+    """
+    graph = _atoms_to_graph(atoms)
+    # nm = nx.algorithms.isomorphism.categorical_node_match("element", None)
+    # GM = nx.algorithms.isomorphism.GraphMatcher(graph, graph, node_match=nm)
+    # mappings: Iterator[dict[int, int]] = GM.isomorphisms_iter()
+    mappings = nx.algorithms.isomorphism.vf2pp_all_isomorphisms(
+        graph, graph, node_label="element"
+    )
+    permutations = []
+    for mapping in mappings:
+        # If a subset of indices should be permuted, check that all other indices map to themselves
+        if indices is not None and not all(
+            mapping[i] == i for i in graph.nodes if i not in indices
+        ):
+            continue
+        perm = tuple(mapping[i] for i in range(len(atoms)))
+        permutations.append(perm)
+    return tuple(perm for perm in permutations)

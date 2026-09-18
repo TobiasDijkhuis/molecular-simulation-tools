@@ -151,7 +151,7 @@ def cut_out_atoms_within_radius(
 
 def cut_out_trajectory_within_radius(
     frames: list[Atoms],
-    centers: list[np.ndarray] | np.ndarray,
+    centers: list[np.ndarray] | np.ndarray | int,
     radius: float,
     keep_molecules_intact: bool = True,
     allowed_molecules: list[str] | set[str] | None = None,
@@ -163,9 +163,9 @@ def cut_out_trajectory_within_radius(
     ----------
     frames : list[Atoms]
         Trajectory to cut out.
-    centers : list[np.ndarray] | np.ndarray
+    centers : list[np.ndarray] | np.ndarray | int
         Center of sphere to be cut. If a list of arrays, the center changes between
-        frames.
+        frames. If an integer, the index of the atom that is the center of the sphere.
     radius : float
         Radius of sphere to be cut in Angstrom.
     keep_molecules_intact : bool
@@ -202,6 +202,8 @@ def cut_out_trajectory_within_radius(
             if centers.shape[0] != len(frames):
                 raise ValueError
             centers = list(centers)
+    elif isinstance(centers, int):
+        centers = [frame.positions[centers, :] for frame in frames]
 
     all_indices: set[int] = set()
     for frame, center in zip(frames, centers, strict=True):

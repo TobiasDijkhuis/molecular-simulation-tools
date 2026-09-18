@@ -7,14 +7,18 @@ import matplotlib.pyplot as plt
 import numpy as np
 from ase import Atoms
 from ase.mep.neb import BaseNEB
+from ase.units import eV, kcal, mol
 from ase.utils.forcecurve import ForceFit, fit_images
 from matplotlib import patches
+from matplotlib.axes._secondary_axes import SecondaryAxis
 
 
-def plot_neb(
+def plot_neb_from_images(
     images: list[Atoms] | BaseNEB,
     ax: plt.Axes | None = None,
     plot_kwargs: dict[str, Any] | None = None,
+    *,
+    mark_transition: bool = True,
 ) -> plt.Axes:
     """Plot a NEB calculation.
 
@@ -34,15 +38,71 @@ def plot_neb(
         Axes that was plotted on.
 
     """
+    if isinstance(images, BaseNEB):
+        images = list(images.iterimages())
+    force_fit: ForceFit = fit_images(images)
+    return plot_neb(
+        force_fit.path,
+        force_fit.energies,
+        ax=ax,
+        plot_kwargs=plot_kwargs,
+        mark_transition=mark_transition,
+    )
+
+
+def plot_neb(
+    path: np.ndarray,
+    energies: np.ndarray,
+    ax: plt.Axes | None = None,
+    plot_kwargs: dict[str, Any] | None = None,
+    *,
+    mark_transition: bool = False,
+    include_secondary_axis: bool = True,
+) -> plt.Axes:
     if plot_kwargs is None:
         plot_kwargs = {}
     if ax is None:
         ax = plt.gca()
-    if isinstance(images, BaseNEB):
-        images = list(images.iterimages())
-    force_fit: ForceFit = fit_images(images)
-    ax.plot(force_fit.path, force_fit.energies, marker="o", **plot_kwargs)
+
+    ax.axhline(energies[0], c="black", ls="dashed", alpha=0.5, lw=1, zorder=0)
+    ax.axhline(energies[-1], c="black", ls="dashed", alpha=0.5, lw=1, zorder=0)
+
+    relative_energies = energies - energies[0]
+    ax.plot(path, relative_energies, marker="o", **plot_kwargs)
+    if mark_transition:
+        ts_index = np.argmax(relative_energies)
+        ax.scatter(
+            path[ts_index],
+            relative_energies[ts_index],
+            marker="*",
+            s=200,
+            color="yellow",
+            edgecolor="black",
+            zorder=5,
+        )
+
+    ax.set_xlabel(r"Reaction coordinate ($\mathrm{\AA}$)")
+    ax.set_ylabel("Energy (eV)")
+    if include_secondary_axis:
+        create_secondary_energy_axis(ax)
     return ax
+
+
+def _ev_to_kcal_per_mol(energy_in_ev: np.typing.ArrayLike) -> np.typing.ArrayLike:
+    return energy_in_ev * eV / (kcal / mol)  # ty: ignore[unsupported-operator]
+
+
+def _kcal_per_mol_to_ev(
+    energy_in_kcal_per_mol: np.typing.ArrayLike,
+) -> np.typing.ArrayLike:
+    return energy_in_kcal_per_mol * (kcal / mol) / eV  # ty: ignore[unsupported-operator]
+
+
+def create_secondary_energy_axis(ax: plt.Axes) -> tuple[plt.Axes, SecondaryAxis]:
+    secax = ax.secondary_yaxis("right", (_ev_to_kcal_per_mol, _kcal_per_mol_to_ev))
+    ax.tick_params(axis="y", right=False, which="both")
+    secax.set_ylabel("Energy (kcal/mol)")
+    return ax, secax
 
 
 def set_up_periodic_plot(
@@ -131,6 +191,7 @@ def plot_periodic_images(
     if isinstance(y, list):
         y = np.asarray(y)
 
+    # TODO: Better inference of which periodic images are necessary.
     if np.any(np.abs(x) > box_size[0]) or np.any(np.abs(y) > box_size[1]):
         # Outside of first periodic image
         images_to_include: tuple[int, ...] = (-2, -1, 0, 1, 2)

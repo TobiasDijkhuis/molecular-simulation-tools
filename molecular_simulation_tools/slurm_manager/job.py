@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-import os
 from pathlib import Path
 from subprocess import run
 from time import sleep
@@ -11,6 +10,7 @@ from molecular_simulation_tools.slurm_manager.utils import (
     get_user,
     same_submission_script_already_submitted,
 )
+from molecular_simulation_tools.utils import set_current_directory
 
 
 class SlurmJob:
@@ -72,46 +72,38 @@ class SlurmJob:
             the job.
 
         """
-        init_dir = Path.cwd()
+        with set_current_directory(directory):
+            command_split = command.split()
+            if not Path(command_split[1]).is_file():
+                msg = f"Command '{command}' second argument '{command_split[1]}' is not a file."
+                raise ValueError(msg)
 
-        # Change to correct directory
-        os.chdir(directory)
-
-        command_split = command.split()
-        if not Path(command_split[1]).is_file():
-            msg = f"Command '{command}' second argument '{command_split[1]}' is not a file."
-            raise ValueError(msg)
-
-        submission_script_path = Path(directory) / command_split[1]
-        submitted, job_id = same_submission_script_already_submitted(
-            submission_script_path
-        )
-        if submitted and not force:
-            print(
-                f"Detected that job with submission command {command} has already started, with job ID {job_id}. Not submitting again"
+            submission_script_path = Path(directory) / command_split[1]
+            submitted, job_id = same_submission_script_already_submitted(
+                submission_script_path
             )
-            os.chdir(init_dir)
-            return cls(job_id)  # type: ignore[arg-type, ty:invalid-argument-type]
+            if submitted and not force:
+                print(
+                    f"Detected that job with submission command {command} has already started, with job ID {job_id}. Not submitting again"
+                )
+                return cls(job_id)  # type: ignore[arg-type, ty:invalid-argument-type]
 
-        # Get job id from this command
-        try:
-            process = run(command.split(), capture_output=True, text=True)
-        except FileNotFoundError as e:
-            msg = f"Could not execute command {command} because the executable {command.split(maxsplit=1)[0]} could not be found"
-            raise FileNotFoundError(msg) from e
+            # Get job id from this command
+            try:
+                process = run(command.split(), capture_output=True, text=True)
+            except FileNotFoundError as e:
+                msg = f"Could not execute command {command} because the executable {command.split(maxsplit=1)[0]} could not be found"
+                raise FileNotFoundError(msg) from e
 
-        if process.stderr:
-            msg = f"Error starting job: {process.stderr}"
-            raise RuntimeError(msg)
+            if process.stderr:
+                msg = f"Error starting job: {process.stderr}"
+                raise RuntimeError(msg)
 
-        try:
-            job_id = int(process.stdout.split()[-1])
-        except ValueError as e:
-            msg = f"Could not extract job_id from stdout {process.stdout}"
-            raise ValueError(msg) from e
-
-        os.chdir(init_dir)
-
+            try:
+                job_id = int(process.stdout.split()[-1])
+            except ValueError as e:
+                msg = f"Could not extract job_id from stdout {process.stdout}"
+                raise ValueError(msg) from e
         return cls(job_id)
 
     def get_state(self) -> str:

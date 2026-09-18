@@ -14,13 +14,13 @@ repos:
         name: "Ruff linter"
         description: "Check for linting errors"
         args: [--fix]
-  - repo: https://github.com/pre-commit/mirrors-mypy
-    rev: v1.20.0
+  - repo: https://github.com/astral-sh/ty-pre-commit
+    # ty version.
+    rev: v0.0.82
     hooks:
-      - id: mypy
-        name: "Mypy type checking"
-        description: "Check for type errors"
-        args: [--install-types, --non-interactive]
+      - id: ty
+        name: "Ty type checking"
+        description: "Ensure no type errors occur"
   - repo: https://github.com/astral-sh/ruff-pre-commit
     rev: v0.15.9
     hooks:
