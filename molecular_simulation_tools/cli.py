@@ -1,3 +1,5 @@
+"""Command-line interface."""
+
 from pathlib import Path
 from typing import Annotated
 
@@ -12,17 +14,26 @@ app = typer.Typer()
 @app.command()
 def gui(
     path: Annotated[
-        Path, typer.Argument(exists=True, file_okay=True, dir_okay=False, readable=True)
+        Path,
+        typer.Argument(
+            help="Path to the structure.",
+            exists=True,
+            file_okay=True,
+            dir_okay=False,
+            readable=True,
+        ),
     ],
-    block: Annotated[bool, typer.Option()] = False,
+    block: Annotated[
+        bool, typer.Option(help="Whether to block while the file is shown.")
+    ] = False,
 ) -> None:
-    """View a molecular geometry. Reads more filetypes than 'ase gui'"""
+    """View a molecular geometry. Reads more filetypes than 'ase gui'."""
     ase_view(read(path), block=block)
 
 
 @app.command()
 def null() -> None:
-    """Do nothing"""
+    """Do nothing."""
     pass
 
 

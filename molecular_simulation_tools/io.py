@@ -35,6 +35,10 @@ def read(path: str | Path, index: int | str | slice = -1) -> Atoms | list[Atoms]
     ------
     ImportError
         If `path` ends with ``.h5``, but ``znh5md`` is not available.
+    NotImplementedError
+        When trying to read multiple images from an ``.inp`` file.
+    NotImplementedError
+        When `index` is not ``":"`` when trying to read a ``.con`` file.
 
     """
     path = Path(path)

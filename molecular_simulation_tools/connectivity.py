@@ -163,7 +163,25 @@ def get_permutations_exchange_identical_atoms_groups(
     atoms: Atoms,
     indices: Iterable[int] | None = None,
 ) -> tuple[tuple[int, ...], ...]:
-    """
+    """Get all permutations that result in only swaps of identically bonded atoms.
+
+    Parameters
+    ----------
+    atoms : Atoms
+        Atoms to get permutations for
+    indices : Iterable[int] | None
+        Default = None.
+
+    Returns
+    -------
+    tuple[tuple[int, ...], ...]
+        All permutations that result in only identical groups swapping
+
+    Notes
+    -----
+    Perhaps easier to use or more versatile if instead this takes a graph?
+    Could then be used directly from the SMILES code, and then not have to generate
+    a 3D geometry first.
 
     Examples
     --------
@@ -200,6 +218,7 @@ def get_permutations_exchange_identical_atoms_groups(
     (0, 1, 2, 3, 4, 5)
     (0, 2, 1, 3, 4, 5)
 
+    >>> # Ethanol geometry from CCCBDB
     >>> ethanol_positions = [
     ...     [1.1879, -0.3829, 0.0000],   # C
     ...     [2.0985, 0.2306, 0.0000],    # H
@@ -218,11 +237,26 @@ def get_permutations_exchange_identical_atoms_groups(
     >>> len(permutations)
     12
 
+    >>> # Glyoxal geometry from CCCBDB
+    >>> glyoxal_positions = [
+    ...     [0.0000, 0.7630, 0.0000],   # C
+    ...     [0.0000, -0.7630, 0.0000],  # C
+    ...     [1.0481, 1.1907, 0.0000],   # H
+    ...     [-1.0481, -1.1907, 0.0000], # H
+    ...     [-1.0367, 1.3908, 0.0000],  # O
+    ...     [1.0367, -1.3908, 0.0000],  # O
+    ... ]
+    >>> glyoxal = Atoms("C2H2O2", positions=glyoxal_positions)
+    >>> permutations = get_permutations_exchange_identical_atoms_groups(glyoxal)
+    >>> # Ideally this would give 8 permutations because 2*2*2 identically bonded atoms swapping,
+    >>> # but it only gives 2 permutations (the entire molecule rotating 180 degrees).
+    >>> len(permutations)
+    2
+    >>> sorted(permutations)
+    [(0, 1, 2, 3, 4, 5), (1, 0, 3, 2, 5, 4)]
+
     """
     graph = _atoms_to_graph(atoms)
-    # nm = nx.algorithms.isomorphism.categorical_node_match("element", None)
-    # GM = nx.algorithms.isomorphism.GraphMatcher(graph, graph, node_match=nm)
-    # mappings: Iterator[dict[int, int]] = GM.isomorphisms_iter()
     mappings = nx.algorithms.isomorphism.vf2pp_all_isomorphisms(
         graph, graph, node_label="element"
     )

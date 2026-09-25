@@ -88,7 +88,7 @@ get_permutations_exchange_identical_atoms_data = [
     "atoms, indices, expected_permutations",
     get_permutations_exchange_identical_atoms_data,
 )
-def test_get_permutations_exchange_identical_atoms_data(
+def test_get_permutations_exchange_identical_atoms(
     atoms, indices, expected_permutations
 ):
     permutations = get_permutations_exchange_identical_atoms(atoms, indices=indices)

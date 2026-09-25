@@ -38,7 +38,6 @@ EON_ASE_CALC_INTERFACE = """def _calculate(R, atomicNrs, box, calc):  # ruff: ig
     return energy, forces
 """
 
-# ruff: ignore[W293]
 EON_ASE_DUMMY_CALC_INTERFACE = dedent("""    import numpy as np
     from ase import Atoms
     from ase.calculators.calculator import Calculator, all_changes
@@ -210,6 +209,14 @@ class NEBInfo:
     force_convergence: OneDFloatArray
 
     def converged(self) -> bool:
+        """Whether the NEB job converged.
+
+        Returns
+        -------
+        bool
+            Whether the NEB converged.
+
+        """
         return self.status == NEBStatus.CONVERGED
 
 

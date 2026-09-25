@@ -1,7 +1,7 @@
 """Tools for creating plots."""
 
 import itertools
-from typing import Any
+from typing import Any, Literal
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -85,20 +85,47 @@ def plot_neb(
     return ax
 
 
-def _ev_to_kcal_per_mol(energy_in_ev: np.typing.ArrayLike) -> np.typing.ArrayLike:
-    return energy_in_ev * eV / (kcal / mol)  # ty: ignore[unsupported-operator]
+def create_secondary_energy_axis(
+    ax: plt.Axes, axis: Literal["x", "y"] = "y"
+) -> tuple[plt.Axes, SecondaryAxis]:
+    """Create a secondary energy axis in kcal/mol.
 
+    Parameters
+    ----------
+    ax : plt.Axes
+        Axes object to modify
+    axis : Literal['x', 'y']
+        Which axis to add the secondary axis to. Default = 'y'
 
-def _kcal_per_mol_to_ev(
-    energy_in_kcal_per_mol: np.typing.ArrayLike,
-) -> np.typing.ArrayLike:
-    return energy_in_kcal_per_mol * (kcal / mol) / eV  # ty: ignore[unsupported-operator]
+    Returns
+    -------
+    ax : plt.Axes
+        Original Axes object.
+    secax : SecondaryAxis
+        Newly created secondary axis.
 
+    Raises
+    ------
+    ValueError
+        If `axis` is not ``"x"`` or ``"y"``.
 
-def create_secondary_energy_axis(ax: plt.Axes) -> tuple[plt.Axes, SecondaryAxis]:
-    secax = ax.secondary_yaxis("right", (_ev_to_kcal_per_mol, _kcal_per_mol_to_ev))
-    ax.tick_params(axis="y", right=False, which="both")
-    secax.set_ylabel("Energy (kcal/mol)")
+    """
+    ev_to_kcal_per_mol = lambda energy_ev: energy_ev * eV / (kcal / mol)
+    kcal_per_mol_to_ev = lambda energy_kcal_per_mol: (
+        energy_kcal_per_mol * (kcal / mol) / eV
+    )
+
+    if axis == "y":
+        secax = ax.secondary_yaxis("right", (ev_to_kcal_per_mol, kcal_per_mol_to_ev))
+        ax.tick_params(axis="y", right=False, which="both")
+        secax.set_ylabel("Energy (kcal/mol)")
+    elif axis == "x":
+        secax = ax.secondary_xaxis("top", (ev_to_kcal_per_mol, kcal_per_mol_to_ev))
+        ax.tick_params(axis="x", top=False, which="both")
+        secax.set_xlabel("Energy (kcal/mol)")
+    else:
+        msg = f"'axis' should be one of ['x', 'y'], but was '{axis}'"
+        raise ValueError(msg)
     return ax, secax
 
 

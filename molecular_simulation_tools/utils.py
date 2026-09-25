@@ -259,7 +259,7 @@ def check_same_number_of_atoms(frames: list[Atoms]) -> None:
 def get_permutations_exchange_identical_atoms(
     atoms: Atoms,
     indices: Sequence[int] | None = None,
-) -> tuple[tuple[int, ...], ...]:
+) -> list[list[int]]:
     """Get all possible permutations of `indices` that exchange identical atoms.
 
     Parameters
@@ -272,20 +272,20 @@ def get_permutations_exchange_identical_atoms(
 
     Returns
     -------
-    tuple[tuple[int, ...], ...]
-        Tuple of possible correct permutations that exchange identical atoms.
+    list[list[int]]
+        List of possible correct permutations that exchange identical atoms.
 
     """
     if indices is None:
         indices = list(range(len(atoms)))
     permutations = [
-        tuple(permutation) for permutation in itertools.permutations(indices)
+        list(permutation) for permutation in itertools.permutations(indices)
     ]
-    return tuple(
+    return [
         permutation
         for permutation in permutations
         if np.all(atoms.numbers[permutation] == atoms.numbers[indices])
-    )
+    ]
 
 
 def combine_overlapping_sets(list_of_sets: list[set[Any]]) -> list[set[Any]]:
@@ -742,7 +742,7 @@ def find_all_numbers(string: str) -> dict[int, str]:
     Returns
     -------
     dct : dict[int, str]
-        Dictionary with keys the indeces of where a number starts,
+        Dictionary with keys the indices of where a number starts,
         and values the string that is that number.
 
     """
@@ -986,10 +986,46 @@ def create_water_surface_from_bulk(
 
 
 def capitalize_each_word(string: str) -> str:
+    """Capitalize each word in a string.
+
+    Parameters
+    ----------
+    string : str
+        String to capitalize
+
+    Returns
+    -------
+    str
+        Same string, with each word capitalized.
+
+    Examples
+    --------
+    >>> capitalize_each_word("Hello world!")
+    'Hello World!'
+
+    """
     return " ".join(word.capitalize() for word in string.split())
 
 
 def get_directory(path: str | Path) -> Path:
+    """Get the directory from a filepath or return the directory.
+
+    Parameters
+    ----------
+    path : str | Path
+        Path that is either a directory or a file.
+
+    Returns
+    -------
+    Path
+        Directory
+
+    Raises
+    ------
+    FileNotFoundError
+        If `path` is not a file or a directory.
+
+    """
     path = Path(path)
 
     if path.is_dir():
@@ -1002,6 +1038,14 @@ def get_directory(path: str | Path) -> Path:
 
 @contextlib.contextmanager
 def set_current_directory(directory: str | Path) -> Generator[None]:
+    """Temporarily set the current directory.
+
+    Parameters
+    ----------
+    directory : str | Path
+        Directory to set current working directory to
+
+    """
     wd = Path.cwd()
     os.chdir(directory)
     try:
