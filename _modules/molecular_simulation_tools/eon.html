@@ -119,7 +119,6 @@
 <span class="s2">&quot;&quot;&quot;</span></div>
 
 
-<span class="c1"># ruff: ignore[W293]</span>
 <div class="viewcode-block" id="EON_ASE_DUMMY_CALC_INTERFACE">
 <a class="viewcode-back" href="../../api/molecular_simulation_tools/eon/index.html#molecular_simulation_tools.eon.EON_ASE_DUMMY_CALC_INTERFACE">[docs]</a>
 <span class="n">EON_ASE_DUMMY_CALC_INTERFACE</span> <span class="o">=</span> <span class="n">dedent</span><span class="p">(</span><span class="s2">&quot;&quot;&quot;    import numpy as np</span>
@@ -379,6 +378,14 @@
 <div class="viewcode-block" id="NEBInfo.converged">
 <a class="viewcode-back" href="../../api/molecular_simulation_tools/eon/index.html#molecular_simulation_tools.eon.NEBInfo.converged">[docs]</a>
     <span class="k">def</span> <span class="nf">converged</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Whether the NEB job converged.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        bool</span>
+<span class="sd">            Whether the NEB converged.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">status</span> <span class="o">==</span> <span class="n">NEBStatus</span><span class="o">.</span><span class="n">CONVERGED</span></div>
 </div>
 

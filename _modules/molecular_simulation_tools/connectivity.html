@@ -249,7 +249,25 @@
     <span class="n">atoms</span><span class="p">:</span> <span class="n">Atoms</span><span class="p">,</span>
     <span class="n">indices</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="o">...</span><span class="p">],</span> <span class="o">...</span><span class="p">]:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Get all permutations that result in only swaps of identically bonded atoms.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    atoms : Atoms</span>
+<span class="sd">        Atoms to get permutations for</span>
+<span class="sd">    indices : Iterable[int] | None</span>
+<span class="sd">        Default = None.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    tuple[tuple[int, ...], ...]</span>
+<span class="sd">        All permutations that result in only identical groups swapping</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    Perhaps easier to use or more versatile if instead this takes a graph?</span>
+<span class="sd">    Could then be used directly from the SMILES code, and then not have to generate</span>
+<span class="sd">    a 3D geometry first.</span>
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
@@ -286,6 +304,7 @@
 <span class="sd">    (0, 1, 2, 3, 4, 5)</span>
 <span class="sd">    (0, 2, 1, 3, 4, 5)</span>
 
+<span class="sd">    &gt;&gt;&gt; # Ethanol geometry from CCCBDB</span>
 <span class="sd">    &gt;&gt;&gt; ethanol_positions = [</span>
 <span class="sd">    ...     [1.1879, -0.3829, 0.0000],   # C</span>
 <span class="sd">    ...     [2.0985, 0.2306, 0.0000],    # H</span>
@@ -304,11 +323,26 @@
 <span class="sd">    &gt;&gt;&gt; len(permutations)</span>
 <span class="sd">    12</span>
 
+<span class="sd">    &gt;&gt;&gt; # Glyoxal geometry from CCCBDB</span>
+<span class="sd">    &gt;&gt;&gt; glyoxal_positions = [</span>
+<span class="sd">    ...     [0.0000, 0.7630, 0.0000],   # C</span>
+<span class="sd">    ...     [0.0000, -0.7630, 0.0000],  # C</span>
+<span class="sd">    ...     [1.0481, 1.1907, 0.0000],   # H</span>
+<span class="sd">    ...     [-1.0481, -1.1907, 0.0000], # H</span>
+<span class="sd">    ...     [-1.0367, 1.3908, 0.0000],  # O</span>
+<span class="sd">    ...     [1.0367, -1.3908, 0.0000],  # O</span>
+<span class="sd">    ... ]</span>
+<span class="sd">    &gt;&gt;&gt; glyoxal = Atoms(&quot;C2H2O2&quot;, positions=glyoxal_positions)</span>
+<span class="sd">    &gt;&gt;&gt; permutations = get_permutations_exchange_identical_atoms_groups(glyoxal)</span>
+<span class="sd">    &gt;&gt;&gt; # Ideally this would give 8 permutations because 2*2*2 identically bonded atoms swapping,</span>
+<span class="sd">    &gt;&gt;&gt; # but it only gives 2 permutations (the entire molecule rotating 180 degrees).</span>
+<span class="sd">    &gt;&gt;&gt; len(permutations)</span>
+<span class="sd">    2</span>
+<span class="sd">    &gt;&gt;&gt; sorted(permutations)</span>
+<span class="sd">    [(0, 1, 2, 3, 4, 5), (1, 0, 3, 2, 5, 4)]</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">graph</span> <span class="o">=</span> <span class="n">_atoms_to_graph</span><span class="p">(</span><span class="n">atoms</span><span class="p">)</span>
-    <span class="c1"># nm = nx.algorithms.isomorphism.categorical_node_match(&quot;element&quot;, None)</span>
-    <span class="c1"># GM = nx.algorithms.isomorphism.GraphMatcher(graph, graph, node_match=nm)</span>
-    <span class="c1"># mappings: Iterator[dict[int, int]] = GM.isomorphisms_iter()</span>
     <span class="n">mappings</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">algorithms</span><span class="o">.</span><span class="n">isomorphism</span><span class="o">.</span><span class="n">vf2pp_all_isomorphisms</span><span class="p">(</span>
         <span class="n">graph</span><span class="p">,</span> <span class="n">graph</span><span class="p">,</span> <span class="n">node_label</span><span class="o">=</span><span class="s2">&quot;element&quot;</span>
     <span class="p">)</span>

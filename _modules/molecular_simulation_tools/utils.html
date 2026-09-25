@@ -369,7 +369,7 @@
 <span class="k">def</span> <span class="nf">get_permutations_exchange_identical_atoms</span><span class="p">(</span>
     <span class="n">atoms</span><span class="p">:</span> <span class="n">Atoms</span><span class="p">,</span>
     <span class="n">indices</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="o">...</span><span class="p">],</span> <span class="o">...</span><span class="p">]:</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">int</span><span class="p">]]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Get all possible permutations of `indices` that exchange identical atoms.</span>
 
 <span class="sd">    Parameters</span>
@@ -382,20 +382,20 @@
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    tuple[tuple[int, ...], ...]</span>
-<span class="sd">        Tuple of possible correct permutations that exchange identical atoms.</span>
+<span class="sd">    list[list[int]]</span>
+<span class="sd">        List of possible correct permutations that exchange identical atoms.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">indices</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">indices</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">atoms</span><span class="p">)))</span>
     <span class="n">permutations</span> <span class="o">=</span> <span class="p">[</span>
-        <span class="nb">tuple</span><span class="p">(</span><span class="n">permutation</span><span class="p">)</span> <span class="k">for</span> <span class="n">permutation</span> <span class="ow">in</span> <span class="n">itertools</span><span class="o">.</span><span class="n">permutations</span><span class="p">(</span><span class="n">indices</span><span class="p">)</span>
+        <span class="nb">list</span><span class="p">(</span><span class="n">permutation</span><span class="p">)</span> <span class="k">for</span> <span class="n">permutation</span> <span class="ow">in</span> <span class="n">itertools</span><span class="o">.</span><span class="n">permutations</span><span class="p">(</span><span class="n">indices</span><span class="p">)</span>
     <span class="p">]</span>
-    <span class="k">return</span> <span class="nb">tuple</span><span class="p">(</span>
+    <span class="k">return</span> <span class="p">[</span>
         <span class="n">permutation</span>
         <span class="k">for</span> <span class="n">permutation</span> <span class="ow">in</span> <span class="n">permutations</span>
         <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">atoms</span><span class="o">.</span><span class="n">numbers</span><span class="p">[</span><span class="n">permutation</span><span class="p">]</span> <span class="o">==</span> <span class="n">atoms</span><span class="o">.</span><span class="n">numbers</span><span class="p">[</span><span class="n">indices</span><span class="p">])</span>
-    <span class="p">)</span></div>
+    <span class="p">]</span></div>
 
 
 
@@ -879,7 +879,7 @@
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    dct : dict[int, str]</span>
-<span class="sd">        Dictionary with keys the indeces of where a number starts,</span>
+<span class="sd">        Dictionary with keys the indices of where a number starts,</span>
 <span class="sd">        and values the string that is that number.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -1147,6 +1147,24 @@
 <div class="viewcode-block" id="capitalize_each_word">
 <a class="viewcode-back" href="../../api/molecular_simulation_tools/utils/index.html#molecular_simulation_tools.utils.capitalize_each_word">[docs]</a>
 <span class="k">def</span> <span class="nf">capitalize_each_word</span><span class="p">(</span><span class="n">string</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Capitalize each word in a string.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    string : str</span>
+<span class="sd">        String to capitalize</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    str</span>
+<span class="sd">        Same string, with each word capitalized.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; capitalize_each_word(&quot;Hello world!&quot;)</span>
+<span class="sd">    &#39;Hello World!&#39;</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="s2">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">word</span><span class="o">.</span><span class="n">capitalize</span><span class="p">()</span> <span class="k">for</span> <span class="n">word</span> <span class="ow">in</span> <span class="n">string</span><span class="o">.</span><span class="n">split</span><span class="p">())</span></div>
 
 
@@ -1154,6 +1172,24 @@
 <div class="viewcode-block" id="get_directory">
 <a class="viewcode-back" href="../../api/molecular_simulation_tools/utils/index.html#molecular_simulation_tools.utils.get_directory">[docs]</a>
 <span class="k">def</span> <span class="nf">get_directory</span><span class="p">(</span><span class="n">path</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">Path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Path</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Get the directory from a filepath or return the directory.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    path : str | Path</span>
+<span class="sd">        Path that is either a directory or a file.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    Path</span>
+<span class="sd">        Directory</span>
+
+<span class="sd">    Raises</span>
+<span class="sd">    ------</span>
+<span class="sd">    FileNotFoundError</span>
+<span class="sd">        If `path` is not a file or a directory.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">path</span><span class="o">.</span><span class="n">is_dir</span><span class="p">():</span>
@@ -1169,6 +1205,14 @@
 <div class="viewcode-block" id="set_current_directory">
 <a class="viewcode-back" href="../../api/molecular_simulation_tools/utils/index.html#molecular_simulation_tools.utils.set_current_directory">[docs]</a>
 <span class="k">def</span> <span class="nf">set_current_directory</span><span class="p">(</span><span class="n">directory</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">Path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Generator</span><span class="p">[</span><span class="kc">None</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Temporarily set the current directory.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    directory : str | Path</span>
+<span class="sd">        Directory to set current working directory to</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">wd</span> <span class="o">=</span> <span class="n">Path</span><span class="o">.</span><span class="n">cwd</span><span class="p">()</span>
     <span class="n">os</span><span class="o">.</span><span class="n">chdir</span><span class="p">(</span><span class="n">directory</span><span class="p">)</span>
     <span class="k">try</span><span class="p">:</span>

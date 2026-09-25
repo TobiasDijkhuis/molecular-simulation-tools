@@ -76,7 +76,7 @@
 <span></span><span class="sd">&quot;&quot;&quot;Tools for creating plots.&quot;&quot;&quot;</span>
 
 <span class="kn">import</span> <span class="nn">itertools</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Literal</span>
 
 <span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
@@ -166,22 +166,49 @@
 
 
 
-<span class="k">def</span> <span class="nf">_ev_to_kcal_per_mol</span><span class="p">(</span><span class="n">energy_in_ev</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">typing</span><span class="o">.</span><span class="n">ArrayLike</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">typing</span><span class="o">.</span><span class="n">ArrayLike</span><span class="p">:</span>
-    <span class="k">return</span> <span class="n">energy_in_ev</span> <span class="o">*</span> <span class="n">eV</span> <span class="o">/</span> <span class="p">(</span><span class="n">kcal</span> <span class="o">/</span> <span class="n">mol</span><span class="p">)</span>  <span class="c1"># ty: ignore[unsupported-operator]</span>
-
-
-<span class="k">def</span> <span class="nf">_kcal_per_mol_to_ev</span><span class="p">(</span>
-    <span class="n">energy_in_kcal_per_mol</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">typing</span><span class="o">.</span><span class="n">ArrayLike</span><span class="p">,</span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">typing</span><span class="o">.</span><span class="n">ArrayLike</span><span class="p">:</span>
-    <span class="k">return</span> <span class="n">energy_in_kcal_per_mol</span> <span class="o">*</span> <span class="p">(</span><span class="n">kcal</span> <span class="o">/</span> <span class="n">mol</span><span class="p">)</span> <span class="o">/</span> <span class="n">eV</span>  <span class="c1"># ty: ignore[unsupported-operator]</span>
-
-
 <div class="viewcode-block" id="create_secondary_energy_axis">
 <a class="viewcode-back" href="../../api/molecular_simulation_tools/plot/index.html#molecular_simulation_tools.plot.create_secondary_energy_axis">[docs]</a>
-<span class="k">def</span> <span class="nf">create_secondary_energy_axis</span><span class="p">(</span><span class="n">ax</span><span class="p">:</span> <span class="n">plt</span><span class="o">.</span><span class="n">Axes</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">plt</span><span class="o">.</span><span class="n">Axes</span><span class="p">,</span> <span class="n">SecondaryAxis</span><span class="p">]:</span>
-    <span class="n">secax</span> <span class="o">=</span> <span class="n">ax</span><span class="o">.</span><span class="n">secondary_yaxis</span><span class="p">(</span><span class="s2">&quot;right&quot;</span><span class="p">,</span> <span class="p">(</span><span class="n">_ev_to_kcal_per_mol</span><span class="p">,</span> <span class="n">_kcal_per_mol_to_ev</span><span class="p">))</span>
-    <span class="n">ax</span><span class="o">.</span><span class="n">tick_params</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="s2">&quot;y&quot;</span><span class="p">,</span> <span class="n">right</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">which</span><span class="o">=</span><span class="s2">&quot;both&quot;</span><span class="p">)</span>
-    <span class="n">secax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;Energy (kcal/mol)&quot;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">create_secondary_energy_axis</span><span class="p">(</span>
+    <span class="n">ax</span><span class="p">:</span> <span class="n">plt</span><span class="o">.</span><span class="n">Axes</span><span class="p">,</span> <span class="n">axis</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;x&quot;</span><span class="p">,</span> <span class="s2">&quot;y&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;y&quot;</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">plt</span><span class="o">.</span><span class="n">Axes</span><span class="p">,</span> <span class="n">SecondaryAxis</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Create a secondary energy axis in kcal/mol.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    ax : plt.Axes</span>
+<span class="sd">        Axes object to modify</span>
+<span class="sd">    axis : Literal[&#39;x&#39;, &#39;y&#39;]</span>
+<span class="sd">        Which axis to add the secondary axis to. Default = &#39;y&#39;</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    ax : plt.Axes</span>
+<span class="sd">        Original Axes object.</span>
+<span class="sd">    secax : SecondaryAxis</span>
+<span class="sd">        Newly created secondary axis.</span>
+
+<span class="sd">    Raises</span>
+<span class="sd">    ------</span>
+<span class="sd">    ValueError</span>
+<span class="sd">        If `axis` is not ``&quot;x&quot;`` or ``&quot;y&quot;``.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">ev_to_kcal_per_mol</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">energy_ev</span><span class="p">:</span> <span class="n">energy_ev</span> <span class="o">*</span> <span class="n">eV</span> <span class="o">/</span> <span class="p">(</span><span class="n">kcal</span> <span class="o">/</span> <span class="n">mol</span><span class="p">)</span>
+    <span class="n">kcal_per_mol_to_ev</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">energy_kcal_per_mol</span><span class="p">:</span> <span class="p">(</span>
+        <span class="n">energy_kcal_per_mol</span> <span class="o">*</span> <span class="p">(</span><span class="n">kcal</span> <span class="o">/</span> <span class="n">mol</span><span class="p">)</span> <span class="o">/</span> <span class="n">eV</span>
+    <span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">axis</span> <span class="o">==</span> <span class="s2">&quot;y&quot;</span><span class="p">:</span>
+        <span class="n">secax</span> <span class="o">=</span> <span class="n">ax</span><span class="o">.</span><span class="n">secondary_yaxis</span><span class="p">(</span><span class="s2">&quot;right&quot;</span><span class="p">,</span> <span class="p">(</span><span class="n">ev_to_kcal_per_mol</span><span class="p">,</span> <span class="n">kcal_per_mol_to_ev</span><span class="p">))</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">tick_params</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="s2">&quot;y&quot;</span><span class="p">,</span> <span class="n">right</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">which</span><span class="o">=</span><span class="s2">&quot;both&quot;</span><span class="p">)</span>
+        <span class="n">secax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;Energy (kcal/mol)&quot;</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">axis</span> <span class="o">==</span> <span class="s2">&quot;x&quot;</span><span class="p">:</span>
+        <span class="n">secax</span> <span class="o">=</span> <span class="n">ax</span><span class="o">.</span><span class="n">secondary_xaxis</span><span class="p">(</span><span class="s2">&quot;top&quot;</span><span class="p">,</span> <span class="p">(</span><span class="n">ev_to_kcal_per_mol</span><span class="p">,</span> <span class="n">kcal_per_mol_to_ev</span><span class="p">))</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">tick_params</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="s2">&quot;x&quot;</span><span class="p">,</span> <span class="n">top</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">which</span><span class="o">=</span><span class="s2">&quot;both&quot;</span><span class="p">)</span>
+        <span class="n">secax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">&quot;Energy (kcal/mol)&quot;</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;&#39;axis&#39; should be one of [&#39;x&#39;, &#39;y&#39;], but was &#39;</span><span class="si">{</span><span class="n">axis</span><span class="si">}</span><span class="s2">&#39;&quot;</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">ax</span><span class="p">,</span> <span class="n">secax</span></div>
 
 

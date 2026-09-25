@@ -75,6 +75,12 @@ Module Contents
 
    .. py:method:: converged() -> bool
 
+      Whether the NEB job converged.
+
+      :returns: Whether the NEB converged.
+      :rtype: bool
+
+
 
    .. py:attribute:: force_convergence
       :type:  OneDFloatArray

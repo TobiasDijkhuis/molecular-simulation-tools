@@ -84,6 +84,20 @@ Module Contents
 
 .. py:function:: capitalize_each_word(string: str) -> str
 
+   Capitalize each word in a string.
+
+   :param string: String to capitalize
+   :type string: str
+
+   :returns: Same string, with each word capitalized.
+   :rtype: str
+
+   .. rubric:: Examples
+
+   >>> capitalize_each_word("Hello world!")
+   'Hello World!'
+
+
 .. py:function:: check_same_number_of_atoms(frames: list[ase.Atoms]) -> None
 
    Check that all frames have the same number of atoms.
@@ -206,7 +220,7 @@ Module Contents
    :param string: String to find numbers for.
    :type string: str
 
-   :returns: **dct** -- Dictionary with keys the indeces of where a number starts,
+   :returns: **dct** -- Dictionary with keys the indices of where a number starts,
              and values the string that is that number.
    :rtype: dict[int, str]
 
@@ -223,6 +237,17 @@ Module Contents
 
 
 .. py:function:: get_directory(path: str | pathlib.Path) -> pathlib.Path
+
+   Get the directory from a filepath or return the directory.
+
+   :param path: Path that is either a directory or a file.
+   :type path: str | Path
+
+   :returns: Directory
+   :rtype: Path
+
+   :raises FileNotFoundError: If `path` is not a file or a directory.
+
 
 .. py:function:: get_minimum_site_idx_for_binding_sites(binding_site_sets: list[set[int]], energies: list[float] | numpy.ndarray) -> list[int]
 
@@ -266,7 +291,7 @@ Module Contents
    :rtype: float
 
 
-.. py:function:: get_permutations_exchange_identical_atoms(atoms: ase.Atoms, indices: collections.abc.Sequence[int] | None = None) -> tuple[tuple[int, ...], ...]
+.. py:function:: get_permutations_exchange_identical_atoms(atoms: ase.Atoms, indices: collections.abc.Sequence[int] | None = None) -> list[list[int]]
 
    Get all possible permutations of `indices` that exchange identical atoms.
 
@@ -276,8 +301,8 @@ Module Contents
                    If None, do all atoms. Default = None.
    :type indices: Sequence[int] | None
 
-   :returns: Tuple of possible correct permutations that exchange identical atoms.
-   :rtype: tuple[tuple[int, ...], ...]
+   :returns: List of possible correct permutations that exchange identical atoms.
+   :rtype: list[list[int]]
 
 
 .. py:function:: get_random_unit_vector(n: int = 1) -> numpy.ndarray
@@ -414,6 +439,12 @@ Module Contents
 
 
 .. py:function:: set_current_directory(directory: str | pathlib.Path) -> collections.abc.Generator[None]
+
+   Temporarily set the current directory.
+
+   :param directory: Directory to set current working directory to
+   :type directory: str | Path
+
 
 .. py:function:: turn_grid_into_position_vectors(grid_matrices: tuple[numpy.ndarray, ...]) -> numpy.ndarray
 

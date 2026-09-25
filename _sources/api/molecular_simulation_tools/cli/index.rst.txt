@@ -3,6 +3,11 @@ molecular_simulation_tools.cli
 
 .. py:module:: molecular_simulation_tools.cli
 
+.. autoapi-nested-parse::
+
+   Command-line interface.
+
+
 
 Attributes
 ----------
@@ -24,14 +29,14 @@ Functions
 Module Contents
 ---------------
 
-.. py:function:: gui(path: Annotated[pathlib.Path, typer.Argument(exists=True, file_okay=True, dir_okay=False, readable=True)], block: Annotated[bool, typer.Option()] = False) -> None
+.. py:function:: gui(path: Annotated[pathlib.Path, typer.Argument(help='Path to the structure.', exists=True, file_okay=True, dir_okay=False, readable=True)], block: Annotated[bool, typer.Option(help='Whether to block while the file is shown.')] = False) -> None
 
-   View a molecular geometry. Reads more filetypes than 'ase gui'
+   View a molecular geometry. Reads more filetypes than 'ase gui'.
 
 
 .. py:function:: null() -> None
 
-   Do nothing
+   Do nothing.
 
 
 .. py:data:: app

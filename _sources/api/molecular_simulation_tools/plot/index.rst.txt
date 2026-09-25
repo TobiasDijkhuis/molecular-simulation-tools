@@ -24,7 +24,20 @@ Functions
 Module Contents
 ---------------
 
-.. py:function:: create_secondary_energy_axis(ax: matplotlib.pyplot.Axes) -> tuple[matplotlib.pyplot.Axes, matplotlib.axes._secondary_axes.SecondaryAxis]
+.. py:function:: create_secondary_energy_axis(ax: matplotlib.pyplot.Axes, axis: Literal['x', 'y'] = 'y') -> tuple[matplotlib.pyplot.Axes, matplotlib.axes._secondary_axes.SecondaryAxis]
+
+   Create a secondary energy axis in kcal/mol.
+
+   :param ax: Axes object to modify
+   :type ax: matplotlib.pyplot.Axes
+   :param axis: Which axis to add the secondary axis to. Default = 'y'
+   :type axis: Literal['x', 'y']
+
+   :returns: * **ax** (*matplotlib.pyplot.Axes*) -- Original Axes object.
+             * **secax** (*SecondaryAxis*) -- Newly created secondary axis.
+
+   :raises ValueError: If `axis` is not ``"x"`` or ``"y"``.
+
 
 .. py:function:: plot_neb(path: numpy.ndarray, energies: numpy.ndarray, ax: matplotlib.pyplot.Axes | None = None, plot_kwargs: dict[str, Any] | None = None, *, mark_transition: bool = False, include_secondary_axis: bool = True) -> matplotlib.pyplot.Axes
 
