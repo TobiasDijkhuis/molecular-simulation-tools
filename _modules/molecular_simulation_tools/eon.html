@@ -81,13 +81,12 @@
 <span class="kn">import</span> <span class="nn">re</span>
 <span class="kn">import</span> <span class="nn">subprocess</span>
 <span class="kn">import</span> <span class="nn">warnings</span>
-<span class="kn">from</span> <span class="nn">collections.abc</span> <span class="kn">import</span> <span class="n">Callable</span>
 <span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span>
 <span class="kn">from</span> <span class="nn">enum</span> <span class="kn">import</span> <span class="n">StrEnum</span><span class="p">,</span> <span class="n">auto</span><span class="p">,</span> <span class="n">unique</span>
 <span class="kn">from</span> <span class="nn">json</span> <span class="kn">import</span> <span class="n">loads</span>
 <span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
 <span class="kn">from</span> <span class="nn">textwrap</span> <span class="kn">import</span> <span class="n">dedent</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">get_type_hints</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">NamedTuple</span><span class="p">,</span> <span class="n">TypeAlias</span><span class="p">,</span> <span class="n">get_type_hints</span>
 
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">from</span> <span class="nn">ase</span> <span class="kn">import</span> <span class="n">Atoms</span>
@@ -100,6 +99,9 @@
     <span class="n">get_directory</span><span class="p">,</span>
     <span class="n">set_current_directory</span><span class="p">,</span>
 <span class="p">)</span>
+
+<span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
+    <span class="kn">from</span> <span class="nn">collections.abc</span> <span class="kn">import</span> <span class="n">Callable</span>
 
 <div class="viewcode-block" id="EON_JOB_REQUIRED_KEYS">
 <a class="viewcode-back" href="../../api/molecular_simulation_tools/eon/index.html#molecular_simulation_tools.eon.EON_JOB_REQUIRED_KEYS">[docs]</a>
@@ -117,6 +119,7 @@
 <span class="s2">&quot;&quot;&quot;</span></div>
 
 
+<span class="c1"># ruff: ignore[W293]</span>
 <div class="viewcode-block" id="EON_ASE_DUMMY_CALC_INTERFACE">
 <a class="viewcode-back" href="../../api/molecular_simulation_tools/eon/index.html#molecular_simulation_tools.eon.EON_ASE_DUMMY_CALC_INTERFACE">[docs]</a>
 <span class="n">EON_ASE_DUMMY_CALC_INTERFACE</span> <span class="o">=</span> <span class="n">dedent</span><span class="p">(</span><span class="s2">&quot;&quot;&quot;    import numpy as np</span>
@@ -240,11 +243,12 @@
 <div class="viewcode-block" id="read_con_info">
 <a class="viewcode-back" href="../../api/molecular_simulation_tools/eon/index.html#molecular_simulation_tools.eon.read_con_info">[docs]</a>
 <span class="k">def</span> <span class="nf">read_con_info</span><span class="p">(</span><span class="n">path</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">Path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]:</span>
-    <span class="n">info_dicts</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="k">with</span> <span class="n">Path</span><span class="p">(</span><span class="n">path</span><span class="p">)</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
-        <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">file</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">line</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;{&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="n">line</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">&quot;}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">):</span>
-                <span class="n">info_dicts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">loads</span><span class="p">(</span><span class="n">line</span><span class="p">))</span>
+        <span class="n">info_dicts</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="n">loads</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">file</span>
+            <span class="k">if</span> <span class="n">line</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;{&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="n">line</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">&quot;}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="p">]</span>
     <span class="k">return</span> <span class="n">info_dicts</span></div>
 
 
@@ -262,9 +266,41 @@
 
 
 
+<div class="viewcode-block" id="OneDIntArray">
+<a class="viewcode-back" href="../../api/molecular_simulation_tools/eon/index.html#molecular_simulation_tools.eon.OneDIntArray">[docs]</a>
+<span class="n">OneDIntArray</span><span class="p">:</span> <span class="n">TypeAlias</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">[</span><span class="nb">tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span> <span class="n">np</span><span class="o">.</span><span class="n">dtype</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">int_</span><span class="p">]]</span></div>
+
+<div class="viewcode-block" id="OneDFloatArray">
+<a class="viewcode-back" href="../../api/molecular_simulation_tools/eon/index.html#molecular_simulation_tools.eon.OneDFloatArray">[docs]</a>
+<span class="n">OneDFloatArray</span><span class="p">:</span> <span class="n">TypeAlias</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">[</span><span class="nb">tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span> <span class="n">np</span><span class="o">.</span><span class="n">dtype</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">floating</span><span class="p">]]</span></div>
+
+
+
+<div class="viewcode-block" id="NEBData">
+<a class="viewcode-back" href="../../api/molecular_simulation_tools/eon/index.html#molecular_simulation_tools.eon.NEBData">[docs]</a>
+<span class="k">class</span> <span class="nc">NEBData</span><span class="p">(</span><span class="n">NamedTuple</span><span class="p">):</span>
+<div class="viewcode-block" id="NEBData.img">
+<a class="viewcode-back" href="../../api/molecular_simulation_tools/eon/index.html#molecular_simulation_tools.eon.NEBData.img">[docs]</a>
+    <span class="n">img</span><span class="p">:</span> <span class="n">OneDIntArray</span></div>
+
+<div class="viewcode-block" id="NEBData.rxn_coord">
+<a class="viewcode-back" href="../../api/molecular_simulation_tools/eon/index.html#molecular_simulation_tools.eon.NEBData.rxn_coord">[docs]</a>
+    <span class="n">rxn_coord</span><span class="p">:</span> <span class="n">OneDFloatArray</span></div>
+
+<div class="viewcode-block" id="NEBData.energy">
+<a class="viewcode-back" href="../../api/molecular_simulation_tools/eon/index.html#molecular_simulation_tools.eon.NEBData.energy">[docs]</a>
+    <span class="n">energy</span><span class="p">:</span> <span class="n">OneDFloatArray</span></div>
+
+<div class="viewcode-block" id="NEBData.f_para">
+<a class="viewcode-back" href="../../api/molecular_simulation_tools/eon/index.html#molecular_simulation_tools.eon.NEBData.f_para">[docs]</a>
+    <span class="n">f_para</span><span class="p">:</span> <span class="n">OneDFloatArray</span></div>
+</div>
+
+
+
 <div class="viewcode-block" id="read_neb_data">
 <a class="viewcode-back" href="../../api/molecular_simulation_tools/eon/index.html#molecular_simulation_tools.eon.read_neb_data">[docs]</a>
-<span class="k">def</span> <span class="nf">read_neb_data</span><span class="p">(</span><span class="n">filepath</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">Path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]:</span>
+<span class="k">def</span> <span class="nf">read_neb_data</span><span class="p">(</span><span class="n">filepath</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">Path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">NEBData</span><span class="p">:</span>
     <span class="k">with</span> <span class="n">Path</span><span class="p">(</span><span class="n">filepath</span><span class="p">)</span><span class="o">.</span><span class="n">open</span><span class="p">()</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
         <span class="n">reader</span> <span class="o">=</span> <span class="n">csv</span><span class="o">.</span><span class="n">reader</span><span class="p">(</span><span class="n">file</span><span class="p">,</span> <span class="n">delimiter</span><span class="o">=</span><span class="s2">&quot; &quot;</span><span class="p">,</span> <span class="n">skipinitialspace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
@@ -272,11 +308,9 @@
         <span class="n">keys</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">dct</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
         <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">reader</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">col</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">row</span><span class="p">):</span>
-                <span class="k">if</span> <span class="n">col</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-                    <span class="n">dct</span><span class="p">[</span><span class="n">keys</span><span class="p">[</span><span class="n">col</span><span class="p">]]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">value</span><span class="p">))</span>
-                <span class="k">else</span><span class="p">:</span>
-                    <span class="n">dct</span><span class="p">[</span><span class="n">keys</span><span class="p">[</span><span class="n">col</span><span class="p">]]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">value</span><span class="p">))</span>
-    <span class="k">return</span> <span class="p">{</span><span class="n">key</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">value</span><span class="p">)</span> <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">dct</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span></div>
+                <span class="n">dct</span><span class="p">[</span><span class="n">keys</span><span class="p">[</span><span class="n">col</span><span class="p">]]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">value</span><span class="p">))</span>
+    <span class="n">img</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">dct</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;img&quot;</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">int</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">NEBData</span><span class="p">(</span><span class="n">img</span><span class="o">=</span><span class="n">img</span><span class="p">,</span> <span class="o">**</span><span class="p">{</span><span class="n">key</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">value</span><span class="p">)</span> <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">dct</span><span class="o">.</span><span class="n">items</span><span class="p">()})</span></div>
 
 
 
@@ -339,7 +373,7 @@
 
 <div class="viewcode-block" id="NEBInfo.force_convergence">
 <a class="viewcode-back" href="../../api/molecular_simulation_tools/eon/index.html#molecular_simulation_tools.eon.NEBInfo.force_convergence">[docs]</a>
-    <span class="n">force_convergence</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span></div>
+    <span class="n">force_convergence</span><span class="p">:</span> <span class="n">OneDFloatArray</span></div>
 
 
 <div class="viewcode-block" id="NEBInfo.converged">
@@ -350,7 +384,7 @@
 
 
 
-<span class="k">def</span> <span class="nf">_read_iteration_info_from_lines</span><span class="p">(</span><span class="n">lines</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]:</span>
+<span class="k">def</span> <span class="nf">_read_iteration_info_from_lines</span><span class="p">(</span><span class="n">lines</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">OneDFloatArray</span><span class="p">]:</span>
     <span class="n">end_idx</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="k">for</span> <span class="n">line_nr</span><span class="p">,</span> <span class="n">line</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">lines</span><span class="p">):</span>
         <span class="k">if</span> <span class="s2">&quot;iteration    step size&quot;</span> <span class="ow">in</span> <span class="n">line</span><span class="p">:</span>

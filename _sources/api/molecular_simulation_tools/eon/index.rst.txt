@@ -13,6 +13,8 @@ Attributes
    molecular_simulation_tools.eon.EON_ASE_DUMMY_CALC_INTERFACE
    molecular_simulation_tools.eon.EON_JOB_REQUIRED_KEYS
    molecular_simulation_tools.eon.EON_LOG_FILEPATH
+   molecular_simulation_tools.eon.OneDFloatArray
+   molecular_simulation_tools.eon.OneDIntArray
    molecular_simulation_tools.eon.RE_NEB_CONVERGED
    molecular_simulation_tools.eon.RE_NEB_FAILED
    molecular_simulation_tools.eon.RE_POTENTIAL_CALLS
@@ -23,6 +25,7 @@ Classes
 
 .. autoapisummary::
 
+   molecular_simulation_tools.eon.NEBData
    molecular_simulation_tools.eon.NEBInfo
    molecular_simulation_tools.eon.NEBStatus
 
@@ -47,13 +50,34 @@ Functions
 Module Contents
 ---------------
 
+.. py:class:: NEBData
+
+   Bases: :py:obj:`NamedTuple`
+
+
+   .. py:attribute:: energy
+      :type:  OneDFloatArray
+
+
+   .. py:attribute:: f_para
+      :type:  OneDFloatArray
+
+
+   .. py:attribute:: img
+      :type:  OneDIntArray
+
+
+   .. py:attribute:: rxn_coord
+      :type:  OneDFloatArray
+
+
 .. py:class:: NEBInfo
 
    .. py:method:: converged() -> bool
 
 
    .. py:attribute:: force_convergence
-      :type:  numpy.ndarray
+      :type:  OneDFloatArray
 
 
    .. py:attribute:: num_evaluations
@@ -100,7 +124,7 @@ Module Contents
 
 .. py:function:: read_eon_quill_log(path: str | pathlib.Path) -> NEBInfo
 
-.. py:function:: read_neb_data(filepath: str | pathlib.Path) -> dict[str, numpy.ndarray]
+.. py:function:: read_neb_data(filepath: str | pathlib.Path) -> NEBData
 
 .. py:function:: run_eon_job(path: str | pathlib.Path) -> subprocess.CompletedProcess
 
@@ -139,6 +163,14 @@ Module Contents
 
 .. py:data:: EON_LOG_FILEPATH
    :value: 'client_quill.log'
+
+
+.. py:type:: OneDFloatArray
+   :canonical: np.ndarray[tuple[int], np.dtype[np.floating]]
+
+
+.. py:type:: OneDIntArray
+   :canonical: np.ndarray[tuple[int], np.dtype[np.int_]]
 
 
 .. py:data:: RE_NEB_CONVERGED

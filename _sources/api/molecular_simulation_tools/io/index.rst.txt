@@ -32,6 +32,6 @@ Module Contents
    :returns: Read file
    :rtype: Atoms | list[Atoms]
 
-   :raises ImportError: If `path` ends with `.h5`, but ``znh5md`` is not available.
+   :raises ImportError: If `path` ends with ``.h5``, but ``znh5md`` is not available.
 
 

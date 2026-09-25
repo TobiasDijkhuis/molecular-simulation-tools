@@ -9,6 +9,15 @@ molecular_simulation_tools.orca
 
 
 
+Attributes
+----------
+
+.. autoapisummary::
+
+   molecular_simulation_tools.orca.XYZ_END_RE
+   molecular_simulation_tools.orca.XYZ_START_RE
+
+
 Classes
 -------
 
@@ -24,6 +33,7 @@ Functions
 
    molecular_simulation_tools.orca.get_calculator_from_orca_inp
    molecular_simulation_tools.orca.get_calculator_from_orca_out
+   molecular_simulation_tools.orca.read_orca_inp
 
 
 Module Contents
@@ -106,4 +116,10 @@ Module Contents
 
    :raises RuntimeError: If ``"INPUT_FILE"`` or ``"****END OF INPUT****"`` are not found in `path`.
 
+
+.. py:function:: read_orca_inp(path: str | pathlib.Path) -> ase.Atoms
+
+.. py:data:: XYZ_END_RE
+
+.. py:data:: XYZ_START_RE
 

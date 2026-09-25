@@ -1,0 +1,38 @@
+molecular_simulation_tools.cli
+==============================
+
+.. py:module:: molecular_simulation_tools.cli
+
+
+Attributes
+----------
+
+.. autoapisummary::
+
+   molecular_simulation_tools.cli.app
+
+
+Functions
+---------
+
+.. autoapisummary::
+
+   molecular_simulation_tools.cli.gui
+   molecular_simulation_tools.cli.null
+
+
+Module Contents
+---------------
+
+.. py:function:: gui(path: Annotated[pathlib.Path, typer.Argument(exists=True, file_okay=True, dir_okay=False, readable=True)], block: Annotated[bool, typer.Option()] = False) -> None
+
+   View a molecular geometry. Reads more filetypes than 'ase gui'
+
+
+.. py:function:: null() -> None
+
+   Do nothing
+
+
+.. py:data:: app
+
