@@ -64,9 +64,6 @@ def plot_neb(
     if ax is None:
         ax = plt.gca()
 
-    ax.axhline(energies[0], c="black", ls="dashed", alpha=0.5, lw=1, zorder=0)
-    ax.axhline(energies[-1], c="black", ls="dashed", alpha=0.5, lw=1, zorder=0)
-
     relative_energies = energies - energies[0]
     ax.plot(path, relative_energies, marker="o", **plot_kwargs)
     if mark_transition:
@@ -131,8 +128,8 @@ def set_up_periodic_plot(
         ax = plt.gca()
 
     ax.set_aspect("equal")
-    ax.set_xlabel("x (Angstrom)")
-    ax.set_ylabel("y (Angstrom)")
+    ax.set_xlabel(r"$x$ ($\mathrm{\AA}$)")
+    ax.set_ylabel(r"$y$ ($\mathrm{\AA}$)")
 
     if box_size.ndim == 2:
         box_size = np.diag(box_size)

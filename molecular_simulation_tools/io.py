@@ -5,6 +5,9 @@ from pathlib import Path
 from ase import Atoms
 from ase.io import read as ase_read
 
+from molecular_simulation_tools.eon import read_con_with_info
+from molecular_simulation_tools.orca import read_orca_inp
+
 try:
     import znh5md
 
@@ -31,14 +34,27 @@ def read(path: str | Path, index: int | str | slice = -1) -> Atoms | list[Atoms]
     Raises
     ------
     ImportError
-        If `path` ends with `.h5`, but ``znh5md`` is not available.
+        If `path` ends with ``.h5``, but ``znh5md`` is not available.
 
     """
-    if str(path).endswith(".h5"):
-        if not _znh5md_avail:
-            msg = "Reading h5md files requires znh5md, but it was not available."
-            raise ImportError(msg)
-        if isinstance(index, str) and index == ":":
-            index = slice(None, None, None)
-        return znh5md.znh5md.read(path, index=index)  # ty: ignore[invalid-argument-type]
-    return ase_read(path, index=index)
+    path = Path(path)
+    match path.suffix:
+        case ".h5":
+            if not _znh5md_avail:
+                msg = "Reading h5md files requires znh5md, but it was not available."
+                raise ImportError(msg)
+            if isinstance(index, str) and index == ":":
+                index = slice(None, None, None)
+            return znh5md.znh5md.read(path, index=index)  # ty: ignore[invalid-argument-type]
+        case ".inp":
+            if index != -1:
+                msg = "Reading ORCA input files only supports indexing the one structure in the file."
+                raise NotImplementedError(msg)
+            return read_orca_inp(path)
+        case ".con":
+            if index != ":":
+                msg = "Single indexing of reading .con files is not implemented. Use index = ':'"
+                raise NotImplementedError(msg)
+            return read_con_with_info(path)[0]
+        case _:
+            return ase_read(path, index=index)

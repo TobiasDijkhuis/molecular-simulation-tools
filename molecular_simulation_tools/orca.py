@@ -2,12 +2,36 @@
 
 from __future__ import annotations
 
+import re
 from pathlib import Path
 
 import numpy as np
 from ase import Atoms
 from ase.calculators.orca import ORCA, OrcaProfile
+from ase.io.extxyz import _read_xyz_frame
 from ase.units import Angstrom, fs
+
+XYZ_START_RE = re.compile(r"\*\s*xyz", flags=re.IGNORECASE)
+XYZ_END_RE = re.compile(r"\*\s*$")
+
+
+def read_orca_inp(path: str | Path) -> Atoms:
+    lines = Path(path).read_text().split("\n")
+    for line_nr, line in enumerate(lines):
+        m = re.match(XYZ_START_RE, line)
+        if m is not None:
+            start_idx = line_nr + 1
+            continue
+        m = re.match(XYZ_END_RE, line)
+        if m is not None:
+            end_idx = line_nr
+
+    n_atoms = end_idx - start_idx
+    frame: Atoms = _read_xyz_frame(
+        iter([f"Parsed from ORCA input file {str(path)}", *lines[start_idx:end_idx]]),
+        n_atoms,
+    )
+    return frame
 
 
 def get_calculator_from_orca_inp(

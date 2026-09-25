@@ -6,13 +6,12 @@ import inspect
 import re
 import subprocess
 import warnings
-from collections.abc import Callable
 from dataclasses import dataclass
 from enum import StrEnum, auto, unique
 from json import loads
 from pathlib import Path
 from textwrap import dedent
-from typing import Any, get_type_hints
+from typing import TYPE_CHECKING, Any, NamedTuple, TypeAlias, get_type_hints
 
 import numpy as np
 from ase import Atoms
@@ -26,6 +25,9 @@ from molecular_simulation_tools.utils import (
     set_current_directory,
 )
 
+if TYPE_CHECKING:
+    from collections.abc import Callable
+
 EON_JOB_REQUIRED_KEYS = frozenset({"Main", "Potential"})
 
 EON_ASE_CALC_INTERFACE = """def _calculate(R, atomicNrs, box, calc):  # ruff: ignore[missing-type-function-argument, invalid-argument-name]
@@ -36,6 +38,7 @@ EON_ASE_CALC_INTERFACE = """def _calculate(R, atomicNrs, box, calc):  # ruff: ig
     return energy, forces
 """
 
+# ruff: ignore[W293]
 EON_ASE_DUMMY_CALC_INTERFACE = dedent("""    import numpy as np
     from ase import Atoms
     from ase.calculators.calculator import Calculator, all_changes
@@ -142,11 +145,12 @@ def write_eon_job(dct: dict[str, Any], path: str | Path) -> None:
 
 
 def read_con_info(path: str | Path) -> list[dict[str, Any]]:
-    info_dicts: list[dict[str, Any]] = []
     with Path(path).open(mode="r") as file:
-        for line in file:
-            if line.startswith("{") and line.endswith("}\n"):
-                info_dicts.append(loads(line))
+        info_dicts = [
+            loads(line)
+            for line in file
+            if line.startswith("{") and line.endswith("}\n")
+        ]
     return info_dicts
 
 
@@ -160,7 +164,18 @@ def read_con_with_info(path: str | Path) -> tuple[list[Atoms], list[dict[str, An
     return atoms, info_dicts
 
 
-def read_neb_data(filepath: str | Path) -> dict[str, np.ndarray]:
+OneDIntArray: TypeAlias = np.ndarray[tuple[int], np.dtype[np.int_]]
+OneDFloatArray: TypeAlias = np.ndarray[tuple[int], np.dtype[np.floating]]
+
+
+class NEBData(NamedTuple):
+    img: OneDIntArray
+    rxn_coord: OneDFloatArray
+    energy: OneDFloatArray
+    f_para: OneDFloatArray
+
+
+def read_neb_data(filepath: str | Path) -> NEBData:
     with Path(filepath).open() as file:
         reader = csv.reader(file, delimiter=" ", skipinitialspace=True)
 
@@ -168,11 +183,9 @@ def read_neb_data(filepath: str | Path) -> dict[str, np.ndarray]:
         keys = list(dct.keys())
         for row in reader:
             for col, value in enumerate(row):
-                if col == 0:
-                    dct[keys[col]].append(int(value))
-                else:
-                    dct[keys[col]].append(float(value))
-    return {key: np.array(value) for key, value in dct.items()}
+                dct[keys[col]].append(float(value))
+    img = np.array(dct.pop("img"), dtype=int)
+    return NEBData(img=img, **{key: np.array(value) for key, value in dct.items()})
 
 
 RE_NEB_CONVERGED = re.compile(r"^NEB converged")
@@ -194,13 +207,13 @@ class NEBInfo:
     status: NEBStatus
     num_evaluations: int
     num_iterations: int
-    force_convergence: np.ndarray
+    force_convergence: OneDFloatArray
 
     def converged(self) -> bool:
         return self.status == NEBStatus.CONVERGED
 
 
-def _read_iteration_info_from_lines(lines: list[str]) -> tuple[int, np.ndarray]:
+def _read_iteration_info_from_lines(lines: list[str]) -> tuple[int, OneDFloatArray]:
     end_idx = None
     for line_nr, line in enumerate(lines):
         if "iteration    step size" in line:

@@ -26,6 +26,9 @@ dependencies = [
     "ase", "numpy", "znh5md", "networkx", "matplotlib", "pytest"
 ]
 
+[project.scripts]
+mlt = "molecular_simulation_tools.cli:app"
+
 [project.urls]
 Repository = "https://github.com/TobiasDijkhuis/molecular-simulation-tools"
 Documentation = "https://tobiasdijkhuis.github.io/molecular-simulation-tools"
