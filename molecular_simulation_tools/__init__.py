@@ -1,6 +1,8 @@
 """Collection of useful tools to run molecular simulations."""
 
 from . import (
+    _version,
+    benchmark,
     connectivity,
     eon,
     geometry,

@@ -1,20 +1,27 @@
 """Collection of geometry tools."""
 
 import sys
+from collections import Counter
+from collections.abc import Iterable
+from enum import StrEnum, auto, unique
+from itertools import product
+from typing import TypeAlias
 
 import numpy as np
 from ase import Atoms
 from ase.constraints.fix_atoms import FixAtoms
-from ase.geometry import find_mic
+from ase.geometry import find_mic, get_angles
+from ase.neighborlist import NeighborList, natural_cutoffs
 
 from molecular_simulation_tools.connectivity import (
-    complete_intact_molecules,
+    identify_molecules,
 )
 from molecular_simulation_tools.utils import (
     check_same_number_of_atoms,
     combine_overlapping_sets,
     correct_distance_for_pbc,
     get_permutations_exchange_identical_atoms,
+    unwrap_trajectory_from_displacement,
 )
 
 
@@ -65,10 +72,91 @@ def get_atoms_indices_within_radius(
 
     """
     relative_positions, vlen = find_mic(
-        atoms.positions - center, cell=atoms.cell, pbc=True
+        atoms.positions - center, cell=atoms.cell, pbc=atoms.pbc
     )
     indices_within_radius = np.flatnonzero(vlen <= radius)
     return indices_within_radius, relative_positions
+
+
+def get_periodic_images_within_radius(
+    atoms: Atoms,
+    center: np.ndarray,
+    radius: float,
+) -> tuple[list[int], list[tuple[int, int, int]]]:
+    """Return atom indices and periodic translation vectors inside a sphere.
+
+    Each returned pair ``(index, translation)`` identifies a particular
+    periodic image of an atom.
+    """
+    if not atoms.pbc.any():
+        distances = atoms.positions - center
+        mask = np.linalg.norm(distances, axis=1) <= radius
+        indices = np.nonzero(mask)[0].tolist()
+        translations = [(0, 0, 0) for _ in indices]
+        return indices, translations
+
+    cell = atoms.cell.array
+    pbc = np.asarray(atoms.pbc)
+
+    # Conservative number of cells to search in each direction.
+    # This is deliberately somewhat generous.
+    lengths = np.linalg.norm(cell, axis=1)
+    n_images = np.ceil(radius / lengths).astype(int) + 1
+
+    ranges = [
+        range(-n_images[i], n_images[i] + 1) if pbc[i] else range(0, 1)
+        for i in range(3)
+    ]
+
+    selected_indices = []
+    selected_translations = []
+
+    for image in product(*ranges):
+        image = np.asarray(image, dtype=int)
+
+        positions = atoms.positions + image @ cell
+        distances = positions - center
+
+        mask = np.linalg.norm(distances, axis=1) <= radius
+
+        for index in np.nonzero(mask)[0]:
+            selected_indices.append(int(index))
+            selected_translations.append(tuple(image.copy()))
+
+    return selected_indices, selected_translations
+
+
+def make_cutout(
+    atoms: Atoms,
+    selected: Iterable[tuple[int, tuple[int, int, int]]],
+) -> Atoms:
+    positions = []
+    numbers = []
+
+    cell = atoms.cell.array
+
+    for index, image in selected:
+        translation = np.asarray(image) @ cell
+
+        positions.append(atoms.positions[index] + translation)
+        numbers.append(atoms.numbers[index])
+
+    cutout = Atoms(
+        numbers=numbers,
+        positions=positions,
+        pbc=False,
+    )
+
+    return cutout
+
+
+def add_molecule_image(
+    selected: set[tuple[int, tuple[int, int, int]]],
+    molecule: list[int],
+    image: tuple[int, int, int],
+) -> None:
+    for index in molecule:
+        selected.add((index, image))
 
 
 def cut_out_atoms_within_radius(
@@ -116,37 +204,59 @@ def cut_out_atoms_within_radius(
         If a non-allowed molecule is within `radius` of `center`.
 
     """
-    if (
-        atoms.cell is not None
-        and not np.all(atoms.cell == 0)
-        and radius >= 0.5 * np.min(atoms.cell.lengths())
-    ):
-        msg = f"Radius of {radius} Angstrom is too big for cell. Would include same atoms multiple times."
-        raise ValueError(msg)
+    # if (
+    #     atoms.cell is not None
+    #     and not np.all(atoms.cell == 0)
+    #     and radius >= 0.5 * np.min(atoms.cell.lengths())
+    # ):
+    #     msg = f"Radius of {radius} Angstrom is too big for cell. Would include same atoms multiple times."
+    #     raise ValueError(msg)
 
-    indices_within_radius, relative_positions = get_atoms_indices_within_radius(
+    indices_within_radius, images = get_periodic_images_within_radius(
         atoms, center, radius
     )
 
-    if indices_within_radius.size == 0:
+    if len(indices_within_radius) == 0:
         msg = f"No atoms were found within radius {radius} Angstrom of center {center}"
         raise RuntimeError(msg)
 
-    if keep_molecules_intact:
-        indices_within_radius = complete_intact_molecules(
-            atoms,
-            indices_within_radius,
-            allowed_molecules=allowed_molecules,
-            cutoffs=cutoffs,
-        )
+    molecules = identify_molecules(atoms, cutoffs=cutoffs)
+    molecule_for_atom = get_molecule_idx_of_atom(molecules, range(len(atoms)))
 
-    cutout_atoms = atoms[indices_within_radius]
-    cutout_atoms.positions = relative_positions[indices_within_radius, :]
+    selected: set[tuple[int, tuple[int, int, int]]] = set()
+    for index, translation in zip(indices_within_radius, images, strict=True):
+        # Find molecule containing `index`
+        molecule = list(molecules[molecule_for_atom[index]])
 
-    cutout_atoms.pbc = False
-    cutout_atoms.cell = None
+        if keep_molecules_intact:
+            add_molecule_image(selected, molecule, translation)
+        else:
+            selected.add(
+                (index, (int(translation[0]), int(translation[1]), int(translation[2])))
+            )
+    # if keep_molecules_intact:
+    #     indices_within_radius = complete_intact_molecules(
+    #         atoms,
+    #         indices_within_radius,
+    #         allowed_molecules=allowed_molecules,
+    #         cutoffs=cutoffs,
+    #     )
+
+    cutout_atoms = make_cutout(atoms, selected)
 
     return cutout_atoms
+
+
+def get_molecule_idx_of_atom(
+    molecules: list[np.ndarray], atom_indices: Iterable[int]
+) -> dict[int, int]:
+    molecule_for_atom: dict[int, int] = {}
+    for atom_idx in atom_indices:
+        in_molecule_idx = [
+            i for i, molecule in enumerate(molecules) if atom_idx in molecule
+        ][0]
+        molecule_for_atom[atom_idx] = in_molecule_idx
+    return molecule_for_atom
 
 
 def cut_out_trajectory_within_radius(
@@ -204,27 +314,33 @@ def cut_out_trajectory_within_radius(
             centers = list(centers)
     elif isinstance(centers, int):
         centers = [frame.positions[centers, :] for frame in frames]
-
-    all_indices: set[int] = set()
-    for frame, center in zip(frames, centers, strict=True):
-        indices, _relative_positions = get_atoms_indices_within_radius(
-            frame, center, radius
+        print(centers)
+        centers = unwrap_trajectory_from_displacement(
+            np.asarray(centers), frames[0].cell
         )
+        print(centers)
 
-        if keep_molecules_intact:
-            indices = complete_intact_molecules(
-                frame, indices, allowed_molecules=allowed_molecules, cutoffs=cutoffs
-            )
-        all_indices.update(indices)
-    all_indices: list[int] = sorted(all_indices)  # type: ignore[no-redef]
+    selected: set[tuple[int, tuple[int, int, int]]] = set()
+    for frame, center in zip(frames, centers, strict=True):
+        indices, images = get_periodic_images_within_radius(frame, center, radius)
 
-    cutout_atoms = [frame[all_indices] for frame in frames]
-    for frame, center in zip(cutout_atoms, centers, strict=True):
-        _, relative_positions = get_atoms_indices_within_radius(frame, center, radius)
-        frame.positions = relative_positions
-        frame.pbc = False
-        frame.cell = None
+        molecules = identify_molecules(frame, cutoffs=cutoffs)
+        molecule_for_atom = get_molecule_idx_of_atom(molecules, range(len(frame)))
 
+        for index, translation in zip(indices, images, strict=True):
+            molecule = list(molecules[molecule_for_atom[index]])
+
+            if keep_molecules_intact:
+                add_molecule_image(selected, molecule, translation)
+            else:
+                selected.add(
+                    (
+                        index,
+                        (int(translation[0]), int(translation[1]), int(translation[2])),
+                    )
+                )
+
+    cutout_atoms = [make_cutout(frame, selected) for frame in frames]
     check_same_number_of_atoms(cutout_atoms)
 
     return cutout_atoms
@@ -382,6 +498,66 @@ def find_min_height_for_distance(
 
 def find_min_height_for_adsorbate_on_surface(
     surface: Atoms,
+    adsorbate_origin: np.ndarray,
+    distance: float,
+    adsorbate: Atoms | None = None,
+) -> float:
+    """Find the minimum height to place an adsorbate at least `distance` away from surface atoms.
+
+    Calculate the minimum height for `adsorbate` for it to have all its
+    atoms at least `distance` away from the other atoms in `surface`.
+
+    The returned points correspond to placing the center-of-mass of `adsorbate`
+    at ``(x, y, z)``, such that the minimum distance to any atom in the surface is
+    `distance`.
+
+    Parameters
+    ----------
+    surface : Atoms
+        Surface
+    ngrid : int | tuple[int, int]
+        Number of grid points along x and y
+    distance : float
+        Distance from all other atoms.
+    adsorbate : Atoms | None
+        Adsorbate. If None, create a dummy Atoms instance with one atom.
+        Default = None.
+
+    Returns
+    -------
+    grid_x : np.ndarray
+        grid of positions along x
+    grid_y : np.ndarray
+        grid of positions along y
+    sample_heights : np.ndarray
+        height of the points corresponding to the points in `grid_x` and `grid_y.
+
+    """
+    if adsorbate is None:
+        # Dummy, single atom
+        adsorbate = Atoms("H", positions=[[0, 0, 0]])
+    else:
+        adsorbate = adsorbate.copy()
+        adsorbate.set_center_of_mass([0, 0, 0])
+
+    cell = surface.cell if any(surface.pbc) else None
+    max_height = sys.float_info.min
+    for atom_idx in range(len(adsorbate)):
+        pos = adsorbate.positions[atom_idx, :]
+
+        height = find_min_height_for_distance(
+            pos[0] + adsorbate_origin[0],
+            pos[1] + adsorbate_origin[1],
+            surface.positions,
+            distance,
+            box_size=cell,
+        )
+        max_height = max(max_height, height)
+    return max_height
+
+
+def find_min_height_for_adsorbate_on_surface_grid(
+    surface: Atoms,
     ngrid: int | tuple[int, int],
     distance: float,
     adsorbate: Atoms | None = None,
@@ -538,7 +714,7 @@ def calculate_rmsd(
 def course_grain_binding_sites(
     sites: list[Atoms],
     indices: int | list[int] | None,
-    max_rmsd: int | float = 0.5,
+    max_rmsd: int | float = 10,
     permute: bool = True,
     top_down: bool = False,
 ) -> list[set[int]]:
@@ -610,3 +786,101 @@ def course_grain_binding_sites(
 
     binding_site_sets = combine_overlapping_sets(binding_site_sets)
     return binding_site_sets
+
+
+@unique
+class HydrogenBondingType(StrEnum):
+    NONE = auto()
+    A = auto()
+    AA = auto()
+    AAA = auto()
+    D = auto()
+    DA = auto()
+    DAA = auto()
+    DAAA = auto()
+    DD = auto()
+    DDA = auto()
+    DDAA = auto()
+    DDAAA = auto()
+    DDD = auto()
+    DDDA = auto()
+    DDDAA = auto()
+
+
+WaterHydrogenBondingNetwork: TypeAlias = list[tuple[int, int, int]]
+
+
+def get_hydrogen_bonding_network(
+    atoms: Atoms,
+    max_hydrogen_bond_length: float = 3.0,
+    max_hydrogen_bond_angle: float = 20.0,
+) -> WaterHydrogenBondingNetwork:
+    cutoffs_hydrogen_bonds = natural_cutoffs(
+        atoms, H=max_hydrogen_bond_length / 2.0, O=max_hydrogen_bond_length / 2.0
+    )
+    nl_hydrogen_bonds = NeighborList(
+        cutoffs_hydrogen_bonds, self_interaction=False, bothways=True, skin=0.0
+    )
+    nl_hydrogen_bonds.update(atoms)
+    cm_hydrogen = nl_hydrogen_bonds.get_connectivity_matrix(sparse=False)
+
+    cutoffs_covalent_bonds = natural_cutoffs(atoms, O=0.9)
+    nl_covalent_bonds = NeighborList(
+        cutoffs_covalent_bonds, self_interaction=False, bothways=True, skin=0.0
+    )
+    nl_covalent_bonds.update(atoms)
+    cm_covalent = nl_covalent_bonds.get_connectivity_matrix(sparse=False)
+
+    cm_non_covalent_hydrogen = cm_hydrogen & ~cm_covalent
+
+    symbols = atoms.symbols
+    positions = atoms.positions
+    network: WaterHydrogenBondingNetwork = []
+    for hydrogen_idx in np.flatnonzero(symbols == "H"):
+        covalent_oxygen_indices = np.flatnonzero(
+            cm_covalent[:, hydrogen_idx] & (symbols == "O")
+        )
+
+        if len(covalent_oxygen_indices) != 1:
+            msg = f"Expected hydrogen to be bound to one oxygen, but got {len(covalent_oxygen_indices)} oxygens"
+            raise ValueError(msg)
+
+        donor_idx = int(covalent_oxygen_indices[0])
+
+        acceptor_indices = np.flatnonzero(
+            cm_non_covalent_hydrogen[:, hydrogen_idx] & (symbols == "O")
+        )
+        for acceptor_idx in acceptor_indices:
+            angle = get_angles(
+                np.atleast_2d(positions[donor_idx, :] - positions[hydrogen_idx, :]),
+                np.atleast_2d(positions[acceptor_idx, :] - positions[hydrogen_idx, :]),
+                cell=atoms.cell,
+                pbc=atoms.pbc,
+            )[0]
+            if 180 - angle <= max_hydrogen_bond_angle:
+                network.append((donor_idx, int(hydrogen_idx), int(acceptor_idx)))
+
+    return network
+
+
+def get_hydrogen_bonding_type(
+    atomic_indices_in_molecule: Iterable[int], network: WaterHydrogenBondingNetwork
+) -> HydrogenBondingType:
+    donors = Counter(hbond[0] for hbond in network)
+    acceptors = Counter(hbond[2] for hbond in network)
+
+    donor_count = sum(donors[atom_idx] for atom_idx in atomic_indices_in_molecule)
+    acceptor_count = sum(acceptors[atom_idx] for atom_idx in atomic_indices_in_molecule)
+
+    if donor_count == 0 and acceptor_count == 0:
+        return HydrogenBondingType.NONE
+    type_string = "d" * donor_count + "a" * acceptor_count
+    return HydrogenBondingType(type_string)
+
+
+def get_all_hydrogen_bonding_counts(
+    molecules: Iterable[Iterable[int]], network: WaterHydrogenBondingNetwork
+) -> Counter[HydrogenBondingType]:
+    return Counter(
+        get_hydrogen_bonding_type(molecule, network) for molecule in molecules
+    )

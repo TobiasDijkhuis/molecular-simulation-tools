@@ -1,11 +1,12 @@
 """Collection of utility functions."""
 
+import ast
 import contextlib
 import itertools
 import os
 import re
 import sys
-from collections.abc import Generator, Iterator, Sequence
+from collections.abc import Generator, Iterable, Iterator, Sequence
 from itertools import islice
 from pathlib import Path
 from random import random
@@ -13,11 +14,33 @@ from typing import Any, TypeVar
 
 import numpy as np
 from ase import Atoms
+from ase.calculators.calculator import Calculator, all_changes
 from ase.calculators.tip4p import angleHOH, rOH
 from ase.neighborlist import build_neighbor_list
 from scipy.signal import correlate
 from scipy.spatial import ConvexHull
 from scipy.stats import norm
+
+
+def is_valid_python_code(code: str) -> bool:
+    """Determine whether the string is valid python code.
+
+    Parameters
+    ----------
+    code : str
+        Python code
+
+    Returns
+    -------
+    bool
+        Whether `code` does not contain any SyntaxError
+
+    """
+    try:
+        ast.parse(code)
+    except SyntaxError:
+        return False
+    return True
 
 
 def get_nyquist_frequency(dt: float) -> float:
@@ -286,6 +309,47 @@ def get_permutations_exchange_identical_atoms(
         for permutation in permutations
         if np.all(atoms.numbers[permutation] == atoms.numbers[indices])
     ]
+
+
+def apply_permutation(
+    atoms: Atoms,
+    permuted_indices: Sequence[int],
+    original_indices: Sequence[int] | None = None,
+) -> Atoms:
+    """Apply a permutatation to the atoms.
+
+    Parameters
+    ----------
+    atoms : Atoms
+        Atoms to permute.
+    permuted_indices : Sequence[int]
+        Permuted indices.
+    original_indices : Sequence[int] | None
+        Original indices of the permuted indices.
+        If None, assume it is the sorted version of `permuted_indices`.
+        Default = None.
+
+    Returns
+    -------
+    new_atoms : Atoms
+        Atoms with the permutation applied (i.e. the positions and numbers changed).
+
+    Raises
+    ------
+    ValueError
+        If `permuted_indices` and `original_indices` are not the same length.
+
+    """
+    if original_indices is None:
+        original_indices = sorted(permuted_indices)
+
+    if len(permuted_indices) != len(original_indices):
+        raise ValueError
+
+    new_atoms = atoms.copy()
+    new_atoms.positions[permuted_indices] = atoms.positions[original_indices]
+    new_atoms.numbers[permuted_indices] = atoms.numbers[original_indices]
+    return new_atoms
 
 
 def combine_overlapping_sets(list_of_sets: list[set[Any]]) -> list[set[Any]]:
@@ -1045,6 +1109,11 @@ def set_current_directory(directory: str | Path) -> Generator[None]:
     directory : str | Path
         Directory to set current working directory to
 
+    Yields
+    ------
+    None
+        Nothing
+
     """
     wd = Path.cwd()
     os.chdir(directory)
@@ -1052,3 +1121,129 @@ def set_current_directory(directory: str | Path) -> Generator[None]:
         yield
     finally:
         os.chdir(wd)
+
+
+def is_number(string: str) -> bool:
+    """Get whether a number can be converted to a float.
+
+    Parameters
+    ----------
+    string : str
+        String to test
+
+    Returns
+    -------
+    bool
+        Whether the string can be turned into a number.
+
+    """
+    try:
+        float(string)
+        return True
+    except ValueError:
+        return False
+
+
+def to_bool(string: str) -> bool:
+    """Convert a string to a bool.
+
+    Parameters
+    ----------
+    string : str
+        String to convert.
+
+    Returns
+    -------
+    bool
+        Whet
+
+    Raises
+    ------
+    ValueError
+        When the bool could not be determined.
+
+    """
+    string = string.lower()
+    if string in {"false", "f", "no", "n"}:
+        return False
+    if string in {"true", "t", "yes", "y"}:
+        return True
+    msg = f"Could not determine bool from string {string}"
+    raise ValueError(msg)
+
+
+def atoms_are_almost_equal(atoms: Atoms, other: Atoms, atol: float = 1e-5) -> bool:
+    """Test whether the atoms are equal, to some tolerance on the positions.
+
+    Parameters
+    ----------
+    atoms : Atoms
+        Atoms instance to compare
+    other : Atoms
+        Other atoms to compare to
+    atol : float
+        Absolute tolerance to compare positions. Default = 1e-5.
+
+    Returns
+    -------
+    bool
+        Whether the atoms have the same number of atoms, symbols and
+        (within tolerance) positions.
+
+    """
+    return bool(
+        len(atoms) == len(other)
+        and np.all(atoms.symbols == other.symbols)
+        and np.allclose(atoms.positions, other.positions, atol=atol)
+    )
+
+
+class CachedCalculator(Calculator):
+    """Calculator instance that takes energies from a cache."""
+
+    implemented_properties = ["energy"]
+
+    def __init__(self, cache_atoms: Iterable[Atoms], atol: float = 1e-5):
+        """Initialize the calculator.
+
+        Parameters
+        ----------
+        cache_atoms : Iterable[Atoms]
+            Atoms to put in the cache.
+        atol : float
+            Absolute tolerance to compare equality of positions between Atoms.
+            Default = 1e-5 (good value for reading from ORCA output or xyz files).
+
+        Raises
+        ------
+        ValueError
+            If `cache_atoms` is empty.
+
+        """
+        Calculator.__init__(self)
+        cache_atoms = list(cache_atoms)
+        if not cache_atoms:
+            msg = "'cache_atoms' was empty."
+            raise ValueError(msg)
+        self._cached_atoms = cache_atoms
+        self._atol = atol
+
+    def calculate(
+        self,
+        atoms: Atoms | None = None,
+        properties: list[str] | None = None,
+        system_changes: list[str] = all_changes,
+    ) -> None:
+        if properties is None:
+            properties = self.implemented_properties
+        Calculator.calculate(self, atoms, properties, system_changes)
+        self.atoms: Atoms
+
+        for cached_atom in self._cached_atoms:
+            if atoms_are_almost_equal(cached_atom, self.atoms, atol=self._atol):
+                self.results = {
+                    "energy": cached_atom.get_potential_energy(),
+                }
+                return
+
+        self.results["energy"] = 0.0

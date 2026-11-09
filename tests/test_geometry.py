@@ -1,16 +1,24 @@
+from collections import Counter
+from collections.abc import Iterable
+
 import numpy as np
 import pytest
 from ase import Atoms
 from ase.constraints.fix_atoms import FixAtoms
 
+from molecular_simulation_tools.connectivity import identify_molecules
 from molecular_simulation_tools.geometry import (
+    HydrogenBondingType,
     calculate_rmsd,
     construct_grid_in_cell,
     cut_out_atoms_within_radius,
     cut_out_trajectory_within_radius,
     discretize_cell_length,
     find_min_height_for_distance,
+    get_all_hydrogen_bonding_counts,
     get_constraint_outside_radius,
+    get_hydrogen_bonding_network,
+    get_hydrogen_bonding_type,
 )
 
 discretization_data = [
@@ -155,6 +163,13 @@ cutout_data = [
         1,
         np.array([[0, 0, 0], [0, 0, 1], [0, 0, -1]]),
     ),
+    (
+        Atoms("H2", positions=[[0, 0, 0.5], [0, 0, 1.5]], pbc=True, cell=[2, 2, 2]),
+        np.array([0, 0, 0.5]),
+        1.0,
+        # Include two images of second hydrogen atom
+        np.array([[0, 0, 0.5], [0, 0, 1.5], [0, 0, -0.5]]),
+    ),
 ]
 
 
@@ -173,7 +188,7 @@ cutout_from_trajectory_data = [
         [Atoms("H2O", positions=[[0, 0, 0], [0, 0, 1], [0, 0, 2]])] * 2,
         [np.array([0, 0, 0]), np.array([0, 0, 1])],
         0.5,
-        [np.array([[0, 0, 0], [0, 0, 1]]), np.array([[0, 0, -1], [0, 0, 0]])],
+        [np.array([[0, 0, 0], [0, 0, 1]]), np.array([[0, 0, 0], [0, 0, 1]])],
     ),
     (
         [Atoms("H2O", positions=[[0, 0, 0], [0, 0, 1], [0, 0, 2]])] * 3,
@@ -181,8 +196,8 @@ cutout_from_trajectory_data = [
         0.25,
         [
             np.array([[0, 0, 0], [0, 0, 1]]),
-            np.array([[0, 0, -0.5], [0, 0, 0.5]]),
-            np.array([[0, 0, -1], [0, 0, 0]]),
+            np.array([[0, 0, 0], [0, 0, 1]]),
+            np.array([[0, 0, 0], [0, 0, 1]]),
         ],
     ),
 ]
@@ -197,6 +212,52 @@ def test_cut_out_trajectory_within_radius(frames, centers, radius, expected_posi
     )
 
     for frame_idx in range(len(frames)):
+        assert np.all(
+            expected_positions[frame_idx]
+            == trajectory_within_radius[frame_idx].positions
+        )
+
+
+cutout_from_trajectory_pbc_data = [
+    (
+        [
+            Atoms(
+                "H2",
+                positions=[[0.5, 0, 0], [0.25, 0, 0]],
+                pbc=True,
+                cell=[2, 2, 2],
+            ),
+            Atoms(
+                "H2",
+                positions=[[1.5, 0, 0], [0.25, 0, 0]],
+                pbc=True,
+                cell=[2, 2, 2],
+            ),
+        ],
+        0,
+        1,
+        [
+            np.array([[0.5, 0, 0], [0.25, 0, 0], [2.25, 0, 0]]),
+            np.array([[1.5, 0, 0], [0.25, 0, 0], [2.25, 0, 0]]),
+        ],
+        3,
+    ),
+]
+
+
+@pytest.mark.parametrize(
+    ("frames", "centers", "radius", "expected_positions", "num_atoms"),
+    cutout_from_trajectory_pbc_data,
+)
+def test_cut_out_trajectory_within_radius_pbc(
+    frames, centers, radius, expected_positions, num_atoms
+):
+    trajectory_within_radius = cut_out_trajectory_within_radius(
+        frames, centers, radius, keep_molecules_intact=False
+    )
+
+    for frame_idx in range(len(frames)):
+        assert len(trajectory_within_radius[frame_idx]) == num_atoms
         assert np.all(
             expected_positions[frame_idx]
             == trajectory_within_radius[frame_idx].positions
@@ -233,3 +294,129 @@ def test_get_constraint_outside_radius(atoms, center, radius, expected_constrain
         get_constraint_outside_radius(atoms, center, radius).get_indices()
         == expected_constraint.get_indices()
     )
+
+
+hydrogen_bonding_data = [
+    (
+        Atoms(
+            symbols="OH2OH2",
+            positions=[
+                [0.0000, 0.000, 0.0],
+                [0.9570, 0.000, 0.0],
+                [-0.239, 0.927, 0.0],
+                [2.8000, 0.000, 0.0],
+                [3.7570, 0.000, 0.0],
+                [2.5610, 0.927, 0.0],
+            ],
+        ),
+        [(0, 1, 3)],
+    ),
+    (
+        Atoms(
+            symbols="H2OOH2",
+            # Independent of order
+            positions=[
+                [0.9570, 0.000, 0.0],
+                [-0.239, 0.927, 0.0],
+                [0.0000, 0.000, 0.0],
+                [2.8000, 0.000, 0.0],
+                [3.7570, 0.000, 0.0],
+                [2.5610, 0.927, 0.0],
+            ],
+        ),
+        [(2, 0, 3)],
+    ),
+    (
+        Atoms(
+            symbols="OH2OH2",
+            # Two water molecules farther apart
+            positions=[
+                [0.0000, 0.000, 0.0],
+                [0.9570, 0.000, 0.0],
+                [-0.239, 0.927, 0.0],
+                [5.8000, 0.000, 0.0],
+                [6.7570, 0.000, 0.0],
+                [5.5610, 0.927, 0.0],
+            ],
+        ),
+        [],
+    ),
+    (
+        Atoms(
+            symbols="OH2OH2OH2",
+            positions=[
+                [0.0000, 0.000, 0.0],
+                [0.9570, 0.000, 0.0],
+                [-0.239, 0.927, 0.0],
+                [2.8000, 0.000, 0.0],
+                [3.7570, 0.000, 0.0],
+                [2.5610, 0.927, 0.0],
+                [5.6000, 0.000, 0.0],
+                [6.5570, 0.000, 0.0],
+                [5.3610, 0.927, 0.0],
+            ],
+        ),
+        [(0, 1, 3), (3, 4, 6)],
+    ),
+]
+
+
+@pytest.mark.parametrize(("atoms", "expected_network"), hydrogen_bonding_data)
+def test_get_hydrogen_bonding_network(atoms, expected_network):
+    network = get_hydrogen_bonding_network(atoms)
+    assert network == expected_network
+
+
+hydrogen_bonding_type_data = [
+    (hydrogen_bonding_data[0][0], [0, 1, 2], HydrogenBondingType.D),
+    (hydrogen_bonding_data[0][0], [3, 4, 5], HydrogenBondingType.A),
+    (hydrogen_bonding_data[1][0], [0, 1, 2], HydrogenBondingType.D),
+    (hydrogen_bonding_data[1][0], [3, 4, 5], HydrogenBondingType.A),
+    (hydrogen_bonding_data[2][0], [0, 1, 2], HydrogenBondingType.NONE),
+    (hydrogen_bonding_data[2][0], [3, 4, 5], HydrogenBondingType.NONE),
+    (hydrogen_bonding_data[3][0], [0, 1, 2], HydrogenBondingType.D),
+    (hydrogen_bonding_data[3][0], [3, 4, 5], HydrogenBondingType.DA),
+    (hydrogen_bonding_data[3][0], [6, 7, 8], HydrogenBondingType.A),
+]
+
+
+@pytest.mark.parametrize(
+    ("atoms", "indices", "expected_type"), hydrogen_bonding_type_data
+)
+def test_get_hydrogen_bonding_type(
+    atoms: Atoms, indices: Iterable[int], expected_type: HydrogenBondingType
+):
+    network = get_hydrogen_bonding_network(atoms)
+    bonding_type = get_hydrogen_bonding_type(indices, network)
+    assert bonding_type == expected_type
+
+
+hydrogen_bonding_counts_data = [
+    (
+        hydrogen_bonding_data[0][0],
+        Counter([HydrogenBondingType.A, HydrogenBondingType.D]),
+    ),
+    (
+        hydrogen_bonding_data[1][0],
+        Counter([HydrogenBondingType.A, HydrogenBondingType.D]),
+    ),
+    (
+        hydrogen_bonding_data[2][0],
+        Counter([HydrogenBondingType.NONE] * 2),
+    ),
+    (
+        hydrogen_bonding_data[3][0],
+        Counter([HydrogenBondingType.A, HydrogenBondingType.DA, HydrogenBondingType.D]),
+    ),
+]
+
+
+@pytest.mark.parametrize(("atoms", "expected_counter"), hydrogen_bonding_counts_data)
+def test_get_hydrogen_bonding_type_counts(
+    atoms: Atoms, expected_counter: Counter[HydrogenBondingType]
+):
+    network = get_hydrogen_bonding_network(atoms)
+    molecules = identify_molecules(atoms)
+
+    counter = get_all_hydrogen_bonding_counts(molecules, network)
+    assert counter == expected_counter

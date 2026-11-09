@@ -23,11 +23,11 @@ description = "A collection of tools for molecular simulations."
 readme = "README.md"
 requires-python = ">=3.11,<3.14"
 dependencies = [
-    "ase", "numpy", "znh5md", "networkx", "matplotlib", "pytest"
+    "ase", "numpy", "znh5md", "networkx", "matplotlib", "pytest", "pydantic>=2.0", "pyyaml"
 ]
 
 [project.scripts]
-mlt = "molecular_simulation_tools.cli:app"
+mlt = "molecular_simulation_tools.cli:main"
 
 [project.urls]
 Repository = "https://github.com/TobiasDijkhuis/molecular-simulation-tools"
@@ -100,6 +100,8 @@ extend-ignore-identifiers-re = [
     # Ignore n and then one or two chars indicating index or density
     "^n.{1,2}$",
 ]
+[tool.typos.default.extend-words]
+DAA = 'DAA' # Hydrogen bonding type
 
 [tool.pymend]
 output-style = "numpydoc"

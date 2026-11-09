@@ -41,17 +41,17 @@ EON_ASE_CALC_INTERFACE = """def _calculate(R, atomicNrs, box, calc):  # ruff: ig
 EON_ASE_DUMMY_CALC_INTERFACE = dedent("""    import numpy as np
     from ase import Atoms
     from ase.calculators.calculator import Calculator, all_changes
-    
-    
+
+
     class DummyCalculator(Calculator):
         implemented_properties = [
             "energy",
             "forces",
         ]
-    
+
         def __init__(self, **kwargs):
             Calculator.__init__(self, **kwargs)
-    
+
         def calculate(  # ty: ignore[invalid-method-override]
             self,
             atoms: Atoms,
@@ -61,8 +61,8 @@ EON_ASE_DUMMY_CALC_INTERFACE = dedent("""    import numpy as np
             Calculator.calculate(self, atoms, properties, system_changes)
             self.results["energy"] = 0
             self.results["forces"] = np.zeros_like(atoms.positions)
-    
-    
+
+
     def ase_calc() -> DummyCalculator:
         return DummyCalculator()""")
 
@@ -189,6 +189,7 @@ def read_neb_data(filepath: str | Path) -> NEBData:
 
 RE_NEB_CONVERGED = re.compile(r"^NEB converged")
 RE_NEB_FAILED = re.compile(r"^Nudged elastic band, too many iterations.")
+RE_NEB_INTERRUPTED = re.compile("ASE calculator Python error: KeyboardInterrupt")
 RE_POTENTIAL_CALLS = re.compile(r"called potential ([0-9]+) times")
 EON_LOG_FILEPATH = "client_quill.log"
 
@@ -198,6 +199,7 @@ class NEBStatus(StrEnum):
     CONVERGED = auto()
     TOO_MANY_ITERATIONS = auto()
     RUNNING = auto()
+    INTERRUPTED = auto()
     UNKNOWN = auto()
 
 
@@ -221,12 +223,19 @@ class NEBInfo:
 
 
 def _read_iteration_info_from_lines(lines: list[str]) -> tuple[int, OneDFloatArray]:
+    re_optimization_start = re.compile(r"iteration\s+step size")
+    start_idx = None
     end_idx = None
     for line_nr, line in enumerate(lines):
-        if "iteration    step size" in line:
+        if re_optimization_start.search(line) is not None:
             start_idx = line_nr + 2
         elif get_status_from_line(line) is not None:
             end_idx = line_nr
+
+    if start_idx is None:
+        joined_lines = "\n".join(lines)
+        msg = f"Could not infer starting index of optimization from lines. Lines:\n{joined_lines}"
+        raise RuntimeError(msg)
 
     iteration_lines = [
         line.split()
@@ -247,6 +256,9 @@ def get_status_from_line(line: str) -> NEBStatus | None:
     m = RE_NEB_FAILED.search(line)
     if m is not None:
         return NEBStatus.TOO_MANY_ITERATIONS
+    m = RE_NEB_INTERRUPTED.search(line)
+    if m is not None:
+        return NEBStatus.INTERRUPTED
 
 
 def read_eon_quill_log(path: str | Path) -> NEBInfo:

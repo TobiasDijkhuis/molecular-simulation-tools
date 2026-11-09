@@ -3,6 +3,7 @@
 import itertools
 from typing import Any, Literal
 
+import matplotlib as mpl
 import matplotlib.pyplot as plt
 import numpy as np
 from ase import Atoms
@@ -223,9 +224,18 @@ def plot_periodic_images(
         images_to_include = (-1, 0, 1)
 
     images = itertools.product(images_to_include, images_to_include)
-    for image in images:
+    plot_kwargs = plot_kwargs.copy()
+    for image_idx, image in enumerate(images):
         image_x = x + image[0] * box_size[0]
         image_y = y + image[1] * box_size[1]
-        ax.plot(image_x, image_y, **plot_kwargs)
+        if image_idx == 0:
+            line = ax.plot(image_x, image_y, **plot_kwargs)[0]
+            plot_kwargs.pop("c", None)
+        else:
+            ax.plot(image_x, image_y, c=line.get_color(), **plot_kwargs)
 
     return ax
+
+
+def _get_rcparam_value(key: str) -> Any:
+    return mpl.rcParams[key]

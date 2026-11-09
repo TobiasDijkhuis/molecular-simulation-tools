@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from enum import StrEnum, auto, unique
 from pathlib import Path
 from subprocess import run
 from time import sleep
@@ -11,6 +12,17 @@ from molecular_simulation_tools.slurm_manager.utils import (
     same_submission_script_already_submitted,
 )
 from molecular_simulation_tools.utils import set_current_directory
+
+
+@unique
+class JobStatus(StrEnum):
+    """The status of a SlurmJob."""
+
+    COMPLETED = auto()
+    RUNNING = auto()
+    UNKNOWN = auto()
+    PENDING = auto()
+    FAILED = auto()
 
 
 class SlurmJob:
@@ -24,10 +36,6 @@ class SlurmJob:
     """
 
     def __init__(self, job_id: str | int):
-        if not isinstance(job_id, (str, int)):
-            msg = f"job_id should be type int or string, but was type {type(job_id)}"
-            raise TypeError(msg)
-
         try:
             self.job_id: int = int(job_id)
         except ValueError as e:
@@ -82,11 +90,11 @@ class SlurmJob:
             submitted, job_id = same_submission_script_already_submitted(
                 submission_script_path
             )
-            if submitted and not force:
+            if (submitted and job_id is not None) and not force:
                 print(
                     f"Detected that job with submission command {command} has already started, with job ID {job_id}. Not submitting again"
                 )
-                return cls(job_id)  # type: ignore[arg-type, ty:invalid-argument-type]
+                return cls(job_id)
 
             # Get job id from this command
             try:
@@ -106,16 +114,9 @@ class SlurmJob:
                 raise ValueError(msg) from e
         return cls(job_id)
 
-    def get_state(self) -> str:
-        """Get the state of the job.
-
-        Returns
-        -------
-        state : str
-            State of the job.
-
-        """
-        # Sacct command here
+    @property
+    def state(self) -> JobStatus:
+        """The state of the job."""
         command = f"sacct --noheader --jobs {self.job_id} --format=jobid,state"
 
         stdout = run(command.split(), capture_output=True, text=True).stdout
@@ -124,8 +125,8 @@ class SlurmJob:
             # If that is the case, wait for a bit, and then try again.
             sleep(0.1)
             stdout = run(command.split(), capture_output=True, text=True).stdout
-        state = stdout.split("\n")[0].split()[1]
-        return state
+        state = stdout.split("\n")[0].split()[1].lower()
+        return JobStatus(state)
 
     def is_completed(self) -> bool:
         """Whether the current status of the job is "COMPLETED".
@@ -136,7 +137,7 @@ class SlurmJob:
             Whether the current status of the job is "COMPLETED"
 
         """
-        return self.get_state() == "COMPLETED"
+        return self.state == JobStatus.COMPLETED
 
     def is_done(self) -> bool:
         """Check whether the job is done.
@@ -150,7 +151,7 @@ class SlurmJob:
             Whether the job is done.
 
         """
-        return self.get_state() not in {"RUNNING", "PENDING"}
+        return self.state not in {JobStatus.RUNNING, JobStatus.PENDING}
 
     def wait(self, sleep_interval: float = 0.5) -> None:
         """Wait until the job is done.
@@ -179,7 +180,7 @@ class SlurmJob:
             Nice printable string
 
         """
-        return f"SlurmJob: ID {self.job_id}, state {self.get_state()}"
+        return f"SlurmJob: ID {self.job_id}, state {self.state}"
 
     def __str__(self) -> str:
         """Get string representation of the job.
