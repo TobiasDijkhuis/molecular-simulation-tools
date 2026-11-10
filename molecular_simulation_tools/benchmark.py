@@ -448,7 +448,7 @@ def create_item_run_file(
 
 
 def merge_databases(
-    merged_database_path: str | Path, databases: list[str | Path]
+    merged_database_path: str | Path, databases: Iterable[str | Path]
 ) -> None:
     """Merge databases together into one database.
 
@@ -456,7 +456,7 @@ def merge_databases(
     ----------
     merged_database_path : str | Path
         Merged database
-    databases : list[str | Path]
+    databases : Iterable[str | Path]
         List of databases to be merged.
 
     """
@@ -506,7 +506,9 @@ def _get_cmd(item: BenchmarkItem, structures_path: str | Path) -> list[str]:
 def _run_item(
     item: BenchmarkItem, structures_path: str | Path
 ) -> subprocess.CompletedProcess[str]:
-    return subprocess.run(_get_cmd(item, structures_path), text=True)
+    return subprocess.run(
+        _get_cmd(item, structures_path), capture_output=True, check=True, text=True
+    )
 
 
 def run_benchmark(
@@ -527,9 +529,8 @@ def run_benchmark(
     """
     max_workers = get_maximum_num_workers(max_workers)
     with multiprocessing.Pool(processes=max_workers) as pool:
-        pool.apply_async(
-            _run_item, ((item, config.structures_path) for item in config.items)
-        )
+        for item in config.items:
+            pool.apply_async(_run_item, args=(item, config.structures_path))
         pool.close()
         pool.join()
-    merge_databases(config.db_path, [item.db_path for item in config.items])
+    merge_databases(config.db_path, (item.db_path for item in config.items))

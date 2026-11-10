@@ -4,25 +4,39 @@ from __future__ import annotations
 
 import re
 from pathlib import Path
+from types import MappingProxyType
 
 import numpy as np
 from ase import Atoms
 from ase.calculators.orca import ORCA, OrcaProfile
-from ase.io.extxyz import _read_xyz_frame
+from ase.io.extxyz import _read_xyz_frame  # ruff: ignore[import-private-name]
 from ase.units import Angstrom, fs
 
-XYZ_START_RE = re.compile(r"\*\s*xyz", flags=re.IGNORECASE)
-XYZ_END_RE = re.compile(r"\*\s*$")
+_RE_XYZ_START = re.compile(r"\*\s*xyz", flags=re.IGNORECASE)
+_RE_XYZ_END = re.compile(r"\*\s*$")
 
 
 def read_orca_inp(path: str | Path) -> Atoms:
+    """Get the geometry from an ORCA input file.
+
+    Parameters
+    ----------
+    path : str | Path
+        Path to the ORCA input
+
+    Returns
+    -------
+    frame : Atoms
+        Atoms instance.
+
+    """
     lines = Path(path).read_text().split("\n")
     for line_nr, line in enumerate(lines):
-        m = re.match(XYZ_START_RE, line)
+        m = re.match(_RE_XYZ_START, line)
         if m is not None:
             start_idx = line_nr + 1
             continue
-        m = re.match(XYZ_END_RE, line)
+        m = re.match(_RE_XYZ_END, line)
         if m is not None:
             end_idx = line_nr
 
@@ -37,7 +51,7 @@ def read_orca_inp(path: str | Path) -> Atoms:
 def get_calculator_from_orca_inp(
     path: str | Path, profile: OrcaProfile | None = None
 ) -> ORCA:
-    """Create an ORCA instance from an ``orca.inp`` file.
+    """Create an :calc:`ase.calculators.orca.ORCA` instance from an ORCA input file.
 
     Parameters
     ----------
@@ -165,13 +179,40 @@ def _get_calculator_from_orca_inp_lines(
     return calc
 
 
+_ARRAY_FORMATTER = MappingProxyType({"float": lambda x: f"{x:>25.14f}"})
+
+
 class MDrestart:
+    """Class to start and restart ORCA MD."""
+
     def __init__(self, dct: dict, comment: str | None = None):
+        """Initialize the class.
+
+        It is probably easier to use :meth:`MDRestart.from_mdrestart` or
+        :meth:`MDRestart.from_atoms`.
+
+        Parameters
+        ----------
+        dct : dict
+            Dictionary that contains information about the geometry and
+            current state.
+        comment : str | None
+            Comment to put in the MDRestart file. Default = None.
+
+        """
         self.dict = dct
         self.comment = comment
 
     @classmethod
     def from_mdrestart(cls, filepath: str | Path) -> MDrestart:
+        """Get the object from an mdrestart file.
+
+        Parameters
+        ----------
+        filepath : str | Path
+            Path to the mdrestart file.
+
+        """
         with Path(filepath).open("r") as file:
             lines = file.readlines()
         dct = {}
@@ -259,6 +300,14 @@ class MDrestart:
         return Atoms(symbols=symbols, positions=positions, velocities=velocities)
 
     def write(self, filepath: str | Path) -> None:
+        """Write the MDRestart to a file.
+
+        Parameters
+        ----------
+        filepath : str | Path
+            Path to write to.
+
+        """
         with Path(filepath).open("w") as file:
             if self.comment is not None:
                 file.write(self.comment)
@@ -267,6 +316,18 @@ class MDrestart:
                 file.write(f"{value}\n")
 
     def add_atoms(self, atoms: Atoms) -> None:
+        """Add more atoms to the end of the structure.
+
+        Parameters
+        ----------
+        atoms : Atoms
+            Atoms to add.
+
+        Notes
+        -----
+        Positions, velocities and forces are also added if present in ``self.dict``.
+
+        """
         natoms = len(atoms)
         if "AtomCount" in self.dict:
             self.dict["AtomCount"] = f"   {int(self.dict['AtomCount']) + natoms}"
@@ -284,11 +345,20 @@ class MDrestart:
             self._add_forces(atoms.symbols, forces)
 
     def _add_positions(self, symbols: list[str], positions: np.ndarray) -> None:
-        formatter = {"float": lambda x: f"{x:>25.14f}"}
+        """Add more positions to the dictionary.
+
+        Parameters
+        ----------
+        symbols : list[str]
+            List of symbols of atoms to add
+        positions : np.ndarray
+            Positions to add, in Angstrom
+
+        """
         for atom_idx, atomic_symbol in enumerate(symbols):
             position_str = np.array2string(
                 positions[atom_idx, :],
-                formatter=formatter,  # ty: ignore[invalid-argument-type]
+                formatter=_ARRAY_FORMATTER,  # ty: ignore[invalid-argument-type]
                 max_line_width=100,
             )[1:-1]
             line = f"   {atomic_symbol} {position_str}"
@@ -298,11 +368,20 @@ class MDrestart:
                 self.dict["Positions"] = "\n".join([self.dict["Positions"], line])
 
     def _add_velocities(self, symbols: list[str], velocities: np.ndarray) -> None:
-        formatter = {"float": lambda x: f"{x:>25.14f}"}
+        """Add more velocities to the dictionary.
+
+        Parameters
+        ----------
+        symbols : list[str]
+            List of symbols of atoms to add
+        velocities : np.ndarray
+            Velocities to add, in Angstrom/fs
+
+        """
         for atom_idx, atomic_symbol in enumerate(symbols):
             velocities_str = np.array2string(
                 velocities[atom_idx, :],
-                formatter=formatter,  # ty: ignore[invalid-argument-type]
+                formatter=_ARRAY_FORMATTER,  # ty: ignore[invalid-argument-type]
                 max_line_width=100,
             )[1:-1]
             line = f"   {atomic_symbol} {velocities_str}"
@@ -312,11 +391,20 @@ class MDrestart:
                 self.dict["Velocities"] = "\n".join([self.dict["Velocities"], line])
 
     def _add_forces(self, symbols: list[str], forces: np.ndarray) -> None:
-        formatter = {"float": lambda x: f"{x:>25.14f}"}
+        """Add more forces to the dictionary.
+
+        Parameters
+        ----------
+        symbols : list[str]
+            List of symbols of atoms to add
+        forces : np.ndarray
+            Forces to add, in eV/Angstrom
+
+        """
         for atom_idx, atomic_symbol in enumerate(symbols):
             force_str = np.array2string(
                 forces[atom_idx, :],
-                formatter=formatter,  # ty: ignore[invalid-argument-type]
+                formatter=_ARRAY_FORMATTER,  # ty: ignore[invalid-argument-type]
                 max_line_width=100,
             )[1:-1]
             line = f"   {atomic_symbol} {force_str}"

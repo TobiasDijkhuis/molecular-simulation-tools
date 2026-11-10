@@ -15,7 +15,6 @@ repos:
         description: "Check for linting errors"
         args: [--fix]
   - repo: https://github.com/astral-sh/ty-pre-commit
-    # ty version.
     rev: v0.0.99
     hooks:
       - id: ty

@@ -33,6 +33,7 @@ def _gui(args: argparse.Namespace) -> None:
 def _benchmark(args: argparse.Namespace) -> None:
     config = BenchmarkConfig.from_yaml(args.path)
     setup_benchmark(config, verbose=args.verbose)
+    print(args.dry_run)
     if args.dry_run:
         return
     run_benchmark(config, max_workers=args.max_workers, verbose=args.verbose)
