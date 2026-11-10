@@ -1,5 +1,6 @@
 """A collection of tools to benchmark different ways to calculate the energy."""
 
+import multiprocessing
 import subprocess
 from collections.abc import Iterable
 from inspect import cleandoc
@@ -22,7 +23,10 @@ from molecular_simulation_tools.plot import (
     create_secondary_energy_axis,
 )
 from molecular_simulation_tools.slurm_manager.options import SlurmOptions
-from molecular_simulation_tools.utils import is_valid_python_code
+from molecular_simulation_tools.utils import (
+    get_maximum_num_workers,
+    is_valid_python_code,
+)
 
 
 def _write_frames(db: SQLite3Database, frames: Iterable[Atoms], **kwargs) -> None:
@@ -499,26 +503,33 @@ def _get_cmd(item: BenchmarkItem, structures_path: str | Path) -> list[str]:
     return cmd
 
 
-def run_benchmark(config: BenchmarkConfig) -> None:
+def _run_item(
+    item: BenchmarkItem, structures_path: str | Path
+) -> subprocess.CompletedProcess[str]:
+    return subprocess.run(_get_cmd(item, structures_path), text=True)
+
+
+def run_benchmark(
+    config: BenchmarkConfig, max_workers: int = -1, *, verbose: bool = False
+) -> None:
     """Run a benchmark, and merge the databases of each item.
 
     Parameters
     ----------
     config : BenchmarkConfig
         Configuration of the benchmark.
-
-    Raises
-    ------
-    RuntimeError
-        If one of the items failed.
+    max_workers : int
+        Maximum number of workers in the job.
+        If -1, uses all available cores on the system. Default = -1.
+    verbose : bool
+        Whether to print some information while running the jobs. Default = False.
 
     """
-    procs = [
-        subprocess.Popen(_get_cmd(item, config.structures_path), text=True)
-        for item in config.items
-    ]
-    for p in procs:
-        if p.wait() != 0:
-            msg = f"Run failed: {p.args}"
-            raise RuntimeError(msg)
+    max_workers = get_maximum_num_workers(max_workers)
+    with multiprocessing.Pool(processes=max_workers) as pool:
+        pool.apply_async(
+            _run_item, ((item, config.structures_path) for item in config.items)
+        )
+        pool.close()
+        pool.join()
     merge_databases(config.db_path, [item.db_path for item in config.items])

@@ -6,6 +6,7 @@ import itertools
 import os
 import re
 import sys
+import warnings
 from collections.abc import Generator, Iterable, Iterator, Sequence
 from itertools import islice
 from pathlib import Path
@@ -1247,3 +1248,49 @@ class CachedCalculator(Calculator):
                 return
 
         self.results["energy"] = 0.0
+
+
+def get_maximum_num_workers(max_workers: int) -> int:
+    """Get the maximum number of workers.
+
+    Parameters
+    ----------
+    max_workers : int
+        Maximum number of workers set by the user. If -1, uses all available cores.
+
+    Returns
+    -------
+    int
+        Maximum number of workers
+
+    Raises
+    ------
+    RuntimeError
+        If :func:`os.cpu_count()` cannot determine the number of cpu cores on the system,
+        and `max_workers` is -1.
+
+    """
+    cpu_count = os.cpu_count()
+    if cpu_count is None:
+        if max_workers == -1:
+            msg = "`max_workers` was -1, but `os.cpu_count()` returned None. Could not determine number of workers."
+            raise RuntimeError(msg)
+        warnings.warn(
+            f"`os.cpu_count()` returned None, so cannot check number of workers. Using {max_workers=}",
+            category=RuntimeWarning,
+            stacklevel=2,
+        )
+        return max_workers
+
+    if max_workers == -1:
+        return cpu_count - 1
+
+    if max_workers < cpu_count:
+        return max_workers
+
+    warnings.warn(
+        f"`max_workers` was larger than or equal to the number of cores on the system ({max_workers}>={cpu_count}). Using {cpu_count - 1} workers instead.",
+        category=RuntimeWarning,
+        stacklevel=2,
+    )
+    return cpu_count - 1

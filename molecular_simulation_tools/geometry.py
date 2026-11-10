@@ -515,8 +515,8 @@ def find_min_height_for_adsorbate_on_surface(
     ----------
     surface : Atoms
         Surface
-    ngrid : int | tuple[int, int]
-        Number of grid points along x and y
+    adsorbate_origin : np.ndarray
+        Origin of adsorbate
     distance : float
         Distance from all other atoms.
     adsorbate : Atoms | None
@@ -525,12 +525,9 @@ def find_min_height_for_adsorbate_on_surface(
 
     Returns
     -------
-    grid_x : np.ndarray
-        grid of positions along x
-    grid_y : np.ndarray
-        grid of positions along y
-    sample_heights : np.ndarray
-        height of the points corresponding to the points in `grid_x` and `grid_y.
+    max_height : float
+        Height to place adsorbate at for it to be `distance` from all atoms
+        in the surface.
 
     """
     if adsorbate is None:
@@ -593,36 +590,19 @@ def find_min_height_for_adsorbate_on_surface_grid(
         height of the points corresponding to the points in `grid_x` and `grid_y.
 
     """
-    if adsorbate is None:
-        # Dummy, single atom
-        adsorbate = Atoms("H", [[0, 0, 0]])
-    else:
-        adsorbate = adsorbate.copy()
-        adsorbate.set_center_of_mass([0, 0, 0])
-
-    n_atoms_in_adsorbate = len(adsorbate)
-
     grid_x, grid_y = construct_grid_in_cell(surface.get_cell(), ngrid)
     if isinstance(ngrid, int):
         ngrid = (ngrid, ngrid)
 
     sample_heights = np.empty((ngrid[0], ngrid[1]))
-    cell = np.diag(surface.get_cell())
     for i_x in range(ngrid[0]):
         for i_y in range(ngrid[1]):
-            max_height = sys.float_info.min
-
-            for atom_idx in range(n_atoms_in_adsorbate):
-                pos = adsorbate.positions[atom_idx, :]
-
-                height = find_min_height_for_distance(
-                    pos[0] + grid_x[i_x, i_y],
-                    pos[1] + grid_y[i_x, i_y],
-                    surface.positions,
-                    distance,
-                    box_size=cell,
-                )
-                max_height = max(max_height, height)
+            max_height = find_min_height_for_adsorbate_on_surface(
+                surface,
+                np.asarray([grid_x[i_x, i_y], grid_y[i_x, i_y]]),
+                distance,
+                adsorbate=adsorbate,
+            )
             sample_heights[i_x, i_y] = max_height
     return grid_x, grid_y, sample_heights
 
